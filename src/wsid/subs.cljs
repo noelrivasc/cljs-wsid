@@ -6,3 +6,8 @@
  ::name
  (fn [db]
    (:name db)))
+
+(re-frame/reg-sub
+ ::factors-sorted
+ (fn [db]
+   (:factors db)))
