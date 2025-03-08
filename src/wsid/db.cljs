@@ -1,9 +1,6 @@
 (ns wsid.db)
 
-(def default-db
-  {
-   :name "Some name pues"
-   :factors [
+#_(def mock-factors [
              {
               :id "99699f15-3dc7-4f48-b5c2-827092c26e9f"
               :title "Factor A - only positive, high weight"
@@ -28,4 +25,12 @@
               :max 0
               :weight 0
              }
-   ]})
+   ])
+
+(def default-db
+  {
+   :name "Some name pues"
+   :factors {
+             :current nil
+             :all []
+   }})

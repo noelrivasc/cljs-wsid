@@ -4,14 +4,16 @@
    [wsid.subs :as subs]
    ))
 
-(declare v-factor-card v-factors-panel)
+(declare v-factor-card v-factors-panel v-factor-form)
 
 (defn v-main-panel []
-  (let [name (re-frame/subscribe [::subs/name])]
+  (let [name (re-frame/subscribe [::subs/name])
+        current-factor (re-frame/subscribe [::subs/current-factor])]
     [:div
      [:h1
-      "Factors " @name]
+      "Factors" @name]
      (v-factors-panel)
+     (when-not (nil? current-factor) (v-factor-form))
      ]))
 
 (defn v-factor-card [factor]
@@ -25,6 +27,14 @@
   (let [factors (re-frame/subscribe [::subs/factors-sorted])]
     [:div.factors-panel__wrapper
      [:div.factors-panel
-      [:h2.factors-panel__heading]
+      [:div.factors-panel__heading__wrapper 
+       [:h2.factors-panel__heading]
+       [:div.factors-panel__heading__edit-button
+        [:input.factors-panel__heading__edit-button__button 
+         {:type "button" :value "add" :on-click #(re-frame.core/dispatch [:factors-create])}]]]
       [:ul.factors-panel__list
        (map v-factor-card @factors)]]]))
+
+(defn v-factor-form []
+  (let [current-factor (re-frame/subscribe [::subs/current-factor])]
+    [:div "aqui va el formulario"]))
