@@ -10,8 +10,8 @@
  (fn-traced [_ _]
    db/default-db))
 
-#_(re-frame/reg-event-db
- ::factors-create
+(re-frame/reg-event-db
+ :factor-create
  (fn-traced [db _] 
    (let 
     [current-factor 
@@ -25,5 +25,5 @@
        :weight 0
        }
       (get-in db [:factors :current]))]
-     (assoc-in db [:factors :current] @current-factor)
+     (assoc-in db [:factors :current] current-factor)
      )))

@@ -1,8 +1,7 @@
 (ns wsid.views
   (:require
    [re-frame.core :as re-frame]
-   [wsid.subs :as subs]
-   ))
+   [wsid.subs :as subs]))
 
 (declare v-factor-card v-factors-panel v-factor-form)
 
@@ -13,7 +12,8 @@
      [:h1
       "Factors" @name]
      (v-factors-panel)
-     (when-not (nil? current-factor) (v-factor-form))
+     (println "*" @current-factor "*")
+     (if (nil? @current-factor) nil (v-factor-form))
      ]))
 
 (defn v-factor-card [factor]
@@ -30,11 +30,31 @@
       [:div.factors-panel__heading__wrapper 
        [:h2.factors-panel__heading]
        [:div.factors-panel__heading__edit-button
-        [:input.factors-panel__heading__edit-button__button 
-         {:type "button" :value "add" :on-click #(re-frame.core/dispatch [:factors-create])}]]]
+        [:input.factors-panel__heading__edit-button__button
+         {:type "button" 
+          :value "add"
+          :on-click #(re-frame.core/dispatch [:factor-create])
+          }]]]
       [:ul.factors-panel__list
-       (map v-factor-card @factors)]]]))
+       (map v-factor-card @factors)]]]
+    ))
 
 (defn v-factor-form []
   (let [current-factor (re-frame/subscribe [::subs/current-factor])]
-    [:div "aqui va el formulario"]))
+    [:form 
+     [:label {:for "factor-title"} "Title"
+      [:input#factor-title {:defaultValue (:title @current-factor)}]]
+     [:label {:for "factor-description"} "Description"
+      [:textarea#factor-description {:defaultValue (:description @current-factor)}]]
+     [:label {:for "factor-min"} "Minimum value"
+      [:input#factor-min {:defaultValue (:min @current-factor) :type "number" :min -10 :max 0}]]
+     [:label {:for "factor-max"} "Maximum value"
+      [:input#factor-max {:defaultValue (:max @current-factor) :type "number" :min 0 :max 10}]]
+     [:div "Interpretation: soon."]
+     [:div.factor-form__actions
+      [:input.factor-form__actions__button.factor-form__actions__button--delete {:type "button" :value "delete"}] ; TODO: show only for existing factors
+      [:input.factor-form__actions__button.factor-form__actions__button--cancel {:type "button" :value "cancel"}]
+      [:input.factor-form__actions__button.factor-form__actions__button--save {:type "button" :value "save"}]
+      ]
+     ]
+    ))
