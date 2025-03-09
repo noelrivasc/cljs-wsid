@@ -39,10 +39,16 @@
     ))
 
 (defn v-factor-form []
-  (let [current-factor (re-frame/subscribe [::subs/current-factor])]
+  (let [current-factor (re-frame/subscribe [::subs/current-factor])
+        update-factor (fn [el] (let [property (-> el .-target .-name)
+                                     value (-> el .-target .-value)]
+                                 (re-frame.core/dispatch [:factor-active-update property value])))
+        ] 
     [:form 
      [:label {:for "factor-title"} "Title"
-      [:input#factor-title {:defaultValue (:title @current-factor)}]]
+      [:input {:defaultValue (:title @current-factor)
+               :name "factor-title"
+               :on-change update-factor}]]
      [:label {:for "factor-description"} "Description"
       [:textarea#factor-description {:defaultValue (:description @current-factor)}]]
      [:label {:for "factor-min"} "Minimum value"

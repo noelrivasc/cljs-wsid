@@ -27,3 +27,9 @@
       (get-in db [:factors :current]))]
      (assoc-in db [:factors :current] current-factor)
      )))
+
+(re-frame/reg-event-db
+ :factor-active-update
+ (fn [db [_ property value]]
+   (js/console.log "We got a new thing: " property " " value)
+   db))
