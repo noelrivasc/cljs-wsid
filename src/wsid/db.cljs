@@ -29,7 +29,6 @@
 
 (def default-db
   {
-   :name "Some name pues"
    :factors {
              :current nil
              :all []

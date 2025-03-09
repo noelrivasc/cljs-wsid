@@ -2,11 +2,8 @@
 ### State
 
 ### Views
-- Add edit icon or button to factors panel
-- Remove name from title
 
 ### Work
-- On press new button, set state of currently edited factor to empty map (no id yet)
 - On press save button, dispatch save factor event
 - Write save factor event handler (returns new db, no need for fx here)
 - On press the delete button, dispatch remove factor event

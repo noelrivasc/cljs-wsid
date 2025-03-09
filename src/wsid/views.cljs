@@ -6,11 +6,10 @@
 (declare v-factor-card v-factors-panel v-factor-form)
 
 (defn v-main-panel []
-  (let [name (re-frame/subscribe [::subs/name])
-        current-factor (re-frame/subscribe [::subs/current-factor])]
+  (let [current-factor (re-frame/subscribe [::subs/current-factor])]
     [:div
      [:h1
-      "Factors" @name]
+      "Factors"]
      (v-factors-panel)
      (println "*" @current-factor "*")
      (if (nil? @current-factor) nil (v-factor-form))
@@ -52,9 +51,7 @@
       [:input#factor-max {:defaultValue (:max @current-factor) :type "number" :min 0 :max 10}]]
      [:div "Interpretation: soon."]
      [:div.factor-form__actions
-      [:input.factor-form__actions__button.factor-form__actions__button--delete {:type "button" :value "delete"}] ; TODO: show only for existing factors
+      (if (:id current-factor) [:input.factor-form__actions__button.factor-form__actions__button--delete {:type "button" :value "delete"}] nil)
       [:input.factor-form__actions__button.factor-form__actions__button--cancel {:type "button" :value "cancel"}]
-      [:input.factor-form__actions__button.factor-form__actions__button--save {:type "button" :value "save"}]
-      ]
-     ]
+      [:input.factor-form__actions__button.factor-form__actions__button--save {:type "button" :value "save"}]]]
     ))
