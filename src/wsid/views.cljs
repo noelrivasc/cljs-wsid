@@ -44,20 +44,39 @@
                                      value (-> el .-target .-value)]
                                  (re-frame.core/dispatch [:factor-active-update property value])))
         ] 
-    [:form 
+    [:form.factor-active-edit  
      [:label {:for "factor-title"} "Title"
       [:input {:defaultValue (:title @current-factor)
+               :id "factor-title"
                :name "factor-title"
+               :class ["factor-active-edit__input"]
                :on-change update-factor}]]
      [:label {:for "factor-description"} "Description"
-      [:textarea#factor-description {:defaultValue (:description @current-factor)}]]
+      [:textarea {:defaultValue (:description @current-factor)
+                  :id "factor-description" 
+                  :class ["factor-active-edit__textarea"]
+                  :name "factor-description"
+                  :on-change update-factor}]]
      [:label {:for "factor-min"} "Minimum value"
-      [:input#factor-min {:defaultValue (:min @current-factor) :type "number" :min -10 :max 0}]]
+      [:input {:defaultValue (:title @current-factor)
+               :type "number"
+               :min -10
+               :max 0
+               :id "factor-min"
+               :name "factor-min" 
+               :class ["factor-active-edit__input" "factor-active-edit__input--number"]
+               :on-change update-factor}]]
      [:label {:for "factor-max"} "Maximum value"
-      [:input#factor-max {:defaultValue (:max @current-factor) :type "number" :min 0 :max 10}]]
+      [:input {:defaultValue (:title @current-factor)
+               :type "number"
+               :min 0
+               :max 10
+               :id "factor-max"
+               :name "factor-max"
+               :class ["factor-active-edit__input" "factor-active-edit__input--number"]
+               :on-change update-factor}]]
      [:div "Interpretation: soon."]
      [:div.factor-form__actions
       (if (:id current-factor) [:input.factor-form__actions__button.factor-form__actions__button--delete {:type "button" :value "delete"}] nil)
       [:input.factor-form__actions__button.factor-form__actions__button--cancel {:type "button" :value "cancel"}]
-      [:input.factor-form__actions__button.factor-form__actions__button--save {:type "button" :value "save"}]]]
-    ))
+      [:input.factor-form__actions__button.factor-form__actions__button--save {:type "button" :value "save"}]]]))
