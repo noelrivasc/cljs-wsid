@@ -3,16 +3,15 @@
    [re-frame.core :as re-frame]
    [wsid.subs :as subs]))
 
-(declare v-factor-card v-factors-panel v-factor-form)
+(declare v-factor-card v-factors-panel v-factor-form v-factor-interpretation)
 
 (defn v-main-panel []
-  (let [current-factor (re-frame/subscribe [::subs/current-factor])]
+  (let [factor-active (re-frame/subscribe [::subs/factor-active])]
     [:div
      [:h1
       "Factors"]
      (v-factors-panel)
-     (println "*" @current-factor "*")
-     (if (nil? @current-factor) nil (v-factor-form))
+     (if (nil? @factor-active) nil (v-factor-form))
      ]))
 
 (defn v-factor-card [factor]
@@ -39,44 +38,50 @@
     ))
 
 (defn v-factor-form []
-  (let [current-factor (re-frame/subscribe [::subs/current-factor])
-        update-factor (fn [el] (let [property (-> el .-target .-name)
+  (let [factor-edit-defaults (re-frame/subscribe [::subs/factor-edit-defaults])
+        update-factor (fn [el] (let [type (-> el .-target .-type)
+                                     property (-> el .-target .-name)
                                      value (-> el .-target .-value)]
-                                 (re-frame.core/dispatch [:factor-active-update property value])))
+                                 (re-frame.core/dispatch [:factor-active-update property
+                                                          (if (= type "number") (parse-long value) value)])))
         ] 
     [:form.factor-active-edit  
      [:label {:for "factor-title"} "Title"
-      [:input {:defaultValue (:title @current-factor)
+      [:input {:defaultValue (:title @factor-edit-defaults)
                :id "factor-title"
-               :name "factor-title"
+               :name "title"
                :class ["factor-active-edit__input"]
                :on-change update-factor}]]
      [:label {:for "factor-description"} "Description"
-      [:textarea {:defaultValue (:description @current-factor)
+      [:textarea {:defaultValue (:description @factor-edit-defaults)
                   :id "factor-description" 
                   :class ["factor-active-edit__textarea"]
-                  :name "factor-description"
+                  :name "description"
                   :on-change update-factor}]]
      [:label {:for "factor-min"} "Minimum value"
-      [:input {:defaultValue (:title @current-factor)
+      [:input {:defaultValue (:min @factor-edit-defaults)
                :type "number"
                :min -10
                :max 0
                :id "factor-min"
-               :name "factor-min" 
+               :name "min" 
                :class ["factor-active-edit__input" "factor-active-edit__input--number"]
                :on-change update-factor}]]
      [:label {:for "factor-max"} "Maximum value"
-      [:input {:defaultValue (:title @current-factor)
+      [:input {:defaultValue (:max @factor-edit-defaults)
                :type "number"
                :min 0
                :max 10
                :id "factor-max"
-               :name "factor-max"
+               :name "max"
                :class ["factor-active-edit__input" "factor-active-edit__input--number"]
                :on-change update-factor}]]
-     [:div "Interpretation: soon."]
+     (v-factor-interpretation)
      [:div.factor-form__actions
-      (if (:id current-factor) [:input.factor-form__actions__button.factor-form__actions__button--delete {:type "button" :value "delete"}] nil)
+      (if (:id factor-edit-defaults) [:input.factor-form__actions__button.factor-form__actions__button--delete {:type "button" :value "delete"}] nil)
       [:input.factor-form__actions__button.factor-form__actions__button--cancel {:type "button" :value "cancel"}]
       [:input.factor-form__actions__button.factor-form__actions__button--save {:type "button" :value "save"}]]]))
+
+(defn v-factor-interpretation []
+  (let [range-interpretation (re-frame/subscribe [::subs/factor-active-range-interpretation])]
+    [:div.factor-active-edit__range-interpretation @range-interpretation]))
