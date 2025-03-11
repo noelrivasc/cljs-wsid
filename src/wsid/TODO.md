@@ -3,8 +3,8 @@
 
 ### Views
 
-### Work
-- On press save button, dispatch save factor event
+### Works
+- On press save button, dispatch save factor event (transfer factor-active to list of factors; produce UUID if necessary)
 - Write save factor event handler (returns new db, no need for fx here)
 - On press the delete button, dispatch remove factor event
 - Write remove factor event handler (return  new db) 
