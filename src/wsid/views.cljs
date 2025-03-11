@@ -43,8 +43,7 @@
                                      property (-> el .-target .-name)
                                      value (-> el .-target .-value)]
                                  (re-frame.core/dispatch [:factor-active-update property
-                                                          (if (= type "number") (parse-long value) value)])))
-        ] 
+                                                          (if (= type "number") (parse-long value) value)])))] 
     [:form.factor-active-edit  
      [:label {:for "factor-title"} "Title"
       [:input {:defaultValue (:title @factor-edit-defaults)
