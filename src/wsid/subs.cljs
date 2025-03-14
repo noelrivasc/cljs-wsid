@@ -1,7 +1,6 @@
 (ns wsid.subs
   (:require
-   [re-frame.core :as re-frame]
-   [clojure.math :as math]))
+   [re-frame.core :as re-frame]))
 
 (re-frame/reg-sub
  ::factors-sorted
