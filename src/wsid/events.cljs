@@ -49,7 +49,6 @@
    ; (factor validation is handled by a separate method)
    ; Save the active factor to the factors vector
    ; clear the active-factor
-   (js/console.log "Why is this being dispatched?")
    (let [active-factor (get-in db [:transient :factor-active])
          factor-prepared (assoc active-factor :id (if
                                           (= "" (:id active-factor))
