@@ -34,3 +34,33 @@
  :factor-active-update
  (fn [db [_ property value]]
    (assoc-in db [:transient :factor-active (keyword property)] value)))
+
+(defn replace-map-by-id [my-vector id-to-replace new-map]
+  (map (fn [m]
+         (if (= (:id m) id-to-replace)
+           new-map
+           m))
+       my-vector))
+
+(re-frame/reg-event-db
+ :factor-active-save
+ (fn [db _]
+   ; If the factor does not have an id, create it
+   ; (factor validation is handled by a separate method)
+   ; Save the active factor to the factors vector
+   ; clear the active-factor
+   (js/console.log "Why is this being dispatched?")
+   (let [active-factor (get-in db [:transient :factor-active])
+         factor-prepared (assoc active-factor :id (if
+                                          (= "" (:id active-factor))
+                                           (.toString (random-uuid))
+                                           (:id active-factor)))
+         factors (conj
+                  (filter #(not (= (:id factor-prepared) (:id %)))
+                         (get-in db [:factors :all]))
+                  factor-prepared)]
+     (-> db
+         (assoc-in [:factors :all] factors)
+         (assoc-in [:transient :factor-edit-defaults] nil)
+         (assoc-in [:transient :factor-active] nil)))
+   ))
