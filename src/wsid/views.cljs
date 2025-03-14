@@ -77,9 +77,16 @@
                :on-change update-factor}]]
      (v-factor-interpretation)
      [:div.factor-form__actions
-      (if (:id factor-edit-defaults) [:input.factor-form__actions__button.factor-form__actions__button--delete {:type "button" :value "delete"}] nil)
-      [:input.factor-form__actions__button.factor-form__actions__button--cancel {:type "button" :value "cancel"}]
-      [:input.factor-form__actions__button.factor-form__actions__button--save {:type "button" :value "save"}]]]))
+      (if (:id factor-edit-defaults) [:input {:type "button" 
+                                              :value "delete"
+                                              :class ["factor-form__actions__button" "factor-form__actions__button--delete"]}] nil)
+      [:input {:type "button"
+               :value "cancel"
+               :class ["factor-form__actions__button" "factor-form__actions__button--cancel"]}]
+      [:input {:type "button"
+               :value "save"
+               :class ["factor-form__actions__button" "factor-form__actions__button--save"]
+               :on-click #(re-frame.core/dispatch [:factor-active-save])}]]]))
 
 (defn v-factor-interpretation []
   (let [range-interpretation (re-frame/subscribe [::subs/factor-active-range-interpretation])]
