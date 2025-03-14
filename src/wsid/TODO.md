@@ -10,3 +10,4 @@
 - Write remove factor event handler (return  new db) 
 - On press cancel button, dispatch unset currently edited - not an empty map but nil
 - Condition the rendering of the form to the thing being edited not nil
+- Add active factor validation (disable save until factor is valid; show errors)
