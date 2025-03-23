@@ -44,7 +44,10 @@
                                      value (-> el .-target .-value)]
                                  (re-frame.core/dispatch [:factor-active-update property
                                                           (if (= type "number") (parse-long value) value)])))] 
-    [:form.factor-active-edit  
+    [:details {:open true
+               :class ["border-2 border-blue-600"]}
+     [:summary "This is the summary"]
+     [:form.factor-active-edit  
      [:label {:for "factor-title"} "Title"
       [:input {:defaultValue (:title @factor-edit-defaults)
                :id "factor-title"
@@ -86,7 +89,8 @@
       [:input {:type "button"
                :value "save"
                :class ["factor-form__actions__button" "factor-form__actions__button--save"]
-               :on-click #(re-frame.core/dispatch [:factor-active-save])}]]]))
+               :on-click #(re-frame.core/dispatch [:factor-active-save])}]]]]
+    ))
 
 (defn v-factor-interpretation []
   (let [range-interpretation (re-frame/subscribe [::subs/factor-active-range-interpretation])]
