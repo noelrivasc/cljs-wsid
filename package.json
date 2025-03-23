@@ -2,7 +2,9 @@
 	"name": "wsid",
 	"scripts": {
 		"ancient": "clojure -Sdeps '{:deps {com.github.liquidz/antq {:mvn/version \"RELEASE\"}}}' -m antq.core",
-		"watch": "npx shadow-cljs watch app browser-test karma-test",
+		"tailwind-watch": "npx @tailwindcss/cli -i ./src/wsid/css/main.css -o ./resources/public/css/main.css --content './src/cljs/**/*.cljs' --watch",
+		"shadow-watch": "npx shadow-cljs watch app browser-test karma-test",
+		"watch": "npm run shadow-watch & npm run tailwind-watch",
 		"release": "npx shadow-cljs release app",
 		"build-report": "npx shadow-cljs run shadow.cljs.build-report app target/build-report.html"
 	},
@@ -11,6 +13,7 @@
 		"react-dom": "17.0.2"
 	},
 	"devDependencies": {
+		"@tailwindcss/cli": "^4.0.15",
 		"shadow-cljs": "2.26.2"
 	}
 }
