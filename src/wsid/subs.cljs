@@ -52,7 +52,7 @@
                           :negative-only (str "This factor can only be negative and the effects "
                                               min-weight
                                               ".")
-                          :positive-only (str "This factor can only be positive and the effects"
+                          :positive-only (str "This factor can only be positive and the effects "
                                               max-weight
                                               ".")
                           :zero "")]
