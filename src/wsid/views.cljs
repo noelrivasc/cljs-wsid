@@ -1,18 +1,22 @@
 (ns wsid.views
   (:require
    [re-frame.core :as re-frame]
-   [wsid.subs :as subs]))
+   [wsid.subs :as subs]
+   [wsid.style-helpers :as style]))
 
 (declare v-factor-card v-factors-panel v-factor-form v-factor-interpretation)
 
 (defn v-main-panel []
   (let [factor-active (re-frame/subscribe [::subs/factor-active])]
-    [:div
-     [:h1
-      "Factors"]
-     (v-factors-panel)
-     (if (nil? @factor-active) nil (v-factor-form))
-     ]))
+    [:div.wsid-app
+     [:main
+      [:div.title__wrapper
+       [:h1.title  "What Should I Do?"]]
+      (v-factors-panel)
+      [:dialog.modal-container (conj {}
+                                     (if (nil? @factor-active) nil {:open true}) ; TODO: switch to a modal-active container? or turn into a component
+                                     {:class style/modal-container})
+       (if (nil? @factor-active) nil (v-factor-form))]]]))
 
 (defn v-factor-card [factor]
   [:div.factor-card__wrapper {:key (:id factor)}
