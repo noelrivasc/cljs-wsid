@@ -63,3 +63,10 @@
          (assoc-in [:transient :factor-edit-defaults] nil)
          (assoc-in [:transient :factor-active] nil)))
    ))
+
+(re-frame/reg-event-db
+ :factor-active-cancel
+ (fn [db _]
+   (-> db
+       (assoc-in [:transient :factor-edit-defaults] nil)
+       (assoc-in [:transient :factor-active] nil))))

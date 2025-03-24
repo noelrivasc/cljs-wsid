@@ -3,7 +3,7 @@
    [re-frame.core :as re-frame]
    [wsid.subs :as subs]))
 
-(declare v-factor-card v-factors-panel v-factor-form v-factor-interpretation v-modal-dialog)
+(declare v-factor-card v-factors-panel v-scenarios-panel v-factor-form v-factor-interpretation v-modal-dialog)
 
 (defn v-modal-dialog [render? content-fn]
   [:dialog.modal-container (conj {}
@@ -17,8 +17,10 @@
      [:main
       [:div.title__wrapper
        [:h1.title  "What Should I Do?"]]
-      (v-factors-panel)
-      (v-modal-dialog (nil? @factor-active) v-factor-form)]]))
+      [:div.decision-container
+       (v-factors-panel)
+       (v-scenarios-panel)]
+      (v-modal-dialog (not (nil? @factor-active)) v-factor-form)]]))
 
 (defn v-factor-card [factor]
   [:div.factor-card__wrapper {:key (:id factor)}
@@ -91,7 +93,8 @@
                                               :class ["factor-form__actions__button" "factor-form__actions__button--delete"]}] nil)
       [:input {:type "button"
                :value "cancel"
-               :class ["factor-form__actions__button" "factor-form__actions__button--cancel"]}]
+               :class ["factor-form__actions__button" "factor-form__actions__button--cancel"]
+               :on-click #(re-frame.core/dispatch [:factor-active-cancel])}]
       [:input {:type "button"
                :value "save"
                :class ["factor-form__actions__button" "factor-form__actions__button--save"]
@@ -101,3 +104,6 @@
 (defn v-factor-interpretation []
   (let [range-interpretation (re-frame/subscribe [::subs/factor-active-range-interpretation])]
     [:div.factor-active-edit__range-interpretation @range-interpretation]))
+
+(defn v-scenarios-panel []
+  [:div.scenarios-panel "Wait a bit."])
