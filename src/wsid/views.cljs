@@ -1,10 +1,15 @@
 (ns wsid.views
   (:require
    [re-frame.core :as re-frame]
-   [wsid.subs :as subs]
-   [wsid.style-helpers :as style]))
+   [wsid.subs :as subs]))
 
-(declare v-factor-card v-factors-panel v-factor-form v-factor-interpretation)
+(declare v-factor-card v-factors-panel v-factor-form v-factor-interpretation v-modal-dialog)
+
+(defn v-modal-dialog [render? content-fn]
+  [:dialog.modal-container (conj {}
+                                 (if render? {:open true} nil)
+                                 {:class ["absolute" "w-screen" "h-screen" "bg-red-300" "left-0" "top-0"]})
+   (if render? (content-fn) nil)])
 
 (defn v-main-panel []
   (let [factor-active (re-frame/subscribe [::subs/factor-active])]
@@ -13,10 +18,7 @@
       [:div.title__wrapper
        [:h1.title  "What Should I Do?"]]
       (v-factors-panel)
-      [:dialog.modal-container (conj {}
-                                     (if (nil? @factor-active) nil {:open true}) ; TODO: switch to a modal-active container? or turn into a component
-                                     {:class style/modal-container})
-       (if (nil? @factor-active) nil (v-factor-form))]]]))
+      (v-modal-dialog (nil? @factor-active) v-factor-form)]]))
 
 (defn v-factor-card [factor]
   [:div.factor-card__wrapper {:key (:id factor)}
