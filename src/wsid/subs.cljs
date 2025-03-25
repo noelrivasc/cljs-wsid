@@ -19,9 +19,11 @@
 
 (re-frame/reg-sub
  ::factor-active-range-interpretation
- (fn [db]
-   (let [min (get-in db [:transient :factor-active :min])
-         max (get-in db [:transient :factor-active :max])
+ (fn [_ _]
+   (re-frame/subscribe [::factor-active]))
+ (fn [factor-active]
+   (let [min (get factor-active :min)
+         max (get factor-active :max)
          effect-direction (case [(< min 0) (> max 0)]
                             [true true] :both-ways
                             [true false] :negative-only
