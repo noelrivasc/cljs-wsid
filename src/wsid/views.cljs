@@ -1,7 +1,8 @@
 (ns wsid.views
   (:require
    [re-frame.core :as re-frame]
-   [wsid.subs :as subs]))
+   [wsid.subs :as subs]
+   [wsid.icons :as icons]))
 
 (declare v-factor-card v-factors-panel v-scenarios-panel v-factor-form v-factor-interpretation v-modal-dialog)
 
@@ -16,7 +17,9 @@
     [:div.wsid-app
      [:main
       [:div.title__wrapper
-       [:h1.title  "What Should I Do?"]]
+       [:h1.title 
+        {:class ["text-cyan-700" "font-bold" "italic" "text-6xl"]}
+        "What Should I Do?"]]
       [:div.decision-container
        (v-factors-panel)
        (v-scenarios-panel)]
@@ -33,17 +36,19 @@
   (let [factors (re-frame/subscribe [::subs/factors-sorted])]
     [:div.factors-panel__wrapper
      [:div.factors-panel
-      [:div.factors-panel__heading__wrapper 
-       [:h2.factors-panel__heading]
-       [:div.factors-panel__heading__edit-button
-        [:input.factors-panel__heading__edit-button__button
-         {:type "button" 
+      [:div.factors-panel__heading__wrapper
+       [:h2.factors-panel__heading
+        {:class ["text-xl" "text-yellow-400"]}
+        "Factors"]
+       [:div.factors-panel__heading__add-button
+        [:button.factors-panel__heading__add-button__button
+         {:type "button"
           :value "add"
-          :on-click #(re-frame.core/dispatch [:factor-create])
-          }]]]
+          :on-click #(re-frame.core/dispatch [:factor-create])}
+         [:span.icon
+          (icons/get-icon icons/edit ["fill-red-800" "size-4"])]]]]
       [:ul.factors-panel__list
-       (map v-factor-card @factors)]]]
-    ))
+       (map v-factor-card @factors)]]]))
 
 (defn v-factor-form []
   (let [factor-edit-defaults (re-frame/subscribe [::subs/factor-edit-defaults])
