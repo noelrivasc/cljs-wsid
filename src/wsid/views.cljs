@@ -2,7 +2,7 @@
   (:require
    [re-frame.core :as re-frame]
    [wsid.subs :as subs]
-   [wsid.icons :as icons]))
+   [wsid.icons :as i]))
 
 (declare v-factor-card v-factors-panel v-scenarios-panel v-factor-form v-factor-interpretation v-modal-dialog)
 
@@ -46,7 +46,7 @@
           :value "add"
           :on-click #(re-frame.core/dispatch [:factor-create])}
          [:span.icon
-          (icons/get-icon icons/edit ["fill-red-800" "size-4"])]]]]
+          (i/get-icon i/square-plus ["fill-red-800" "size-4"])]]]]
       [:ul.factors-panel__list
        (map v-factor-card @factors)]]]))
 
