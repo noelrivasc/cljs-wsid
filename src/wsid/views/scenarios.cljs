@@ -1,7 +1,7 @@
 (ns wsid.views.scenarios
   (:require 
    [re-frame.core :as re-frame]
-   [wsid.icons :as i]))
+   [wsid.views.icons :as i]))
 
 (defn v-scenarios-panel []
   [:div.scenarios-panel__wrapper

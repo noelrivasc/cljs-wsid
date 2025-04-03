@@ -1,4 +1,4 @@
-(ns wsid.icons)
+(ns wsid.views.icons)
 
 (defn get-icon [icon class]
   (let [class-vec (if (vector? class) class [class])]

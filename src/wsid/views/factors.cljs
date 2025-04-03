@@ -1,9 +1,8 @@
 (ns wsid.views.factors
   (:require 
-   [wsid.icons :as i]
+   [wsid.views.icons :as i]
    [re-frame.core :as re-frame]
-   [wsid.subs :as subs]
-   ))
+   [wsid.subs :as subs]))
 
 (declare v-factor-card v-factors-panel v-factor-form v-factor-interpretation v-factor-range)
 
