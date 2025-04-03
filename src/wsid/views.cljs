@@ -1,6 +1,5 @@
 (ns wsid.views
   (:require
-   [clojure.string :as str]
    [re-frame.core :as re-frame]
    [wsid.subs :as subs]
    [wsid.icons :as i]))
@@ -45,7 +44,7 @@
      [:div.factor-range__center-line
       {:style {:position "absolute"
                :left (str centerline-position "px")
-               :height (str height "px")} ; account for borders
+               :height (str height "px")}
        :class ["border-l-1" "border-cyan-500"]}]
      [:div.factor-range__negative-bar
       {:style {:position "absolute"
@@ -58,8 +57,7 @@
                :left (str (+ 1 centerline-position) "px")
                :height (str height "px")
                :width (str positive-width "px") }
-      :class ["bg-blue-300"]}
-      ]]))
+      :class ["bg-blue-300"]}]]))
 
 (defn v-factors-panel []
   (let [factors (re-frame/subscribe [::subs/factors-sorted])]
