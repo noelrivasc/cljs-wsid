@@ -35,13 +35,6 @@
  (fn [db [_ property value]]
    (assoc-in db [:transient :factor-active (keyword property)] value)))
 
-(defn replace-map-by-id [my-vector id-to-replace new-map]
-  (map (fn [m]
-         (if (= (:id m) id-to-replace)
-           new-map
-           m))
-       my-vector))
-
 (re-frame/reg-event-db
  :factor-active-save
  (fn [db _]
