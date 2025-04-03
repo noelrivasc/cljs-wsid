@@ -127,9 +127,12 @@
      (v-factor-interpretation)
      (v-factor-range (:min @factor-active) (:max @factor-active) 120 15)
      [:div.factor-form__actions
-      (if (:id @factor-edit-defaults) [:input {:type "button" 
-                                              :value "delete"
-                                              :class ["factor-form__actions__button" "factor-form__actions__button--delete"]}] nil)
+      (if (:id @factor-edit-defaults)
+        [:input {:type "button"
+                 :value "delete"
+                 :class ["factor-form__actions__button" "factor-form__actions__button--delete"]
+                 :on-click #(re-frame.core/dispatch [:factor-active-delete])}]
+        nil)
       [:input {:type "button"
                :value "cancel"
                :class ["factor-form__actions__button" "factor-form__actions__button--cancel"]
