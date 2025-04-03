@@ -18,7 +18,8 @@
 ## Topics I'd like to cover
 
 ### Not yet
-(low) use spec to validate state
+HIGH! (otherwise one has to read all the code to know what a _factor_ is)) use spec to validate state
+separate markup structure from markup style; make a function to merge style data by using BEM classes; components are a potentially hard to maintain eye sore
 use fx handlers
 use external data for coeffects -> load decision, parse JSON
 use effect handler, custom
