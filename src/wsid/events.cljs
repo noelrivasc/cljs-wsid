@@ -65,6 +65,16 @@
    ))
 
 (re-frame/reg-event-db
+ :factor-active-delete
+ (fn [db _]
+   (let [factor-active (get-in db [:transient :factor-active])
+         factors (filter #(not (= (:id %) (:id factor-active))) (get-in db [:factors :all]))]
+     (-> db
+         (assoc-in [:factors :all] factors)
+         (assoc-in [:transient :factor-edit-defaults] nil)
+         (assoc-in [:transient :factor-active] nil)))))
+
+(re-frame/reg-event-db
  :factor-active-cancel
  (fn [db _]
    (-> db
