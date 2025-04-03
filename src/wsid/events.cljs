@@ -55,8 +55,8 @@
                                            (.toString (random-uuid))
                                            (:id active-factor)))
          factors (conj
-                  (filter #(not (= (:id factor-prepared) (:id %)))
-                         (get-in db [:factors :all]))
+                   (vec (filter #(not (= (:id factor-prepared) (:id %)))
+                            (get-in db [:factors :all])))
                   factor-prepared)]
      (-> db
          (assoc-in [:factors :all] factors)
@@ -68,7 +68,7 @@
  :factor-active-delete
  (fn [db _]
    (let [factor-active (get-in db [:transient :factor-active])
-         factors (filter #(not (= (:id %) (:id factor-active))) (get-in db [:factors :all]))]
+         factors (vec (filter #(not (= (:id %) (:id factor-active))) (get-in db [:factors :all])))]
      (-> db
          (assoc-in [:factors :all] factors)
          (assoc-in [:transient :factor-edit-defaults] nil)
