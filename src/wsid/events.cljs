@@ -31,6 +31,13 @@
         (assoc-in [:transient :factor-active] active-factor)))))
 
 (re-frame/reg-event-db
+ :factor-edit
+ (fn [db [_ factor]]
+   (-> db
+       (assoc-in [:transient :factor-active] factor)
+       (assoc-in [:transient :factor-edit-defaults] factor))))
+
+(re-frame/reg-event-db
  :factor-active-update
  (fn [db [_ property value]]
    (assoc-in db [:transient :factor-active (keyword property)] value)))
