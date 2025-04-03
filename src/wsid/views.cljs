@@ -1,10 +1,11 @@
 (ns wsid.views
   (:require
+   [clojure.string :as str]
    [re-frame.core :as re-frame]
    [wsid.subs :as subs]
    [wsid.icons :as i]))
 
-(declare v-factor-card v-factors-panel v-scenarios-panel v-factor-form v-factor-interpretation v-modal-dialog)
+(declare v-factor-card v-factors-panel v-scenarios-panel v-factor-form v-factor-interpretation v-modal-dialog v-factor-range)
 
 (defn v-modal-dialog [render? content-fn]
   [:dialog.modal-container (conj {}
@@ -29,8 +30,36 @@
   [:div.factor-card__wrapper {:key (:id factor)}
    [:div.factor-card
     [:div.factor-card__title (:title factor)]
-    [:div.factor-card__range]
+    [:div.factor-card__range 
+     (v-factor-range (:min factor) (:max factor) 120 15)]
     [:div.factor-card__edit-button]]])
+
+(defn v-factor-range [minimum maximum width height]
+  (let [negative-width (* (/ minimum 10) (/ width 2) -1)
+        positive-width (* (/ maximum 10) (/ width 2))
+        centerline-position (/ width 2)]
+    [:div.factor-range
+     {:style {:width (str width "px")
+              :height (str height "px")}
+      :class ["bg-cyan-100" "border-cyan-500" "border-1" "box-content"]}
+     [:div.factor-range__center-line
+      {:style {:position "absolute"
+               :left (str centerline-position "px")
+               :height (str height "px")} ; account for borders
+       :class ["border-l-1" "border-cyan-500"]}]
+     [:div.factor-range__negative-bar
+      {:style {:position "absolute"
+               :left (str (+ (* -1 negative-width) centerline-position) "px")
+               :height (str height "px")
+               :width (str negative-width "px") }
+       :class ["bg-red-300"]}]
+     [:div.factor-range__positive-bar
+      {:style {:position "absolute"
+               :left (str (+ 1 centerline-position) "px")
+               :height (str height "px")
+               :width (str positive-width "px") }
+      :class ["bg-blue-300"]}
+      ]]))
 
 (defn v-factors-panel []
   (let [factors (re-frame/subscribe [::subs/factors-sorted])]
