@@ -84,6 +84,7 @@
 
 (defn v-factor-form []
   (let [factor-edit-defaults (re-frame/subscribe [::subs/factor-edit-defaults])
+        factor-active (re-frame/subscribe [::subs/factor-active])
         update-factor (fn [el] (let [type (-> el .-target .-type)
                                      property (-> el .-target .-name)
                                      value (-> el .-target .-value)]
@@ -124,8 +125,9 @@
                :class ["factor-active-edit__input" "factor-active-edit__input--number"]
                :on-change update-factor}]]
      (v-factor-interpretation)
+     (v-factor-range (:min @factor-active) (:max @factor-active) 120 15)
      [:div.factor-form__actions
-      (if (:id factor-edit-defaults) [:input {:type "button" 
+      (if (:id @factor-edit-defaults) [:input {:type "button" 
                                               :value "delete"
                                               :class ["factor-form__actions__button" "factor-form__actions__button--delete"]}] nil)
       [:input {:type "button"
