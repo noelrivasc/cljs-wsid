@@ -1,9 +1,8 @@
 ## TODO
-- Add edit button for events
-- Handle edit button press for events
 - On press the delete button, dispatch remove factor event
 - Write remove factor event handler (return  new db) 
 - Add active factor validation (disable save until factor is valid; show errors)
+- Debounce form input or create local state to prevent fast re-renders on input
 
 ## Style the thing
 - Add max dimensions to main panel, center.
@@ -14,12 +13,12 @@
 - Make factors container, title, float add icon
 - Make factors list, each w/ name, tooltip, edit button, value bar.
 - Make scenarios panel, grey, place holder w/ title.
+- Separate markup structure from markup style; make a function to merge style data by using BEM classes; components are a potentially hard to maintain eye sore
 
 ## Topics I'd like to cover
 
 ### Not yet
 HIGH! (otherwise one has to read all the code to know what a _factor_ is)) use spec to validate state
-separate markup structure from markup style; make a function to merge style data by using BEM classes; components are a potentially hard to maintain eye sore
 use fx handlers
 use external data for coeffects -> load decision, parse JSON
 use effect handler, custom
