@@ -29,9 +29,14 @@
   [:div.factor-card__wrapper {:key (:id factor)}
    [:div.factor-card
     [:div.factor-card__title (:title factor)]
-    [:div.factor-card__range 
+    [:div.factor-card__range
      (v-factor-range (:min factor) (:max factor) 120 15)]
-    [:div.factor-card__edit-button]]])
+    [:button.factor-card__edit-button
+     {:type "button"
+      :value "add"
+      :on-click #(re-frame.core/dispatch [:factor-edit factor])}
+     [:span.icon
+      (i/get-icon i/edit ["fill-red-800" "size-4"])]]]])
 
 (defn v-factor-range [minimum maximum width height]
   (let [negative-width (* (/ minimum 10) (/ width 2) -1)
@@ -67,8 +72,8 @@
        [:h2.factors-panel__heading
         {:class ["text-xl" "text-yellow-400"]}
         "Factors"]
-       [:div.factors-panel__heading__add-button
-        [:button.factors-panel__heading__add-button__button
+       [:div.factors-panel__heading__add
+        [:button.factors-panel__heading__add__button
          {:type "button"
           :value "add"
           :on-click #(re-frame.core/dispatch [:factor-create])}
@@ -138,4 +143,18 @@
     [:div.factor-active-edit__range-interpretation @range-interpretation]))
 
 (defn v-scenarios-panel []
-  [:div.scenarios-panel "Wait a bit."])
+  [:div.scenarios-panel__wrapper
+   [:div.scenarios-panel
+    [:div.scenarios-panel__heading__wrapper
+     [:h2.scenarios-panel__heading 
+      {:class ["text-xl" "text-yellow-400"]}
+      "Scenarios"]
+     [:div.scenarios-panel__heading__add
+        [:button.scenarios-panel__heading__add__button
+         {:type "button"
+          :value "add"
+          :on-click #(re-frame.core/dispatch [:scenario-create])}
+         [:span.icon
+          (i/get-icon i/square-plus ["fill-red-800" "size-4"])]]]
+     ]]
+   ])
