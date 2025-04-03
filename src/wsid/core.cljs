@@ -3,7 +3,7 @@
    [reagent.dom :as rdom]
    [re-frame.core :as re-frame]
    [wsid.events :as events]
-   [wsid.views :as views]
+   [wsid.views.main :as views]
    [wsid.config :as config]))
 
 

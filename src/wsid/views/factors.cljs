@@ -1,29 +1,11 @@
-(ns wsid.views
-  (:require
+(ns wsid.views.factors
+  (:require 
+   [wsid.icons :as i]
    [re-frame.core :as re-frame]
    [wsid.subs :as subs]
-   [wsid.icons :as i]))
+   ))
 
-(declare v-factor-card v-factors-panel v-scenarios-panel v-factor-form v-factor-interpretation v-modal-dialog v-factor-range)
-
-(defn v-modal-dialog [render? content-fn]
-  [:dialog.modal-container (conj {}
-                                 (if render? {:open true} nil)
-                                 {:class ["absolute" "w-screen" "h-screen" "bg-red-300" "left-0" "top-0"]})
-   (if render? (content-fn) nil)])
-
-(defn v-main-panel []
-  (let [factor-active (re-frame/subscribe [::subs/factor-active])]
-    [:div.wsid-app
-     [:main
-      [:div.title__wrapper
-       [:h1.title 
-        {:class ["text-cyan-700" "font-bold" "italic" "text-6xl"]}
-        "What Should I Do?"]]
-      [:div.decision-container
-       (v-factors-panel)
-       (v-scenarios-panel)]
-      (v-modal-dialog (not (nil? @factor-active)) v-factor-form)]]))
+(declare v-factor-card v-factors-panel v-factor-form v-factor-interpretation v-factor-range)
 
 (defn v-factor-card [factor]
   [:div.factor-card__wrapper {:key (:id factor)}
@@ -146,20 +128,3 @@
 (defn v-factor-interpretation []
   (let [range-interpretation (re-frame/subscribe [::subs/factor-active-range-interpretation])]
     [:div.factor-active-edit__range-interpretation @range-interpretation]))
-
-(defn v-scenarios-panel []
-  [:div.scenarios-panel__wrapper
-   [:div.scenarios-panel
-    [:div.scenarios-panel__heading__wrapper
-     [:h2.scenarios-panel__heading 
-      {:class ["text-xl" "text-yellow-400"]}
-      "Scenarios"]
-     [:div.scenarios-panel__heading__add
-        [:button.scenarios-panel__heading__add__button
-         {:type "button"
-          :value "add"
-          :on-click #(re-frame.core/dispatch [:scenario-create])}
-         [:span.icon
-          (i/get-icon i/square-plus ["fill-red-800" "size-4"])]]]
-     ]]
-   ])

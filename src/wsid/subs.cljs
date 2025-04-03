@@ -18,6 +18,12 @@
    (get-in db [:transient :factor-active])))
 
 (re-frame/reg-sub
+ ::factor-active-is-set
+ (fn [db]
+   (js/console.log "factor-active-is-set was consulted")
+   (nil? (get-in db [:transient :factor-active]))))
+
+(re-frame/reg-sub
  ::factor-active-range-interpretation
  (fn [_ _]
    (re-frame/subscribe [::factor-active]))
