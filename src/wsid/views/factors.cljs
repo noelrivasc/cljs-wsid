@@ -3,16 +3,10 @@
    [wsid.views.icons :as i]
    [re-frame.core :as re-frame]
    [wsid.subs :as subs]
-   [clojure.walk :refer [postwalk]]))
+   [wsid.util.theming :as t]
+   [wsid.views.themes.slate :refer [theme]]))
 
 (declare v-factor-card v-factors-panel v-factor-form v-factor-interpretation v-factor-range)
-
-(def theme {
-            :v-factor-card 
-              {
-               :div.factor-card ["bg-slate-300"]
-              }
-            })
 
 (defn v-factor-card [factor]
   [:div.factor-card__wrapper {:key (:id factor)}
@@ -69,7 +63,7 @@
          [:span.icon
           (i/get-icon i/square-plus)]]]]
       [:ul.factors-panel__list
-       (map #(v-themed-component (v-factor-card %) :v-factor-card theme) @factors)]]]))
+       (map #(t/apply-theme (v-factor-card %) :v-factor-card theme) @factors)]]]))
 
 (defn v-factor-form []
   (let [factor-edit-defaults (re-frame/subscribe [::subs/factor-edit-defaults])

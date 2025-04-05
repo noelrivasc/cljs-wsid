@@ -2,6 +2,8 @@
   (:require
    [re-frame.core :as re-frame]
    [wsid.subs :as subs]
+   [wsid.util.theming :as t]
+   [wsid.views.themes.slate :refer [theme]]
    [wsid.views.factors :refer [v-factors-panel v-factor-form]]
    [wsid.views.scenarios :refer [v-scenarios-panel]]))
 
@@ -22,6 +24,6 @@
         {:class ["text-cyan-700" "font-bold" "italic" "text-6xl"]}
         "What Should I Do?"]]
       [:div.decision-container
-       (v-factors-panel)
+       (t/apply-theme (v-factors-panel) :v-factors-panel theme)
        (v-scenarios-panel)]
       (v-modal-dialog (not @factor-active) v-factor-form)]]))
