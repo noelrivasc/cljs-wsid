@@ -3,14 +3,15 @@
    [wsid.views.icons :as i]
    [re-frame.core :as re-frame]
    [wsid.subs :as subs]
-   [wsid.util.theming :as t]
-   [wsid.views.themes.slate :refer [theme]]))
+   [wsid.util.theming
+    :refer [apply-current-theme]
+    :rename {apply-current-theme t}]))
 
 (declare v-factor-card v-factors-panel v-factor-form v-factor-interpretation v-factor-range)
 
 (defn v-factor-card [factor]
-  [:div.factor-card__wrapper {:key (:id factor)}
-   [:div.factor-card
+  [:div.factor-card {:key (:id factor)}
+   [:div.factor-card__inner
     [:div.factor-card__title (:title factor)]
     [:div.factor-card__range
      (v-factor-range (:min factor) (:max factor) 120 15)]
@@ -63,7 +64,7 @@
          [:span.icon
           (i/get-icon i/square-plus)]]]]
       [:ul.factors-panel__list
-       (map #(t/apply-theme (v-factor-card %) :v-factor-card theme) @factors)]]]))
+       (map #(t (v-factor-card %)) @factors)]]]))
 
 (defn v-factor-form []
   (let [factor-edit-defaults (re-frame/subscribe [::subs/factor-edit-defaults])

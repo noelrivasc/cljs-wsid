@@ -6,4 +6,4 @@
    })
 
 (def theme {:library theme-library
-            :v-factor-card {:div.factor-card ["bg-slate-300" "hover:bg-slate-400"]}})
+            :div.factor-card {:div.factor-card ["bg-slate-300" "hover:bg-slate-400"]}})
