@@ -25,29 +25,7 @@
       :value "add"
       :on-click #(re-frame.core/dispatch [:factor-edit factor])}
      [:span.icon
-      (i/get-icon i/edit ["fill-red-800" "size-4"])]]]])
-
-; TODO: write tests for this function - I sniff potential edge cases here
-; TODO: move to view utilities; make its own thing
-(defn v-themed-component [hiccup component-key theme]
-  (let [component-theme (get theme component-key)
-        has-theme (not (nil? component-theme))
-        result (if has-theme
-                 (postwalk
-                  (fn [form]
-                    (if (and (vector? form) (keyword? (first form)))
-                      (let [tag (first form)
-                            theme-classes (get component-theme tag)
-                            has-classes (not (nil? theme-classes))]
-                        (if has-classes
-                          (if (map? (second form))
-                            (update form 1 update :class concat theme-classes)
-                            (into [tag {:class theme-classes}] (rest form)))
-                          form))
-                      form)) ; - else - not a vector starting with a keyword
-                  hiccup) ; - hiccup passed to postwalk
-                 hiccup)] ; - else - no theme for component
-    result))
+      (i/get-icon i/edit)]]]])
 
 (defn v-factor-range [minimum maximum width height]
   (let [negative-width (* (/ minimum 10) (/ width 2) -1)
@@ -89,7 +67,7 @@
           :value "add"
           :on-click #(re-frame.core/dispatch [:factor-create])}
          [:span.icon
-          (i/get-icon i/square-plus ["fill-red-800" "size-4"])]]]]
+          (i/get-icon i/square-plus)]]]]
       [:ul.factors-panel__list
        (map #(v-themed-component (v-factor-card %) :v-factor-card theme) @factors)]]]))
 

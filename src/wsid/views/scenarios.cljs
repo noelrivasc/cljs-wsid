@@ -16,6 +16,6 @@
           :value "add"
           :on-click #(re-frame.core/dispatch [:scenario-create])}
          [:span.icon
-          (i/get-icon i/square-plus ["fill-red-800" "size-4"])]]]
+          (i/get-icon i/square-plus)]]]
      ]]
    ])
