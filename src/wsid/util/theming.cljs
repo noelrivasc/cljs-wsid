@@ -2,6 +2,11 @@
   (:require
    [clojure.walk :refer [postwalk]]))
 
+(def current-theme (atom nil))
+
+(defn set-theme [theme]
+  (reset! current-theme theme))
+
 ; Input hiccup example
 #_(def input-hiccup [:div.panel__wrapper
                    [:div.panel
@@ -16,22 +21,6 @@
                          :div.panel__right ["w-1/2" "p-4"]
             }
 })
-
-(def current-theme (atom nil))
-
-(defn set-theme [theme]
-  (reset! current-theme theme))
-
-(defn apply-current-theme
-  "Applies the theme set in current-theme to the hiccup provided as input."
-
-  ([hiccup]
-   (apply-current-theme hiccup (first hiccup)))
-
-  ([hiccup ^keyword component-key]
-   (if (nil? current-theme)
-    (throw (js/Error. "Current theme is nil. Call set-theme before using apply-current-theme."))
-    (apply hiccup component-key @current-theme))))
 
 (defn apply-theme
   "Walks the hiccup structure and, for each element, looks for
@@ -60,3 +49,14 @@
 
 #_(print (apply-theme input-hiccup component-key theme))
 ; => [:div.panel__wrapper [:div.panel {:class [flex w-full]} [:div.panel__left {:class [w-1/2 p-4 border-r border-gray-200]}] [:div.panel__right {:class [w-1/2 p-4]}]]]
+
+(defn apply-current-theme
+  "Applies the theme set in current-theme to the hiccup provided as input."
+
+  ([hiccup]
+   (apply-current-theme hiccup (first hiccup)))
+
+  ([hiccup ^keyword component-key]
+   (if (nil? current-theme)
+    (throw (js/Error. "Current theme is nil. Call set-theme before using apply-current-theme."))
+    (apply-theme hiccup component-key @current-theme))))
