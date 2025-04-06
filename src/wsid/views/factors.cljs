@@ -14,13 +14,13 @@
    [:div.factor-card__inner
     [:div.factor-card__title (:title factor)]
     [:div.factor-card__range
-     (v-factor-range (:min factor) (:max factor) 120 15)]
+     [v-factor-range (:min factor) (:max factor) 120 15]]
     [:button.factor-card__edit-button
      {:type "button"
       :value "add"
       :on-click #(evt> [:factor-edit factor])}
      [:span.icon
-      (i/get-icon i/edit)]]]])
+      [i/get-icon i/edit]]]]])
 
 (defn v-factor-range [minimum maximum width height]
   (let [negative-width (* (/ minimum 10) (/ width 2) -1)
@@ -50,8 +50,7 @@
 
 (defn v-factor-range--sub []
   (let [factor-active (<sub [:factor-active])]
-    (print "RANGE was rendered")
-    (v-factor-range (:min factor-active) (:max factor-active) 120 15)))
+    [v-factor-range (:min factor-active) (:max factor-active) 120 15]))
 
 
 (defn v-factors-panel []
@@ -68,7 +67,7 @@
           :value "add"
           :on-click #(evt> [:factor-create])}
          [:span.icon
-          (i/get-icon i/square-plus)]]]]
+          [i/get-icon i/square-plus]]]]]
       [:ul.factors-panel__list
        (map #(t (v-factor-card %)) factors)]]]))
 
@@ -113,9 +112,8 @@
                :name "max"
                :class ["factor-active-edit__input" "factor-active-edit__input--number"]
                :on-change update-factor}]]
-     (v-factor-interpretation)
-     (print "factor-form was rendered")
-     (v-factor-range--sub)
+     [v-factor-interpretation]
+     [v-factor-range--sub]
 
      [:div.factor-form__actions
       (if (:id factor-edit-defaults)

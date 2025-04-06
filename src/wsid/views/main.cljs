@@ -25,6 +25,6 @@
         {:class ["text-cyan-700" "font-bold" "italic" "text-6xl"]}
         "What Should I Do?"]]
       [:div.decision-container
-       (t (v-factors-panel) :v-factors-panel)
-       (v-scenarios-panel)]
-      (v-modal-dialog (not factor-active) v-factor-form)]]))
+       [t (v-factors-panel) :v-factors-panel]
+       [v-scenarios-panel]]
+      [v-modal-dialog (not factor-active) v-factor-form]]]))
