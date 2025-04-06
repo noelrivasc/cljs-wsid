@@ -5,6 +5,8 @@
    ; [day8.re-frame.tracing :refer-macros [fn-traced]] ; TODO reimplement the fn-traced and figure out what it does and how to fix the macro errors in the editor
    ))
 
+(def evt> re-frame.core/dispatch)
+
 (re-frame/reg-event-db
  ::initialize-db
  (fn [_ _]

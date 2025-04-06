@@ -1,7 +1,6 @@
 (ns wsid.views.main
   (:require
-   [re-frame.core :as re-frame]
-   [wsid.subs :as subs]
+   [wsid.subs :as subs :refer [<sub]] 
    [wsid.util.theming
     :refer [apply-current-theme]
     :rename {apply-current-theme t}]
@@ -17,7 +16,8 @@
    (if render? (content-fn) nil)])
 
 (defn v-main-panel []
-  (let [factor-active (re-frame/subscribe [::subs/factor-active-is-set])]
+  (print "UH-OH... is the whole thing being re-rendered!?")
+  (let [factor-active (<sub [:factor-active-is-set])]
     [:div.wsid-app
      [:main
       [:div.title__wrapper
@@ -27,4 +27,4 @@
       [:div.decision-container
        (t (v-factors-panel) :v-factors-panel)
        (v-scenarios-panel)]
-      (v-modal-dialog (not @factor-active) v-factor-form)]]))
+      (v-modal-dialog (not factor-active) v-factor-form)]]))

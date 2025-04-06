@@ -1,8 +1,8 @@
 (ns wsid.views.factors
   (:require 
    [wsid.views.icons :as i]
-   [re-frame.core :as re-frame]
-   [wsid.subs :as subs]
+   [wsid.subs :as subs :refer [<sub]]
+   [wsid.events :refer [evt>]]
    [wsid.util.theming
     :refer [apply-current-theme]
     :rename {apply-current-theme t}]))
@@ -18,7 +18,7 @@
     [:button.factor-card__edit-button
      {:type "button"
       :value "add"
-      :on-click #(re-frame.core/dispatch [:factor-edit factor])}
+      :on-click #(evt> [:factor-edit factor])}
      [:span.icon
       (i/get-icon i/edit)]]]])
 
@@ -48,8 +48,14 @@
                :width (str positive-width "px") }
       :class ["bg-blue-300"]}]]))
 
+(defn v-factor-range--sub []
+  (let [factor-active (<sub [:factor-active])]
+    (print "RANGE was rendered")
+    (v-factor-range (:min factor-active) (:max factor-active) 120 15)))
+
+
 (defn v-factors-panel []
-  (let [factors (re-frame/subscribe [::subs/factors-sorted])]
+  (let [factors (<sub [:factors-sorted])] ; OPTIMIZE: subscribe to list of factor ids rather than factors
     [:div.factors-panel__wrapper
      [:div.factors-panel
       [:div.factors-panel__heading__wrapper
@@ -60,38 +66,37 @@
         [:button.factors-panel__heading__add__button
          {:type "button"
           :value "add"
-          :on-click #(re-frame.core/dispatch [:factor-create])}
+          :on-click #(evt> [:factor-create])}
          [:span.icon
           (i/get-icon i/square-plus)]]]]
       [:ul.factors-panel__list
-       (map #(t (v-factor-card %)) @factors)]]]))
+       (map #(t (v-factor-card %)) factors)]]]))
 
 (defn v-factor-form []
-  (let [factor-edit-defaults (re-frame/subscribe [::subs/factor-edit-defaults])
-        factor-active (re-frame/subscribe [::subs/factor-active])
+  (let [factor-edit-defaults (<sub [:factor-edit-defaults])
         update-factor (fn [el] (let [type (-> el .-target .-type)
                                      property (-> el .-target .-name)
                                      value (-> el .-target .-value)]
-                                 (re-frame.core/dispatch [:factor-active-update property
+                                 (evt> [:factor-active-update property
                                                           (if (= type "number") (parse-long value) value)])))] 
     [:details {:open true
                :class ["border-2 border-blue-600"]}
      [:summary "This is the summary"]
      [:form.factor-active-edit  
      [:label {:for "factor-title"} "Title"
-      [:input {:defaultValue (:title @factor-edit-defaults)
+      [:input {:defaultValue (:title factor-edit-defaults)
                :id "factor-title"
                :name "title"
                :class ["factor-active-edit__input"]
                :on-change update-factor}]]
      [:label {:for "factor-description"} "Description"
-      [:textarea {:defaultValue (:description @factor-edit-defaults)
+      [:textarea {:defaultValue (:description factor-edit-defaults)
                   :id "factor-description" 
                   :class ["factor-active-edit__textarea"]
                   :name "description"
                   :on-change update-factor}]]
      [:label {:for "factor-min"} "Minimum value"
-      [:input {:defaultValue (:min @factor-edit-defaults)
+      [:input {:defaultValue (:min factor-edit-defaults)
                :type "number"
                :min -10
                :max 0
@@ -100,7 +105,7 @@
                :class ["factor-active-edit__input" "factor-active-edit__input--number"]
                :on-change update-factor}]]
      [:label {:for "factor-max"} "Maximum value"
-      [:input {:defaultValue (:max @factor-edit-defaults)
+      [:input {:defaultValue (:max factor-edit-defaults)
                :type "number"
                :min 0
                :max 10
@@ -109,24 +114,26 @@
                :class ["factor-active-edit__input" "factor-active-edit__input--number"]
                :on-change update-factor}]]
      (v-factor-interpretation)
-     (v-factor-range (:min @factor-active) (:max @factor-active) 120 15)
+     (print "factor-form was rendered")
+     (v-factor-range--sub)
+
      [:div.factor-form__actions
-      (if (:id @factor-edit-defaults)
+      (if (:id factor-edit-defaults)
         [:input {:type "button"
                  :value "delete"
                  :class ["factor-form__actions__button" "factor-form__actions__button--delete"]
-                 :on-click #(re-frame.core/dispatch [:factor-active-delete])}]
+                 :on-click #(evt> [:factor-active-delete])}]
         nil)
       [:input {:type "button"
                :value "cancel"
                :class ["factor-form__actions__button" "factor-form__actions__button--cancel"]
-               :on-click #(re-frame.core/dispatch [:factor-active-cancel])}]
+               :on-click #(evt> [:factor-active-cancel])}]
       [:input {:type "button"
                :value "save"
                :class ["factor-form__actions__button" "factor-form__actions__button--save"]
-               :on-click #(re-frame.core/dispatch [:factor-active-save])}]]]]
+               :on-click #(evt> [:factor-active-save])}]]]]
     ))
 
 (defn v-factor-interpretation []
-  (let [range-interpretation (re-frame/subscribe [::subs/factor-active-range-interpretation])]
-    [:div.factor-active-edit__range-interpretation @range-interpretation]))
+  (let [range-interpretation (<sub [:factor-active-range-interpretation])]
+    [:div.factor-active-edit__range-interpretation range-interpretation]))

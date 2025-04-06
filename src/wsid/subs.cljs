@@ -2,30 +2,32 @@
   (:require
    [re-frame.core :as re-frame]))
 
+(def <sub (comp deref re-frame.core/subscribe))
+
 (re-frame/reg-sub
- ::factors-sorted
+ :factors-sorted
  (fn [db]
    (get-in db [:factors :all])))
 
 (re-frame/reg-sub
- ::factor-edit-defaults
+ :factor-edit-defaults
  (fn [db]
    (get-in db [:transient :factor-edit-defaults])))
 
 (re-frame/reg-sub
- ::factor-active
+ :factor-active
  (fn [db]
    (get-in db [:transient :factor-active])))
 
 (re-frame/reg-sub
- ::factor-active-is-set
+ :factor-active-is-set
  (fn [db]
    (nil? (get-in db [:transient :factor-active]))))
 
 (re-frame/reg-sub
- ::factor-active-range-interpretation
+ :factor-active-range-interpretation
  (fn [_ _]
-   (re-frame/subscribe [::factor-active]))
+   (re-frame/subscribe [:factor-active]))
  (fn [factor-active]
    (let [min (get factor-active :min)
          max (get factor-active :max)
@@ -65,8 +67,3 @@
                           :zero "")]
      interpretation)
    ))
-
-#_(
-   ; Three cases: only neg, only pos, or both. Depending on that: "This factor can only have negative effects, ", same for positive, and "This factor can have either a positive or negative effect."
-   ; 
-)

@@ -1,6 +1,6 @@
 (ns wsid.views.scenarios
   (:require 
-   [re-frame.core :as re-frame]
+    [wsid.events :refer [evt>]]
    [wsid.views.icons :as i]))
 
 (defn v-scenarios-panel []
@@ -14,7 +14,7 @@
         [:button.scenarios-panel__heading__add__button
          {:type "button"
           :value "add"
-          :on-click #(re-frame.core/dispatch [:scenario-create])}
+          :on-click #(evt> [:scenario-create])}
          [:span.icon
           (i/get-icon i/square-plus)]]]
      ]]
