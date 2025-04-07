@@ -41,7 +41,7 @@
                         (if has-classes
                           (if (map? (second form))
                             (update form 1 update :class concat new-classes)
-                            (into [tag {:class new-classes}] (rest form))) ; THIS LINE IS BREAKING THINGs
+                            (into [tag {:class new-classes}] (rest form)))
                           form))
                       form)) ; - else - not a vector starting with a keyword
                   hiccup)] ; - else - no theme for component

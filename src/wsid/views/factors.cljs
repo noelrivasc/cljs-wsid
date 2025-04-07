@@ -20,7 +20,7 @@
       :value "add"
       :on-click #(evt> [:factor-edit factor])}
      [:span.icon
-      [i/get-icon i/edit]]]]])
+      [t (i/get-icon i/edit)]]]]])
 
 (defn v-factor-range [minimum maximum width height]
   (let [negative-width (* (/ minimum 10) (/ width 2) -1)
@@ -67,7 +67,7 @@
           :value "add"
           :on-click #(evt> [:factor-create])}
          [:span.icon
-          [i/get-icon i/square-plus]]]]]
+          [t (i/get-icon i/square-plus)]]]]]
       [:ul.factors-panel__list
        (map #(t (v-factor-card %)) factors)]]]))
 

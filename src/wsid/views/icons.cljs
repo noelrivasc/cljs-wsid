@@ -3,7 +3,7 @@
    [clojure.string :as str]))
 
 (defn get-icon
-  ([icon] (assoc icon 0 :svg.icon))
+  ([icon] (get-icon icon :svg.icon))
 
   ([icon tag]
    (let [not-svg (not (= ":svg" (first (str/split (str tag) #"\."))))]
