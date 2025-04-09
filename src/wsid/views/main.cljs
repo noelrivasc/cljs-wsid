@@ -16,15 +16,18 @@
    (if render? (content-fn) nil)])
 
 (defn v-main-panel []
-  (print "UH-OH... is the whole thing being re-rendered!?")
   (let [factor-active (<sub [:factor-active-is-set])]
-    [:div.wsid-app
-     [:main
+    [:main.main-container
       [:div.title__wrapper
+       [:span.title__acronym "w.s.i.d ?"]
        [:h1.title 
         {:class ["text-cyan-700" "font-bold" "italic" "text-6xl"]}
         "What Should I Do?"]]
       [:div.decision-container
        [t (v-factors-panel) :v-factors-panel]
        [v-scenarios-panel]]
-      [v-modal-dialog (not factor-active) v-factor-form]]]))
+      [v-modal-dialog (not factor-active) v-factor-form]]))
+
+(defn v-main []
+  [:div.wsid-app
+   [t (v-main-panel)]])
