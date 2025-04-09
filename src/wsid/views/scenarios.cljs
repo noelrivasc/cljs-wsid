@@ -7,9 +7,7 @@
   [:div.scenarios-panel__wrapper
    [:div.scenarios-panel
     [:div.scenarios-panel__heading__wrapper
-     [:h2.scenarios-panel__heading 
-      {:class ["text-xl" "text-yellow-400"]}
-      "Scenarios"]
+     [:h2.scenarios-panel__heading "Scenarios"]
      [:div.scenarios-panel__heading__add
         [:button.scenarios-panel__heading__add__button
          {:type "button"
