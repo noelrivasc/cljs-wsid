@@ -1,6 +1,10 @@
+## Epics
+- Design UX for full behavior
+- Finish core behavior (scenarios; evaluation)
+- Style the app
+- Implement Spec fully (db, key functions in events)
+
 ## TODO
-- On press the delete button, dispatch remove factor event
-- Write remove factor event handler (return  new db) 
 - Add active factor validation (disable save until factor is valid; show errors)
 - Debounce form input or create local state to prevent fast re-renders on input
 
