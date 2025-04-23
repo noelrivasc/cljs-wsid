@@ -68,63 +68,66 @@
 
 (defn v-factor-form []
   (let [factor-edit-defaults (<sub [:factor-edit-defaults])
+        factor-valid? (<sub [:factor-active-is-valid])
         update-factor (fn [el] (let [type (-> el .-target .-type)
                                      property (-> el .-target .-name)
                                      value (-> el .-target .-value)]
                                  (evt> [:factor-active-update property
-                                                          (if (= type "number") (parse-long value) value)])))] 
+                                        (if (= type "number") (parse-long value) value)])))]
     [:details {:open true}
      [:summary "This is the summary"]
-     [:form.factor-active-edit  
-     [:label {:for "factor-title"} "Title"
-      [:input.factor-active-edit__input 
-       {:defaultValue (:title factor-edit-defaults) 
-        :id "factor-title" 
-        :name "title" 
-        :on-change update-factor}]]
-     [:label {:for "factor-description"} "Description"
-      [:textarea.factor-active-edit__textarea 
-       {:defaultValue (:description factor-edit-defaults)
-        :id "factor-description" 
-        :name "description" 
-        :on-change update-factor}]]
-     [:label {:for "factor-min"} "Minimum value"
-      [:input.factor-active-edit__input.factor-active-edit__input--number
-       {:defaultValue (:min factor-edit-defaults) 
-        :type "number"
-        :min -10
-        :max 0
-        :id "factor-min"
-        :name "min" 
-        :on-change update-factor}]]
-     [:label {:for "factor-max"} "Maximum value"
-      [:input.factor-active-edit__input.factor-active-edit__input--number
-       {:defaultValue (:max factor-edit-defaults) 
-        :type "number"
-        :min 0
-        :max 10
-        :id "factor-max"
-        :name "max"
-        :on-change update-factor}]]
-     [v-factor-interpretation]
-     [v-factor-range--sub]
+     [:form.factor-active-edit
+      [:label {:for "factor-title"} "Title"
+       [:input.factor-active-edit__input
+        {:defaultValue (:title factor-edit-defaults)
+         :id "factor-title"
+         :name "title"
+         :on-change update-factor}]]
+      [:label {:for "factor-description"} "Description"
+       [:textarea.factor-active-edit__textarea
+        {:defaultValue (:description factor-edit-defaults)
+         :id "factor-description"
+         :name "description"
+         :on-change update-factor}]]
+      [:label {:for "factor-min"} "Minimum value"
+       [:input.factor-active-edit__input.factor-active-edit__input--number
+        {:defaultValue (:min factor-edit-defaults)
+         :type "number"
+         :min -10
+         :max 0
+         :id "factor-min"
+         :name "min"
+         :on-change update-factor}]]
+      [:label {:for "factor-max"} "Maximum value"
+       [:input.factor-active-edit__input.factor-active-edit__input--number
+        {:defaultValue (:max factor-edit-defaults)
+         :type "number"
+         :min 0
+         :max 10
+         :id "factor-max"
+         :name "max"
+         :on-change update-factor}]]
 
-     [:div.factor-form__actions
-      (if (:id factor-edit-defaults)
-        [:input.factor-form__actions__button.factor-form__actions__button--delete
-         {:type "button"
-          :value "delete"
-          :on-click #(evt> [:factor-active-delete])}]
-        nil)
-      [:input.factor-form__actions__button.factor-form__actions__button--cancel
-       {:type "button"
-        :value "cancel"
-        :on-click #(evt> [:factor-active-cancel])}]
-      [:input.factor-form__actions__button.factor-form__actions__button--save
-       {:type "button" 
-        :value "save" 
-        :on-click #(evt> [:factor-active-save])}]]]]
-    ))
+      [v-factor-interpretation]
+      [v-factor-range--sub]
+
+      [:div.factor-form__actions
+       (if (:id factor-edit-defaults)
+         [:input.factor-form__actions__button.factor-form__actions__button--delete
+          {:type "button"
+           :value "delete"
+           :on-click #(evt> [:factor-active-delete])}]
+         nil)
+       [:input.factor-form__actions__button.factor-form__actions__button--cancel
+        {:type "button"
+         :value "cancel"
+         :on-click #(evt> [:factor-active-cancel])}]
+
+       [:input.factor-form__actions__button.factor-form__actions__button--save
+        (conj {:type "button"
+               :value "save"
+               :on-click #(evt> [:factor-active-save])}
+              (when-not factor-valid? {:disabled true}))]]]]))
 
 (defn v-factor-interpretation []
   (let [range-interpretation (<sub [:factor-active-range-interpretation])]

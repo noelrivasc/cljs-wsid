@@ -67,3 +67,8 @@
                           :zero "")]
      interpretation)
    ))
+
+(re-frame/reg-sub
+ :factor-active-is-valid
+ (fn [db]
+   (get-in db [:transient :factor-active-validation :is-valid])))

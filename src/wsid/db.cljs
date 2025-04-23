@@ -25,14 +25,15 @@
 ; -- SCENARIOS ----------------------
           
 (def default-db
-  {
-   ; Information that is used for procedures but that is
+  {; Information that is used for procedures but that is
    ; not the resulting data that is the goal of the program
-   :transient {
-               :factor-edit-defaults nil ; SPEC :factor
-               :factor-active nil ; SPEC :factor
-               }
-   :factors {
-             :all []
-             }
-   })
+   :transient {; Just default values of factor form
+               ; These do not change as form is edited
+               :factor-edit-defaults nil
+
+               ; The model that changes as input is made
+               ; Goal of duplication: avoid re-renders or
+               ; having local state in the component
+               :factor-active nil
+               :factor-active-validation {:is-valid nil}}
+   :factors {:all []}})

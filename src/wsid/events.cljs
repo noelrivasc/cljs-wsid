@@ -3,7 +3,8 @@
    [re-frame.core :as re-frame]
    [wsid.db :as db]
    ; [day8.re-frame.tracing :refer-macros [fn-traced]] ; TODO reimplement the fn-traced and figure out what it does and how to fix the macro errors in the editor
-   ))
+   
+   [clojure.spec.alpha :as s]))
 
 (def evt> re-frame.core/dispatch)
 
@@ -42,7 +43,12 @@
 (re-frame/reg-event-db
  :factor-active-update
  (fn [db [_ property value]]
-   (assoc-in db [:transient :factor-active (keyword property)] value)))
+   (let [updated-factor (assoc (get-in db [:transient :factor-active]) (keyword property) value)
+         factor-valid? (s/valid? ::db/factor updated-factor)]
+     (-> db
+         (assoc-in [:transient :factor-active] updated-factor)
+         (assoc-in [:transient :factor-active-validation :is-valid] factor-valid?)))))
+
 
 (re-frame/reg-event-db
  :factor-active-save
