@@ -31,4 +31,4 @@ jobs:
 
       - name: Sync to S3
         run: |
-          aws s3 sync ./resources/public s3://${{ vars.AWS_S3_BUCKET_ARN }} --delete
+          aws s3 sync ./resources/public s3://${{ vars.AWS_S3_BUCKET }} --delete
