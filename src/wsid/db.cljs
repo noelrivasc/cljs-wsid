@@ -1,6 +1,6 @@
 (ns wsid.db
   (:require
-    [clojure.spec.alpha :as s]))
+   [clojure.spec.alpha :as s]))
 
 ; -- FACTORS ------------------------
 (s/def :factor/id (s/or :empty (s/and string? #(= 0 (count %)))
@@ -19,11 +19,26 @@
 ;  :weight 0
 ;  }
 (s/def ::factor (s/keys :req-un [:factor/title :factor/min :factor/max]
-                       :opt-un [:factor/id :factor/description]))
-(s/def ::factor-list (s/coll-of ::factor :kind vector?))
+                        :opt-un [:factor/id :factor/description]))
+(s/def :factors/all (s/coll-of ::factor :kind vector?))
 
 ; -- SCENARIOS ----------------------
-          
+
+; -- TRANSIENT ----------------------
+(s/def :transient/factor-edit-defaults (s/or :empty nil?
+                                             :map map?))
+(s/def :transient/factor-active (s/or :empty nil?
+                                      :map map?))
+(s/def :transient/factor-active-validation map?)
+
+; -- DEFAULT DB ---------------------
+(s/def :default-db/transient
+  (s/keys :req-un [:transient/factor-edit-defaults
+                   :transient/factor-active
+                   :transient/factor-active-validation]))
+(s/def :default-db/factors (s/keys :req-un [:factors/all]))
+(s/def ::default-db (s/keys :req-un [:default-db/transient :default-db/factors]))
+
 (def default-db
   {; Information that is used for procedures but that is
    ; not the resulting data that is the goal of the program
