@@ -21,3 +21,5 @@
 
 .DS_Store
 .aider*
+
+resources/public/css/main.css
