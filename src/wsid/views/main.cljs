@@ -5,7 +5,7 @@
     :refer [apply-current-theme]
     :rename {apply-current-theme t}]
    [wsid.views.factors :refer [v-factors-panel v-factor-form]]
-   [wsid.views.scenarios :refer [v-scenarios-panel]]))
+   [wsid.views.scenarios :refer [v-scenarios-panel v-scenario-form]]))
 
 (declare v-modal-dialog)
 
@@ -40,7 +40,9 @@
      [t (v-scenarios-panel)]]]])
 
 (defn v-main []
-  (let [factor-active (<sub [:factor-active-is-set])]
+  (let [factor-active (<sub [:factor-active-is-set])
+        scenario-active (<sub [:scenario-active-is-set])]
   [:div.wsid-app
    [t (v-main-panel)]
-   [t (v-modal-dialog (not factor-active) v-factor-form)]]))
+   [t (v-modal-dialog (not factor-active) v-factor-form)]
+   [t (v-modal-dialog (not scenario-active) v-scenario-form)]]))

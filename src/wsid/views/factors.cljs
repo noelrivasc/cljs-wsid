@@ -75,7 +75,7 @@
                                  (evt> [:factor-active-update property
                                         (if (= type "number") (parse-long value) value)])))]
     [:details {:open true}
-     [:summary "This is the summary"]
+     [:summary "Edit Factor"]
      [:form.factor-active-edit
       [:label {:for "factor-title"} "Title"
        [:input.factor-active-edit__input

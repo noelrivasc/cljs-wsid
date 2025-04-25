@@ -28,10 +28,11 @@
 
 ; -- SCENARIOS ----------------------
 (s/def :scenario/id id)
-(s/def :scenario/title string?)
-(s/def :scenario/description string?)
+(s/def :scenario/title (s/and string? #(<= 1 (count %) 50)))
+(s/def :scenario/description (s/and string? #(<= (count %) 120)))
 (s/def :scenario/factors (s/map-of string? number?))
-(s/def ::scenario (s/keys :req-un [:scenario/id :scenario/title :scenario/description :scenario/factors]))
+(s/def ::scenario (s/keys :req-un [:scenario/title :scenario/factors]
+                          :opt-un [:scenario/id :scenario/description]))
 
 ; -- TRANSIENT ----------------------
 (s/def :transient/factor-edit-defaults nil-or-map)
