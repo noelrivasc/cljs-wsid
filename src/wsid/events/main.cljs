@@ -4,9 +4,9 @@
    [wsid.db :as db]
    [day8.re-frame.tracing :refer-macros [fn-traced]]
 
-    #_{:clj-kondo/ignore [:unused-namespace]}
-   [wsid.events.factors :as factors]
-    #_{:clj-kondo/ignore [:unused-namespace]}
+   #_{:clj-kondo/ignore [:unused-namespace]}
+   [wsid.events.factors :as factors] 
+   #_{:clj-kondo/ignore [:unused-namespace]}
    [wsid.events.scenarios :as scenarios]
    ))
 

@@ -1,6 +1,6 @@
 (ns wsid.views.main
   (:require
-   [wsid.subs :as subs :refer [<sub]] 
+   [wsid.subs.main :as subs :refer [<sub]] 
    [wsid.util.theming
     :refer [apply-current-theme]
     :rename {apply-current-theme t}]

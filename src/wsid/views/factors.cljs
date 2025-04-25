@@ -1,7 +1,7 @@
 (ns wsid.views.factors
   (:require 
    [wsid.views.icons :as i]
-   [wsid.subs :as subs :refer [<sub]]
+   [wsid.subs.main :as subs :refer [<sub]]
    [wsid.events.main :refer [evt>]]
    [wsid.util.theming
     :refer [apply-current-theme]

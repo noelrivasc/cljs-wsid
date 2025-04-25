@@ -18,7 +18,7 @@
        :id ""
        :title ""
        :description ""
-       :factors (zipmap factor-ids (repeat nil)) 
+       :factors (zipmap factor-ids (repeat 0)) 
        }
       (get-in db active-scenario-path))]
     (-> db
