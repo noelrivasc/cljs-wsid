@@ -23,21 +23,33 @@
 (s/def :factors/all (s/coll-of ::factor :kind vector?))
 
 ; -- SCENARIOS ----------------------
+(s/def :scenario/name string?)
+(s/def :scenario/description string?)
+(s/def :scenario/factors (s/map-of string? number?))
+(s/def ::scenario (s/keys :req-un [:scenario/name :scenario/description :scenario/factors]))
 
 ; -- TRANSIENT ----------------------
-(s/def :transient/factor-edit-defaults (s/or :empty nil?
-                                             :map map?))
-(s/def :transient/factor-active (s/or :empty nil?
-                                      :map map?))
+(def nil-or-map (s/or :empty nil? :map map?))
+(s/def :transient/factor-edit-defaults nil-or-map)
+(s/def :transient/factor-active nil-or-map)
 (s/def :transient/factor-active-validation map?)
+(s/def :transient/scenario-edit-defaults nil-or-map)
+(s/def :transient/scenario-active nil-or-map)
+(s/def :transient/scenario-active-validation map?)
 
 ; -- DEFAULT DB ---------------------
 (s/def :default-db/transient
   (s/keys :req-un [:transient/factor-edit-defaults
                    :transient/factor-active
-                   :transient/factor-active-validation]))
+                   :transient/factor-active-validation
+                   :transient/scenario-edit-defaults
+                   :transient/scenario-active
+                   :transient/scenario-active-validation]))
 (s/def :default-db/factors (s/keys :req-un [:factors/all]))
-(s/def ::default-db (s/keys :req-un [:default-db/transient :default-db/factors]))
+(s/def :default-db/scenarios (s/coll-of ::scenario :kind vector?))
+(s/def ::default-db (s/keys :req-un [:default-db/transient
+                                     :default-db/factors
+                                     :default-db/scenarios]))
 
 (def default-db
   {; Information that is used for procedures but that is
@@ -50,5 +62,10 @@
                ; Goal of duplication: avoid re-renders or
                ; having local state in the component
                :factor-active nil
-               :factor-active-validation {:is-valid nil}}
-   :factors {:all []}})
+               :factor-active-validation {:is-valid nil}
+               
+               :scenario-edit-defaults nil
+               :scenario-active nil
+               :scenario-active-validation {:is-valid nil}}
+   :factors {:all []}
+   :scenarios []})
