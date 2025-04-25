@@ -7,8 +7,6 @@
    [wsid.views.factors :refer [v-factors-panel v-factor-form]]
    [wsid.views.scenarios :refer [v-scenarios-panel v-scenario-form]]))
 
-(declare v-modal-dialog)
-
 (defn v-modal-dialog [render? content-fn]
   [:dialog.modal-container (conj {}
                                  (if render? {:open true} nil))
