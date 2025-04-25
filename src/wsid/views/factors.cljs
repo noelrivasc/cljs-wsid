@@ -2,7 +2,7 @@
   (:require 
    [wsid.views.icons :as i]
    [wsid.subs :as subs :refer [<sub]]
-   [wsid.events :refer [evt>]]
+   [wsid.events.main :refer [evt>]]
    [wsid.util.theming
     :refer [apply-current-theme]
     :rename {apply-current-theme t}]))

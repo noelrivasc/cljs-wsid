@@ -1,6 +1,6 @@
 (ns wsid.views.scenarios
   (:require 
-    [wsid.events :refer [evt>]]
+    [wsid.events.main :refer [evt>]]
    [wsid.views.icons :as i]))
 
 (defn v-scenarios-panel []
