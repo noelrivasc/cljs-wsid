@@ -2,7 +2,7 @@
   (:require
    [reagent.dom :as rdom]
    [re-frame.core :as re-frame]
-   [wsid.events :as events]
+   [wsid.events.main :as events]
    [wsid.views.main :as views]
    [wsid.config :as config]
    [wsid.util.theming :refer [set-theme]]

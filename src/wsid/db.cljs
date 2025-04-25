@@ -2,9 +2,13 @@
   (:require
    [clojure.spec.alpha :as s]))
 
+; -- UTILITIES ----------------------
+(def nil-or-map (s/or :empty nil? :map map?))
+(def id (s/or :empty (s/and string? #(= 0 (count %))) 
+              :uuid (s/and string? #(= 36 (count %)))))
+
 ; -- FACTORS ------------------------
-(s/def :factor/id (s/or :empty (s/and string? #(= 0 (count %)))
-                        :uuid (s/and string? #(= 36 (count %)))))
+(s/def :factor/id id)
 (s/def :factor/min (s/and int? #(<= -10 % 0)))
 (s/def :factor/max (s/and int? #(<= 0 % 10)))
 (s/def :factor/title (s/and string? #(<= 1 (count %) 50)))
@@ -23,13 +27,14 @@
 (s/def :factors/all (s/coll-of ::factor :kind vector?))
 
 ; -- SCENARIOS ----------------------
-(s/def :scenario/name string?)
-(s/def :scenario/description string?)
+(s/def :scenario/id id)
+(s/def :scenario/title (s/and string? #(<= 1 (count %) 50)))
+(s/def :scenario/description (s/and string? #(<= (count %) 120)))
 (s/def :scenario/factors (s/map-of string? number?))
-(s/def ::scenario (s/keys :req-un [:scenario/name :scenario/description :scenario/factors]))
+(s/def ::scenario (s/keys :req-un [:scenario/title :scenario/factors]
+                          :opt-un [:scenario/id :scenario/description]))
 
 ; -- TRANSIENT ----------------------
-(def nil-or-map (s/or :empty nil? :map map?))
 (s/def :transient/factor-edit-defaults nil-or-map)
 (s/def :transient/factor-active nil-or-map)
 (s/def :transient/factor-active-validation map?)
@@ -63,7 +68,7 @@
                ; having local state in the component
                :factor-active nil
                :factor-active-validation {:is-valid nil}
-               
+
                :scenario-edit-defaults nil
                :scenario-active nil
                :scenario-active-validation {:is-valid nil}}
