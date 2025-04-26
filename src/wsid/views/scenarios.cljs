@@ -7,6 +7,19 @@
     :refer [apply-current-theme]
     :rename {apply-current-theme t}]))
 
+(defn v-scenario-factor-item [scenario-id scenario-factor]
+  (let [datalist-id (str "datalist-" scenario-id "-" (:id scenario-factor))]
+    [:div.scenario-factor-item {:key (:id scenario-factor)}
+     [:div.scenario-factor-item__title (:title scenario-factor)]
+     [:div.scenario-factor-item__value
+      [:datalist.scenario-factor-item__datalist {:id datalist-id}
+       (map #(conj [:option {:value % :label %}])
+            (range (:min scenario-factor) (+ 1 (:max scenario-factor))))]
+      [:input.scenario-factor-item__slider {:type "range"
+                                            :default-value (:scenario-value scenario-factor)
+                                            :min (:min scenario-factor)
+                                            :max (:max scenario-factor)}]]]))
+
 (defn v-scenario-card [scenario-id]
   (let [scenario (<sub [:scenario scenario-id])
         scenario-score (<sub [:scenario-score scenario-id])
@@ -21,7 +34,7 @@
        [:div.scenario-card__factors__instructions
         "Move the slider to adjust the points this scenario gets for each decision factor."]
        [:ul.scenario-card__factors-list
-        (map #(conj [:div.factor (str (:title %) " " (:scenario-value %))]) scenario-factors)]]]]))
+        (map #(t (v-scenario-factor-item scenario-id %)) scenario-factors)]]]]))
 
 (defn v-scenarios-panel []
   (let [scenario-ids (<sub [:scenario-ids])]
