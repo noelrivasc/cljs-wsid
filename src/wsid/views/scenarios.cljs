@@ -13,12 +13,17 @@
      [:div.scenario-factor-item__title (:title scenario-factor)]
      [:div.scenario-factor-item__value
       [:datalist.scenario-factor-item__datalist {:id datalist-id}
-       (map #(conj [:option {:value % :label %}])
+       (map #(conj [:option {:value % :label % :key %}])
             (range (:min scenario-factor) (+ 1 (:max scenario-factor))))]
-      [:input.scenario-factor-item__slider {:type "range"
-                                            :default-value (:scenario-value scenario-factor)
-                                            :min (:min scenario-factor)
-                                            :max (:max scenario-factor)}]]]))
+      [:input.scenario-factor-item__slider
+       {:type "range"
+        :default-value (:scenario-value scenario-factor)
+        :min (:min scenario-factor)
+        :max (:max scenario-factor)
+        :on-change (fn [el] (evt> [:scenario-factor-update
+                                   scenario-id
+                                   (:id scenario-factor)
+                                   (-> el .-target .-value)]))}]]]))
 
 (defn v-scenario-card [scenario-id]
   (let [scenario (<sub [:scenario scenario-id])
