@@ -2,22 +2,42 @@
   (:require 
     [wsid.events.main :refer [evt>]]
    [wsid.subs.main :as subs :refer [<sub]]
-   [wsid.views.icons :as i]))
+   [wsid.views.icons :as i]
+   [wsid.util.theming
+    :refer [apply-current-theme]
+    :rename {apply-current-theme t}]))
+
+(defn v-scenario-card [scenario-id]
+  (let [scenario (<sub [:scenario scenario-id])
+        scenario-score (<sub [:scenario-score scenario-id])
+        scenario-factors (<sub [:scenario-factors scenario-id])]
+    [:div.scenario-card {:key scenario-id}
+     [:div.scenario-card__inner
+      [:div.scenario-card__title (:title scenario)]
+      [:div.scenario-card__description (:description scenario)]
+      [:div.scenario-card__score scenario-score]
+      [:details.scenario-card__factors
+       [:summary.scenario-card__factors__summary "Decision Factors"]
+       [:div.scenario-card__factors__instructions
+        "Move the slider to adjust the points this scenario gets for each decision factor."]
+       [:ul.scenario-card__factors-list
+        (map #(conj [:div.factor (str (:title %) " " (:scenario-value %))]) scenario-factors)]]]]))
 
 (defn v-scenarios-panel []
-  [:div.scenarios-panel__wrapper
-   [:div.scenarios-panel
-    [:div.scenarios-panel__heading__wrapper
-     [:h2.scenarios-panel__heading "Scenarios"]
-     [:div.scenarios-panel__heading__add
+  (let [scenario-ids (<sub [:scenario-ids])]
+    [:div.scenarios-panel__wrapper
+     [:div.scenarios-panel
+      [:div.scenarios-panel__heading__wrapper
+       [:h2.scenarios-panel__heading "Scenarios"]
+       [:div.scenarios-panel__heading__add
         [:button.scenarios-panel__heading__add__button
          {:type "button"
           :value "add"
           :on-click #(evt> [:scenario-create])}
          [:span.icon
-          (i/get-icon i/square-plus)]]]
-     ]]
-   ])
+          (i/get-icon i/square-plus)]]]]
+      [:ul.scenarios-panel__list
+       (map #(t (v-scenario-card %)) scenario-ids)]]]))
 
 (defn v-scenario-form []
   (let [scenario-edit-defaults (<sub [:scenario-edit-defaults])
