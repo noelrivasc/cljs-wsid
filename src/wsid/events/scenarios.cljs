@@ -7,17 +7,15 @@
    [clojure.spec.alpha :as s]))
 
 (re-frame/reg-event-db
- :scenario-create
+ :scenario-create-stub
  (fn [db _]
    (let
     [active-scenario-path [:transient :scenario-active]
-     factor-ids (map :id (get-in db [:factors :all])) ; obsolete - remove
      active-scenario
      (if (nil? (get-in db active-scenario-path))
        {:id ""
         :title ""
-        :description ""
-        :factors (zipmap factor-ids (repeat 0))} ; obsolete - remove this
+        :description ""}
        (get-in db active-scenario-path))]
      (-> db
          (assoc-in [:transient :scenario-edit-defaults] active-scenario)
@@ -33,6 +31,14 @@
          (assoc-in [:transient :scenario-active-validation :is-valid] scenario-valid?)))))
 
 (re-frame/reg-event-db
+ :scenario-factor-values-initialize
+ (fn 
+   ; Initialize the factor values for the given scenario to nil.
+   [db [_ scenario-id]]
+   (assoc-in db [:scenario-factor-values scenario-id]
+             (zipmap (map :id (get-in db [:factors :all])) (repeat nil)))))
+
+(re-frame/reg-event-db
  :scenario-active-save
  (fn [db _]
    ; If the scenario does not have an id, create it
@@ -40,15 +46,17 @@
    ; Save the active scenario to the scenarios vector
    ; clear the active-scenario
    (let [active-scenario (get-in db [:transient :scenario-active])
-         scenario-prepared (assoc active-scenario :id (if
-                                                       (= "" (:id active-scenario))
-                                                        (.toString (random-uuid))
-                                                        (:id active-scenario)))
-         other-scenarios 
-                    (vec (filter #(not= (:id scenario-prepared) (:id %))
-                                 (get-in db [:scenarios])))
+         is-new (= "" (:id active-scenario))
+         scenario-id (if is-new
+                       (.toString (random-uuid))
+                       (:id active-scenario))
+         scenario-prepared (assoc active-scenario :id scenario-id)
+         other-scenarios
+         (vec (filter #(not= (:id scenario-prepared) (:id %))
+                      (get-in db [:scenarios])))
          scenarios (conj other-scenarios
-                    scenario-prepared)]
+                         scenario-prepared)]
+     (when is-new (re-frame.core/dispatch [:scenario-factor-values-initialize scenario-id]))
      (-> db
          (assoc-in [:scenarios] scenarios)
          (assoc-in [:transient :scenario-edit-defaults] nil)

@@ -28,7 +28,7 @@
 (defn v-scenario-card [scenario-id]
   (let [scenario (<sub [:scenario scenario-id])
         scenario-score (<sub [:scenario-score-obsolete scenario-id])
-        scenario-factors (<sub [:scenario-factors-obsolete scenario-id])]
+        scenario-factors (<sub [:scenario-factors scenario-id])]
     [:div.scenario-card {:key scenario-id}
      [:div.scenario-card__inner
       [:div.scenario-card__title (:title scenario)]
@@ -54,7 +54,7 @@
         [:button.scenarios-panel__heading__add__button
          {:type "button"
           :value "add"
-          :on-click #(evt> [:scenario-create])}
+          :on-click #(evt> [:scenario-create-stub])}
          [:span.icon
           (i/get-icon i/square-plus)]]]]
       [:ul.scenarios-panel__list

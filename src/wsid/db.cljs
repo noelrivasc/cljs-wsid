@@ -31,8 +31,7 @@
 (s/def :scenario/id id)
 (s/def :scenario/title (s/and string? #(<= 1 (count %) 50)))
 (s/def :scenario/description (s/and string? #(<= (count %) 120)))
-(s/def :scenario/factors (s/map-of string? number?)) ; obsolete - remove
-(s/def ::scenario (s/keys :req-un [:scenario/title :scenario/factors] ; obsolete - remove factors from scenario
+(s/def ::scenario (s/keys :req-un [:scenario/title]
                           :opt-un [:scenario/id :scenario/description]))
 
 ; -- TRANSIENT ----------------------
@@ -78,4 +77,5 @@
                :scenario-active nil
                :scenario-active-validation {:is-valid nil}}
    :factors {:all []}
-   :scenarios []})
+   :scenarios []
+   :scenario-factor-values {}})

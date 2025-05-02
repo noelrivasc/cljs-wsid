@@ -41,11 +41,17 @@
    (apply + (vals (:factors scenario)))))
 
 (re-frame/reg-sub
- :scenario-factors-obsolete
+ :scenario-factor-values
+ (fn [db [_ scenario-id]]
+   (get-in db [:scenario-factor-values scenario-id])))
+
+(re-frame/reg-sub
+ :scenario-factors
  (fn [[_ scenario-id]]
-   [(subscribe [:scenario scenario-id])
+   [(subscribe [:scenario-factor-values scenario-id])
     (subscribe [:factors-sorted])])
 
- (fn [[scenario factors]]
-   ;; Enrich the global factors with the value for the given scenario
-   (map #(conj % {:scenario-value (get-in scenario [:factors (:id %)])}) factors)))
+ (fn [[values factors]]
+   ;; Enrich the global factors with the values for the given scenario
+   (for [f factors]
+     (conj f {:scenario-value (get values (:id f))}))))
