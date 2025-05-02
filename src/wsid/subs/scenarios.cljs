@@ -27,13 +27,16 @@
 (re-frame/reg-sub
  :scenario
  (fn [db [_ scenario-id]]
-   (first (filter
-           #(= scenario-id (:id %))
-           (get db :scenarios)))))
+   (let [scenario (first
+                   (filter
+                    #(= scenario-id (:id %))
+                    (get db :scenarios)))]
+     scenario)
+   ))
 
 (re-frame/reg-sub
  :scenario-score
- (fn [_ [_ scenario-id]] (subscribe [:scenario scenario-id]))
+ (fn [[_ scenario-id]] (subscribe [:scenario scenario-id]))
  (fn [scenario]
    (apply + (vals (:factors scenario)))))
 
@@ -44,4 +47,5 @@
     (subscribe [:factors-sorted])])
 
  (fn [[scenario factors]]
+   ;; Enrich the global factors with the value for the given scenario
    (map #(conj % {:scenario-value (get-in scenario [:factors (:id %)])}) factors)))

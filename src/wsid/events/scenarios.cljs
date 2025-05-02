@@ -44,9 +44,10 @@
                                                        (= "" (:id active-scenario))
                                                         (.toString (random-uuid))
                                                         (:id active-scenario)))
-         scenarios (conj
-                    (vec (filter #(not (= (:id scenario-prepared) (:id %)))
+         other-scenarios 
+                    (vec (filter #(not= (:id scenario-prepared) (:id %))
                                  (get-in db [:scenarios])))
+         scenarios (conj other-scenarios
                     scenario-prepared)]
      (-> db
          (assoc-in [:scenarios] scenarios)

@@ -39,7 +39,10 @@
        [:div.scenario-card__factors__instructions
         "Move the slider to adjust the points this scenario gets for each decision factor."]
        [:ul.scenario-card__factors-list
-        (map #(t (v-scenario-factor-item scenario-id %)) scenario-factors)]]]]))
+        (for [f scenario-factors]
+          ^{:key (str "factor-" scenario-id "-" f)}
+          [t [v-scenario-factor-item scenario-id f]])
+        ]]]]))
 
 (defn v-scenarios-panel []
   (let [scenario-ids (<sub [:scenario-ids])]
@@ -55,7 +58,9 @@
          [:span.icon
           (i/get-icon i/square-plus)]]]]
       [:ul.scenarios-panel__list
-       (map #(t (v-scenario-card %)) scenario-ids)]]]))
+       (for [id scenario-ids]
+         ^{:key id}
+         [t [v-scenario-card id]])]]]))
 
 (defn v-scenario-form []
   (let [scenario-edit-defaults (<sub [:scenario-edit-defaults])
