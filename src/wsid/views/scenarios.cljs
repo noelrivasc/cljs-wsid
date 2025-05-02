@@ -13,8 +13,8 @@
      [:div.scenario-factor-item__title (:title scenario-factor)]
      [:div.scenario-factor-item__value
       [:datalist.scenario-factor-item__datalist {:id datalist-id}
-       (map #(conj [:option {:value % :label % :key %}])
-            (range (:min scenario-factor) (+ 1 (:max scenario-factor))))]
+       (for [x (range (:min scenario-factor) (+ 1 (:max scenario-factor)))]
+         [:option {:value x :label x :key x}])]
       [:input.scenario-factor-item__slider
        {:type "range"
         :default-value (:scenario-value scenario-factor)
