@@ -4,6 +4,7 @@
 
 ; -- UTILITIES ----------------------
 (def nil-or-map (s/or :empty nil? :map map?))
+(def nil-or-number (s/or :empty nil? :number number?))
 (def id (s/or :empty (s/and string? #(= 0 (count %))) 
               :uuid (s/and string? #(= 36 (count %)))))
 
@@ -42,19 +43,23 @@
 (s/def :transient/scenario-active nil-or-map)
 (s/def :transient/scenario-active-validation map?)
 
-; -- DEFAULT DB ---------------------
-(s/def :default-db/transient
+; -- APP DB -------------------------
+(s/def :app-db/transient
   (s/keys :req-un [:transient/factor-edit-defaults
                    :transient/factor-active
                    :transient/factor-active-validation
                    :transient/scenario-edit-defaults
                    :transient/scenario-active
                    :transient/scenario-active-validation]))
-(s/def :default-db/factors (s/keys :req-un [:factors/all]))
-(s/def :default-db/scenarios (s/coll-of ::scenario :kind vector?))
-(s/def ::default-db (s/keys :req-un [:default-db/transient
-                                     :default-db/factors
-                                     :default-db/scenarios]))
+(s/def :app-db/factors (s/keys :req-un [:factors/all]))
+(s/def :app-db/scenarios (s/coll-of ::scenario :kind vector?))
+
+; A map of scenarios with nested maps of factor values
+(s/def :app-db/scenario-factor-values (s/map-of string? (s/map-of string? nil-or-number)))
+(s/def ::app-db (s/keys :req-un [:app-db/transient
+                                 :app-db/factors
+                                 :app-db/scenarios
+                                 :app-db/scenario-factor-values]))
 
 (def default-db
   {; Information that is used for procedures but that is
