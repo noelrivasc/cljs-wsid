@@ -20,15 +20,15 @@
         :default-value (:scenario-value scenario-factor)
         :min (:min scenario-factor)
         :max (:max scenario-factor)
-        :on-change (fn [el] (evt> [:scenario-factor-update
+        :on-change (fn [el] (evt> [:scenario-factor-update-obsolete
                                    scenario-id
                                    (:id scenario-factor)
                                    (-> el .-target .-value)]))}]]]))
 
 (defn v-scenario-card [scenario-id]
   (let [scenario (<sub [:scenario scenario-id])
-        scenario-score (<sub [:scenario-score scenario-id])
-        scenario-factors (<sub [:scenario-factors scenario-id])]
+        scenario-score (<sub [:scenario-score-obsolete scenario-id])
+        scenario-factors (<sub [:scenario-factors-obsolete scenario-id])]
     [:div.scenario-card {:key scenario-id}
      [:div.scenario-card__inner
       [:div.scenario-card__title (:title scenario)]

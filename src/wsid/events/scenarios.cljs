@@ -11,13 +11,13 @@
  (fn [db _]
    (let
     [active-scenario-path [:transient :scenario-active]
-     factor-ids (map :id (get-in db [:factors :all]))
+     factor-ids (map :id (get-in db [:factors :all])) ; obsolete - remove
      active-scenario
      (if (nil? (get-in db active-scenario-path))
        {:id ""
         :title ""
         :description ""
-        :factors (zipmap factor-ids (repeat 0))}
+        :factors (zipmap factor-ids (repeat 0))} ; obsolete - remove this
        (get-in db active-scenario-path))]
      (-> db
          (assoc-in [:transient :scenario-edit-defaults] active-scenario)
@@ -72,7 +72,7 @@
        (assoc-in [:transient :scenario-active] nil))))
 
 (re-frame/reg-event-db
- :scenario-factor-update
+ :scenario-factor-update-obsolete
  (fn [db [_ scenario-id factor-id value]]
    (let [scenarios (:scenarios db)]
      (assoc db :scenarios
