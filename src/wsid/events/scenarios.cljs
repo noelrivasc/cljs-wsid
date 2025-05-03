@@ -89,3 +89,8 @@
                      (assoc-in scenario [:factors factor-id] value)
                      scenario))
                  scenarios)))))
+
+(re-frame/reg-event-db
+ :scenario-factor-values-update
+ (fn [db [_ scenario-id values]]
+   (assoc-in db [:scenario-factor-values scenario-id] values)))
