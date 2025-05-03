@@ -35,10 +35,9 @@
    ))
 
 (re-frame/reg-sub
- :scenario-score-obsolete
- (fn [[_ scenario-id]] (subscribe [:scenario scenario-id]))
- (fn [scenario]
-   (apply + (vals (:factors scenario)))))
+ :scenario-score
+ (fn [db [_ scenario-id]]
+   (apply + (vals (get-in db [:scenario-factor-values scenario-id])))))
 
 (re-frame/reg-sub
  :scenario-factor-values

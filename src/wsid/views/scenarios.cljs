@@ -58,7 +58,7 @@
 
 (defn v-scenario-card [scenario-id]
   (let [scenario (<sub [:scenario scenario-id])
-        scenario-score (<sub [:scenario-score-obsolete scenario-id])]
+        scenario-score (<sub [:scenario-score scenario-id])]
     [:div.scenario-card {:key scenario-id}
      [:div.scenario-card__inner
       [:div.scenario-card__title (:title scenario)]
