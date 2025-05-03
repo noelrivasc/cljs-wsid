@@ -80,17 +80,6 @@
        (assoc-in [:transient :scenario-active] nil))))
 
 (re-frame/reg-event-db
- :scenario-factor-update-obsolete
- (fn [db [_ scenario-id factor-id value]]
-   (let [scenarios (:scenarios db)]
-     (assoc db :scenarios
-            (map (fn [scenario]
-                   (if (= scenario-id (:id scenario))
-                     (assoc-in scenario [:factors factor-id] value)
-                     scenario))
-                 scenarios)))))
-
-(re-frame/reg-event-db
  :scenario-factor-values-update
  (fn [db [_ scenario-id values]]
    (assoc-in db [:scenario-factor-values scenario-id] values)))
