@@ -21,7 +21,7 @@
         :default-value (:scenario-value scenario-factor)
         :min (:min scenario-factor)
         :max (:max scenario-factor)
-        :on-change (fn [el] (value-update-callback (:id scenario-factor) (-> el .-target .-value)))}]]]))
+        :on-change (fn [el] (value-update-callback (:id scenario-factor) (-> el .-target .-value js/parseInt)))}]]]))
 
 (defn v-scenario-factors [scenario-id]
   (let [scenario-factors (<sub [:scenario-factors scenario-id])
