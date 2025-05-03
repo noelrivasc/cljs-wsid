@@ -53,7 +53,10 @@
      [:ul.scenario-card__factors-list
       (for [f scenario-factors]
         ^{:key (str "factor-" scenario-id "-" f)}
-        [t [v-scenario-factor-item scenario-id f update-value]])
+        [t [v-scenario-factor-item
+            scenario-id
+            (assoc f :scenario-value (get scenario-factor-values (:id f)))
+            update-value]])
       ]]))
 
 (defn v-scenario-card [scenario-id]
