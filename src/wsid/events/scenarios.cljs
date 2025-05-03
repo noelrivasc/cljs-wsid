@@ -31,12 +31,45 @@
          (assoc-in [:transient :scenario-active-validation :is-valid] scenario-valid?)))))
 
 (re-frame/reg-event-db
- :scenario-factor-values-initialize
+ :scenario-factor-values-initialize-all
  (fn 
    ; Initialize the factor values for the given scenario to nil.
    [db [_ scenario-id]]
-   (assoc-in db [:scenario-factor-values scenario-id]
+   db
+   #_(assoc-in (assoc db scenario-id {}) 
+             [:scenario-factor-values scenario-id]
              (zipmap (map :id (get-in db [:factors :all])) (repeat nil)))))
+
+(re-frame/reg-event-db
+ :scenario-factor-values-initialize
+ (fn [db [_ factor-id]]
+   db
+   #_(assoc-in db [:scenario-factor-values]
+             (update-vals (get-in db [:scenario-factor-values])
+                          (fn [s]
+                            (assoc s factor-id nil))))))
+
+(re-frame/reg-event-db
+ :scenario-factor-values-clip
+ (fn [db [_ factor-id]]
+   db
+   #_(assoc-in db [:scenario-factor-values]
+             (update-vals (get-in db [:scenario-factor-values])
+                          (fn [s]
+                            (let [factor (first (filter
+                                                 #(= factor-id (:id %))
+                                                 (get-in db [:factors :all])))
+                                  current-value (get factor-id s)
+                                  lower (max (:min factor) (current-value))
+                                  clipped-value (min (:max factor) lower)]
+                              (assoc s factor-id clipped-value)))))))
+(re-frame/reg-event-db
+ :scenario-factor-values-prune
+ (fn [db [_ factor-id]]
+   (assoc-in db [:scenario-factor-values]
+             (update-vals (get-in db [:scenario-factor-values])
+                          (fn [s]
+                            (dissoc s factor-id))))))
 
 (re-frame/reg-event-db
  :scenario-active-save
@@ -56,7 +89,7 @@
                       (get-in db [:scenarios])))
          scenarios (conj other-scenarios
                          scenario-prepared)]
-     (when is-new (re-frame.core/dispatch [:scenario-factor-values-initialize scenario-id]))
+     (when is-new (re-frame.core/dispatch [:scenario-factor-values-initialize-all scenario-id]))
      (-> db
          (assoc-in [:scenarios] scenarios)
          (assoc-in [:transient :scenario-edit-defaults] nil)
@@ -83,3 +116,13 @@
  :scenario-factor-values-update
  (fn [db [_ scenario-id values]]
    (assoc-in db [:scenario-factor-values scenario-id] values)))
+
+(re-frame/reg-event-db
+ :scenario-factor-values-clip
+ (fn [db [_ factor-id]]
+   (let [factors (get-in db [:factors :all])
+         clip #()
+         factor-values (get-in db [:scenario-factor-values])]
+     (assoc db :scenario-factor-values
+            ()))))
+

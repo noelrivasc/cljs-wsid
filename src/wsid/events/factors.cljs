@@ -51,29 +51,37 @@
    ; Save the active factor to the factors vector
    ; clear the active-factor
    (let [active-factor (get-in db [:transient :factor-active])
-         factor-prepared (assoc active-factor :id (if
-                                          (= "" (:id active-factor))
-                                           (.toString (random-uuid))
-                                           (:id active-factor)))
+         is-new (= "" (:id active-factor))
+         factor-id (if is-new
+                       (.toString (random-uuid))
+                       (:id active-factor))
+         factor-prepared (assoc active-factor :id factor-id)
          factors (conj
-                   (vec (filter #(not (= (:id factor-prepared) (:id %)))
-                            (get-in db [:factors :all])))
-                  factor-prepared)]
-     (-> db
-         (assoc-in [:factors :all] factors)
-         (assoc-in [:transient :factor-edit-defaults] nil)
-         (assoc-in [:transient :factor-active] nil)))
+                  (vec (filter #(not (= (:id factor-prepared) (:id %)))
+                               (get-in db [:factors :all])))
+                  factor-prepared)
+         new-db (-> db
+                    (assoc-in [:factors :all] factors)
+                    (assoc-in [:transient :factor-edit-defaults] nil)
+                    (assoc-in [:transient :factor-active] nil))]
+     (if is-new
+       (re-frame.core/dispatch [:scenario-factor-values-clip (:id factor-prepared)])
+       (re-frame.core/dispatch [:scenario-factor-values-initialize (:id factor-prepared)]))
+     
+     new-db)
    ))
 
 (re-frame/reg-event-db
  :factor-active-delete
  (fn [db _]
    (let [factor-active (get-in db [:transient :factor-active])
-         factors (vec (filter #(not (= (:id %) (:id factor-active))) (get-in db [:factors :all])))]
-     (-> db
-         (assoc-in [:factors :all] factors)
-         (assoc-in [:transient :factor-edit-defaults] nil)
-         (assoc-in [:transient :factor-active] nil)))))
+         factors (vec (filter #(not (= (:id %) (:id factor-active))) (get-in db [:factors :all])))
+         new-db (-> db
+                    (assoc-in [:factors :all] factors)
+                    (assoc-in [:transient :factor-edit-defaults] nil)
+                    (assoc-in [:transient :factor-active] nil))]
+     (re-frame.core/dispatch [:scenario-factor-values-prune])
+     new-db)))
 
 (re-frame/reg-event-db
  :factor-active-cancel
