@@ -31,7 +31,7 @@
          (assoc-in [:transient :scenario-active-validation :is-valid] scenario-valid?)))))
 
 (re-frame/reg-event-db
- :scenario-factor-values-initialize-all
+ :scenario-factor-values-initialize-scenario
  (fn 
    ; Initialize the factor values for the given scenario to nil.
    [db [_ scenario-id]]
@@ -89,7 +89,7 @@
                       (get-in db [:scenarios])))
          scenarios (conj other-scenarios
                          scenario-prepared)]
-     (when is-new (re-frame.core/dispatch [:scenario-factor-values-initialize-all scenario-id]))
+     (when is-new (re-frame.core/dispatch [:scenario-factor-values-initialize-scenario scenario-id]))
      (-> db
          (assoc-in [:scenarios] scenarios)
          (assoc-in [:transient :scenario-edit-defaults] nil)
