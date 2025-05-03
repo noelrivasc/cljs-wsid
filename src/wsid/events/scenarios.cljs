@@ -35,15 +35,19 @@
  (fn 
    ; Initialize the factor values for the given scenario to nil.
    [db [_ scenario-id]]
-   db
+   db ; TODO fix below
    #_(assoc-in (assoc db scenario-id {}) 
              [:scenario-factor-values scenario-id]
              (zipmap (map :id (get-in db [:factors :all])) (repeat nil)))))
+(re-frame/reg-event-db
+ :scenario-factor-values-clip-scenario
+ (fn [db _]
+   db)) ; TODO 
 
 (re-frame/reg-event-db
  :scenario-factor-values-initialize
  (fn [db [_ factor-id]]
-   db
+   db ; TODO fix below
    #_(assoc-in db [:scenario-factor-values]
              (update-vals (get-in db [:scenario-factor-values])
                           (fn [s]
@@ -52,7 +56,7 @@
 (re-frame/reg-event-db
  :scenario-factor-values-clip
  (fn [db [_ factor-id]]
-   db
+   db ; TODO fix below
    #_(assoc-in db [:scenario-factor-values]
              (update-vals (get-in db [:scenario-factor-values])
                           (fn [s]
@@ -66,7 +70,8 @@
 (re-frame/reg-event-db
  :scenario-factor-values-prune
  (fn [db [_ factor-id]]
-   (assoc-in db [:scenario-factor-values]
+   db ; TODO fix below
+   #_(assoc-in db [:scenario-factor-values]
              (update-vals (get-in db [:scenario-factor-values])
                           (fn [s]
                             (dissoc s factor-id))))))
@@ -89,7 +94,9 @@
                       (get-in db [:scenarios])))
          scenarios (conj other-scenarios
                          scenario-prepared)]
-     (when is-new (re-frame.core/dispatch [:scenario-factor-values-initialize-scenario scenario-id]))
+     (if is-new
+       (re-frame.core/dispatch [:scenario-factor-values-initialize-scenario scenario-id])
+       (re-frame.core/dispatch [:scenario-factor-values-clip-scenario scenario-id]))
      (-> db
          (assoc-in [:scenarios] scenarios)
          (assoc-in [:transient :scenario-edit-defaults] nil)
@@ -101,6 +108,7 @@
    (let [scenario-active (get-in db [:transient :scenario-active])
          scenarios (vec (filter #(not (= (:id %) (:id scenario-active))) (get-in db [:scenarios])))]
      (-> db
+         ; TODO: remove scenario factor values
          (assoc-in [:scenarios] scenarios)
          (assoc-in [:transient :scenario-edit-defaults] nil)
          (assoc-in [:transient :scenario-active] nil)))))
