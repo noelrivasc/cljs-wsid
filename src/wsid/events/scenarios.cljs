@@ -45,7 +45,7 @@
    db)) ; TODO 
 
 (re-frame/reg-event-db
- :scenario-factor-values-initialize
+ :scenario-factor-values-initialize-factor
  (fn [db [_ factor-id]]
    (assoc-in db [:scenario-factor-values]
              (update-vals (get-in db [:scenario-factor-values])
@@ -53,7 +53,7 @@
                             (assoc s factor-id nil))))))
 
 (re-frame/reg-event-db
- :scenario-factor-values-clip
+ :scenario-factor-values-clip-factor
  (fn [db [_ factor-id]]
    db ; TODO fix below
    #_(assoc-in db [:scenario-factor-values]

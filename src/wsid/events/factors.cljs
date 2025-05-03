@@ -65,8 +65,8 @@
                     (assoc-in [:transient :factor-edit-defaults] nil)
                     (assoc-in [:transient :factor-active] nil))]
      (if is-new
-       (re-frame.core/dispatch [:scenario-factor-values-initialize (:id factor-prepared)])
-       (re-frame.core/dispatch [:scenario-factor-values-clip (:id factor-prepared)]))
+       (re-frame.core/dispatch [:scenario-factor-values-initialize-factor (:id factor-prepared)])
+       (re-frame.core/dispatch [:scenario-factor-values-clip-factor (:id factor-prepared)]))
      
      new-db)
    ))
