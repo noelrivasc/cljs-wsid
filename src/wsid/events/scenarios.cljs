@@ -35,10 +35,10 @@
  (fn 
    ; Initialize the factor values for the given scenario to nil.
    [db [_ scenario-id]]
-   db ; TODO fix below
-   #_(assoc-in (assoc db scenario-id {}) 
+   (assoc-in db 
              [:scenario-factor-values scenario-id]
              (zipmap (map :id (get-in db [:factors :all])) (repeat nil)))))
+
 (re-frame/reg-event-db
  :scenario-factor-values-clip-scenario
  (fn [db _]
@@ -47,8 +47,7 @@
 (re-frame/reg-event-db
  :scenario-factor-values-initialize
  (fn [db [_ factor-id]]
-   db ; TODO fix below
-   #_(assoc-in db [:scenario-factor-values]
+   (assoc-in db [:scenario-factor-values]
              (update-vals (get-in db [:scenario-factor-values])
                           (fn [s]
                             (assoc s factor-id nil))))))
