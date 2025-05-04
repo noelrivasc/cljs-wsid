@@ -38,7 +38,7 @@
      [v-factor-range (:min factor) (:max factor) 120 15]]
     [:button.factor-card__edit-button
      {:type "button"
-      :value "add"
+      :value "edit"
       :on-click #(evt> [:factor-edit factor])}
      [:span.icon
       [t (i/get-icon i/edit)]]]]])

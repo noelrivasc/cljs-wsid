@@ -65,6 +65,12 @@
     [:div.scenario-card {:key scenario-id}
      [:div.scenario-card__inner
       [:div.scenario-card__title (:title scenario)]
+      [:button.scenario-card__edit-button
+       {:type "button"
+        :value "edit"
+        :on-click #(evt> [:scenario-edit scenario])}
+       [:span.icon
+        [t (i/get-icon i/edit)]]]
       [:div.scenario-card__description (:description scenario)]
       [:div.scenario-card__score scenario-score]
       [v-scenario-factors scenario-id]]]))

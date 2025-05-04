@@ -23,6 +23,13 @@
          (assoc-in [:transient :scenario-active] active-scenario)))))
 
 (re-frame/reg-event-db
+ :scenario-edit
+ (fn [db [_ scenario]]
+   (-> db
+       (assoc-in [:transient :scenario-active] scenario)
+       (assoc-in [:transient :scenario-edit-defaults] scenario))))
+
+(re-frame/reg-event-db
  :scenario-active-update
  (fn [db [_ property value]]
    (let [updated-scenario (assoc (get-in db [:transient :scenario-active]) (keyword property) value)
