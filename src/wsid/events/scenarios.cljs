@@ -39,10 +39,37 @@
              [:scenario-factor-values scenario-id]
              (zipmap (map :id (get-in db [:factors :all])) (repeat nil)))))
 
+; TODO - move to helpers area
+(defn clip-value
+  "Clips the given value to prevent it from overflowing minimum and maximum,
+   inclusive. Preserves nil values."
+  [v minimum maximum]
+  (if (nil? v) v
+      (min maximum
+           (max minimum v))))
+
+(defn get-factor-by-id
+  "Gets a factor from the factors vector, by ID. This ugly solution will be made obsolete when #4 is dealt with."
+  [factors factor-id]
+  (first (filter
+          #(= factor-id (:id %))
+          factors)))
+
 (re-frame/reg-event-db
  :scenario-factor-values-clip-scenario
- (fn [db _]
-   db)) ; TODO 
+ (fn [db [_ scenario-id]]
+   (assoc-in db [:scenario-factor-values]
+             (let [scenario (get-in db [:scenario-factor-values scenario-id])
+                   factors (get-in db [:factors :all])]
+               (reduce-kv
+                (fn [m k v]
+                  (let [factor (get-factor-by-id factors k)]
+                    (assoc m k (clip-value
+                                v
+                                (:min factor)
+                                (:max factor)))))
+                {}
+                scenario)))))
 
 (re-frame/reg-event-db
  :scenario-factor-values-initialize-factor
@@ -61,11 +88,10 @@
                             (let [factor (first (filter
                                                  #(= factor-id (:id %))
                                                  (get-in db [:factors :all])))
-                                  current-value (get s factor-id)
-                                  new-value (if (nil? current-value)
-                                              nil
-                                              (min (:max factor)
-                                                   (max (:min factor) current-value)))]
+                                  new-value (clip-value
+                                             (get s factor-id)
+                                             (:min factor)
+                                             (:max factor))]
                               (assoc s factor-id new-value)))))))
 (re-frame/reg-event-db
  :scenario-factor-values-prune
@@ -77,7 +103,7 @@
                             (dissoc s factor-id))))))
 
 ; TODO - remove these tests
-#_(defn replay []
+(defn replay []
   (re-frame.core/dispatch [:wsid.events.main/initialize-db])
   (re-frame.core/dispatch [:factor-create])
   (re-frame.core/dispatch [:factor-active-update :title "Test Factor"])
@@ -89,7 +115,7 @@
   
   )
 
-#_(replay)
+(replay)
 
 (re-frame/reg-event-db
  :scenario-active-save
