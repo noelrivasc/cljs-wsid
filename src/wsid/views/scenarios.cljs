@@ -5,9 +5,10 @@
    [wsid.views.icons :as i]
    [wsid.util.theming
     :refer [apply-current-theme]
-    :rename {apply-current-theme t}]))
+    :rename {apply-current-theme t}]
+   [reagent.core :as r]))
 
-(defn v-scenario-factor-item [scenario-id scenario-factor]
+(defn v-scenario-factor-item [scenario-id scenario-factor value-update-callback]
   (let [datalist-id (str "datalist-" scenario-id "-" (:id scenario-factor))]
     [:div.scenario-factor-item {:key (:id scenario-factor)}
      [:div.scenario-factor-item__title (:title scenario-factor)]
@@ -20,29 +21,53 @@
         :default-value (:scenario-value scenario-factor)
         :min (:min scenario-factor)
         :max (:max scenario-factor)
-        :on-change (fn [el] (evt> [:scenario-factor-update
-                                   scenario-id
-                                   (:id scenario-factor)
-                                   (-> el .-target .-value)]))}]]]))
+        :on-change (fn [el] (value-update-callback (:id scenario-factor) (-> el .-target .-value js/parseInt)))}]]]))
+
+(defn v-scenario-factors [scenario-id]
+  (let [scenario-factors (<sub [:scenario-factors scenario-id])
+
+        ; TESTING A DEBOUNCING STRATEGY
+        ; (alternative: use :on-pointer-down and :on-pointer-up?)
+
+        ; Default values; changes from global state
+        scenario-factor-values (<sub [:scenario-factor-values scenario-id])
+
+        ; Keeps values locally until they are committed
+        live-values (r/atom scenario-factor-values)
+
+        ; Each time live-values change, the debounce timeout is reset.
+        ; The commit only goes out as an evt when the timeout expires.
+        commit-values #(evt> [:scenario-factor-values-update scenario-id @live-values])
+        debounce-timeout-id (r/atom nil)
+        debounce-time-ms 250
+        set-debounce-timeout (fn []
+                               (js/clearTimeout @debounce-timeout-id)
+                               (reset! debounce-timeout-id (js/setTimeout commit-values debounce-time-ms)))
+        update-value (fn [factor-id value]
+                       (swap! live-values assoc factor-id value)
+                       (set-debounce-timeout))]
+    [:details.scenario-card__factors
+     [:summary.scenario-card__factors__summary "Decision Factors"]
+     [:div.scenario-card__factors__instructions
+      "Move the slider to adjust the points this scenario gets for each decision factor."]
+     [:ul.scenario-card__factors-list
+      (for [f scenario-factors]
+        ^{:key (str "factor-" scenario-id "-" f)}
+        [t [v-scenario-factor-item
+            scenario-id
+            (assoc f :scenario-value (get scenario-factor-values (:id f)))
+            update-value]])
+      ]]))
 
 (defn v-scenario-card [scenario-id]
   (let [scenario (<sub [:scenario scenario-id])
-        scenario-score (<sub [:scenario-score scenario-id])
-        scenario-factors (<sub [:scenario-factors scenario-id])]
+        scenario-score (<sub [:scenario-score scenario-id])]
     [:div.scenario-card {:key scenario-id}
      [:div.scenario-card__inner
       [:div.scenario-card__title (:title scenario)]
       [:div.scenario-card__description (:description scenario)]
       [:div.scenario-card__score scenario-score]
-      [:details.scenario-card__factors
-       [:summary.scenario-card__factors__summary "Decision Factors"]
-       [:div.scenario-card__factors__instructions
-        "Move the slider to adjust the points this scenario gets for each decision factor."]
-       [:ul.scenario-card__factors-list
-        (for [f scenario-factors]
-          ^{:key (str "factor-" scenario-id "-" f)}
-          [t [v-scenario-factor-item scenario-id f]])
-        ]]]]))
+      [v-scenario-factors scenario-id]]]))
 
 (defn v-scenarios-panel []
   (let [scenario-ids (<sub [:scenario-ids])]
@@ -54,7 +79,7 @@
         [:button.scenarios-panel__heading__add__button
          {:type "button"
           :value "add"
-          :on-click #(evt> [:scenario-create])}
+          :on-click #(evt> [:scenario-create-stub])}
          [:span.icon
           (i/get-icon i/square-plus)]]]]
       [:ul.scenarios-panel__list
