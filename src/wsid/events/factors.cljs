@@ -6,6 +6,14 @@
    
    [clojure.spec.alpha :as s]))
 
+
+(defn get-factor-by-id
+  "Gets a factor from the factors vector, by ID. This ugly solution will be made obsolete when #4 is dealt with."
+  [factors factor-id]
+  (first (filter
+          #(= factor-id (:id %))
+          factors)))
+
 (re-frame/reg-event-db
  :factor-create
  (fn [db _]    

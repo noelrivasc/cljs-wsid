@@ -2,6 +2,7 @@
   (:require
    [re-frame.core :as re-frame]
    [wsid.db :as db]
+   [wsid.events.factors]
    ; [day8.re-frame.tracing :refer-macros [fn-traced]] ; TODO reimplement the fn-traced and figure out what it does and how to fix the macro errors in the editor
 
    [clojure.spec.alpha :as s]))
@@ -39,7 +40,6 @@
              [:scenario-factor-values scenario-id]
              (zipmap (map :id (get-in db [:factors :all])) (repeat nil)))))
 
-; TODO - move to helpers area
 (defn clip-value
   "Clips the given value to prevent it from overflowing minimum and maximum,
    inclusive. Preserves nil values."
@@ -47,13 +47,6 @@
   (if (nil? v) v
       (min maximum
            (max minimum v))))
-
-(defn get-factor-by-id
-  "Gets a factor from the factors vector, by ID. This ugly solution will be made obsolete when #4 is dealt with."
-  [factors factor-id]
-  (first (filter
-          #(= factor-id (:id %))
-          factors)))
 
 (re-frame/reg-event-db
  :scenario-factor-values-initialize-factor
@@ -69,9 +62,7 @@
    (assoc-in db [:scenario-factor-values]
              (update-vals (get-in db [:scenario-factor-values])
                           (fn [s]
-                            (let [factor (first (filter
-                                                 #(= factor-id (:id %))
-                                                 (get-in db [:factors :all])))
+                            (let [factor (wsid.events.factors/get-factor-by-id (get-in db [:factors :all]) factor-id)
                                   new-value (clip-value
                                              (get s factor-id)
                                              (:min factor)
@@ -116,10 +107,10 @@
    (let [scenario-active (get-in db [:transient :scenario-active])
          scenarios (vec (filter #(not (= (:id %) (:id scenario-active))) (get-in db [:scenarios])))]
      (-> db
-         ; TODO: remove scenario factor values
          (assoc-in [:scenarios] scenarios)
          (assoc-in [:transient :scenario-edit-defaults] nil)
-         (assoc-in [:transient :scenario-active] nil)))))
+         (assoc-in [:transient :scenario-active] nil)
+         (assoc :scenario-factor-values (dissoc (:scenario-factor-values db) (:id scenario-active)))))))
 
 (re-frame/reg-event-db
  :scenario-active-cancel
