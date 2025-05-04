@@ -56,22 +56,6 @@
           factors)))
 
 (re-frame/reg-event-db
- :scenario-factor-values-clip-scenario
- (fn [db [_ scenario-id]]
-   (assoc-in db [:scenario-factor-values]
-             (let [scenario (get-in db [:scenario-factor-values scenario-id])
-                   factors (get-in db [:factors :all])]
-               (reduce-kv
-                (fn [m k v]
-                  (let [factor (get-factor-by-id factors k)]
-                    (assoc m k (clip-value
-                                v
-                                (:min factor)
-                                (:max factor)))))
-                {}
-                scenario)))))
-
-(re-frame/reg-event-db
  :scenario-factor-values-initialize-factor
  (fn [db [_ factor-id]]
    (assoc-in db [:scenario-factor-values]
@@ -96,26 +80,10 @@
 (re-frame/reg-event-db
  :scenario-factor-values-prune
  (fn [db [_ factor-id]]
-   db ; TODO fix below
-   #_(assoc-in db [:scenario-factor-values]
+   (assoc-in db [:scenario-factor-values]
              (update-vals (get-in db [:scenario-factor-values])
                           (fn [s]
                             (dissoc s factor-id))))))
-
-; TODO - remove these tests
-(defn replay []
-  (re-frame.core/dispatch [:wsid.events.main/initialize-db])
-  (re-frame.core/dispatch [:factor-create])
-  (re-frame.core/dispatch [:factor-active-update :title "Test Factor"])
-  (re-frame.core/dispatch [:factor-active-save])
-  
-  (re-frame.core/dispatch [:scenario-create-stub])
-  (re-frame.core/dispatch [:scenario-active-update :title "Test Scenario"])
-  (re-frame.core/dispatch [:scenario-active-save])
-  
-  )
-
-(replay)
 
 (re-frame/reg-event-db
  :scenario-active-save
@@ -135,9 +103,8 @@
                       (get-in db [:scenarios])))
          scenarios (conj other-scenarios
                          scenario-prepared)]
-     (if is-new
-       (re-frame.core/dispatch [:scenario-factor-values-initialize-scenario scenario-id])
-       (re-frame.core/dispatch [:scenario-factor-values-clip-scenario scenario-id]))
+     (when is-new
+       (re-frame.core/dispatch [:scenario-factor-values-initialize-scenario scenario-id]))
      (-> db
          (assoc-in [:scenarios] scenarios)
          (assoc-in [:transient :scenario-edit-defaults] nil)

@@ -80,7 +80,7 @@
                     (assoc-in [:factors :all] factors)
                     (assoc-in [:transient :factor-edit-defaults] nil)
                     (assoc-in [:transient :factor-active] nil))]
-     (re-frame.core/dispatch [:scenario-factor-values-prune])
+     (re-frame.core/dispatch [:scenario-factor-values-prune (:id factor-active)])
      new-db)))
 
 (re-frame/reg-event-db
