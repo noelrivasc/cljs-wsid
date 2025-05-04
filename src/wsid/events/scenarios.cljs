@@ -55,17 +55,18 @@
 (re-frame/reg-event-db
  :scenario-factor-values-clip-factor
  (fn [db [_ factor-id]]
-   db ; TODO fix below
-   #_(assoc-in db [:scenario-factor-values]
+   (assoc-in db [:scenario-factor-values]
              (update-vals (get-in db [:scenario-factor-values])
                           (fn [s]
                             (let [factor (first (filter
                                                  #(= factor-id (:id %))
                                                  (get-in db [:factors :all])))
-                                  current-value (get factor-id s)
-                                  lower (max (:min factor) (current-value))
-                                  clipped-value (min (:max factor) lower)]
-                              (assoc s factor-id clipped-value)))))))
+                                  current-value (get s factor-id)
+                                  new-value (if (nil? current-value)
+                                              nil
+                                              (min (:max factor)
+                                                   (max (:min factor) current-value)))]
+                              (assoc s factor-id new-value)))))))
 (re-frame/reg-event-db
  :scenario-factor-values-prune
  (fn [db [_ factor-id]]
@@ -74,6 +75,21 @@
              (update-vals (get-in db [:scenario-factor-values])
                           (fn [s]
                             (dissoc s factor-id))))))
+
+; TODO - remove these tests
+#_(defn replay []
+  (re-frame.core/dispatch [:wsid.events.main/initialize-db])
+  (re-frame.core/dispatch [:factor-create])
+  (re-frame.core/dispatch [:factor-active-update :title "Test Factor"])
+  (re-frame.core/dispatch [:factor-active-save])
+  
+  (re-frame.core/dispatch [:scenario-create-stub])
+  (re-frame.core/dispatch [:scenario-active-update :title "Test Scenario"])
+  (re-frame.core/dispatch [:scenario-active-save])
+  
+  )
+
+#_(replay)
 
 (re-frame/reg-event-db
  :scenario-active-save
