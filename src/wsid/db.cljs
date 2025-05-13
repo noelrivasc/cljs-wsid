@@ -12,7 +12,7 @@
 (s/def :factor/id id)
 (s/def :factor/weight (s/and int? #(<= 0 % 10)))
 (s/def :factor/title (s/and string? #(<= 1 (count %) 50)))
-(s/def :factor/description (s/and string? #(<= (count %) 120)))
+(s/def :factor/description (s/and string? #(<= (count %) 200)))
 
 ; {
 ;  :id ""
@@ -27,7 +27,7 @@
 ; -- SCENARIOS ----------------------
 (s/def :scenario/id id)
 (s/def :scenario/title (s/and string? #(<= 1 (count %) 50)))
-(s/def :scenario/description (s/and string? #(<= (count %) 120)))
+(s/def :scenario/description (s/and string? #(<= (count %) 400)))
 (s/def ::scenario (s/keys :req-un [:scenario/title]
                           :opt-un [:scenario/id :scenario/description]))
 
