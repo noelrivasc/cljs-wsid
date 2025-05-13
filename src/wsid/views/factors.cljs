@@ -7,7 +7,8 @@
     :refer [apply-current-theme]
     :rename {apply-current-theme t}]))
 
-(defn v-factor-range [minimum maximum width height]
+; TODO use for result visualization or remove
+#_(defn v-factor-range [minimum maximum width height]
   (let [negative-width (* (/ minimum 10) (/ width 2) -1)
         positive-width (* (/ maximum 10) (/ width 2))
         centerline-position (/ width 2)]
@@ -34,18 +35,12 @@
   [:div.factor-card {:key (:id factor)}
    [:div.factor-card__inner
     [:div.factor-card__title (:title factor)]
-    [:div.factor-card__range
-     [v-factor-range (:min factor) (:max factor) 120 15]]
     [:button.factor-card__edit-button
      {:type "button"
       :value "edit"
       :on-click #(evt> [:factor-edit factor])}
      [:span.icon
       [t (i/get-icon i/edit)]]]]])
-
-(defn v-factor-range--sub []
-  (let [factor-active (<sub [:factor-active])]
-    [v-factor-range (:min factor-active) (:max factor-active) 120 15]))
 
 
 (defn v-factors-panel []
@@ -63,10 +58,6 @@
           [t (i/get-icon i/square-plus)]]]]]
       [:ul.factors-panel__list
        (map #(t (v-factor-card %)) factors)]]]))
-
-(defn v-factor-interpretation []
-  (let [range-interpretation (<sub [:factor-active-range-interpretation])]
-    [:div.factor-active-edit__range-interpretation range-interpretation]))
 
 (defn v-factor-form []
   (let [factor-edit-defaults (<sub [:factor-edit-defaults])
@@ -91,27 +82,15 @@
          :id "factor-description"
          :name "description"
          :on-change update-factor}]]
-      [:label {:for "factor-min"} "Minimum value"
+      [:label {:for "factor-weight"} "Weight"
        [:input.factor-active-edit__input.factor-active-edit__input--number
-        {:defaultValue (:min factor-edit-defaults)
+        {:defaultValue (:weight factor-edit-defaults)
          :type "number"
-         :min -10
-         :max 0
-         :id "factor-min"
-         :name "min"
-         :on-change update-factor}]]
-      [:label {:for "factor-max"} "Maximum value"
-       [:input.factor-active-edit__input.factor-active-edit__input--number
-        {:defaultValue (:max factor-edit-defaults)
-         :type "number"
-         :min 0
+         :min 1
          :max 10
-         :id "factor-max"
-         :name "max"
+         :id "factor-weight"
+         :name "weight"
          :on-change update-factor}]]
-
-      [v-factor-interpretation]
-      [v-factor-range--sub]
 
       [:div.factor-form__actions
        (if (:id factor-edit-defaults)

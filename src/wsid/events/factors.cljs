@@ -25,9 +25,7 @@
        :id ""
        :title ""
        :description ""
-       :min -10
-       :max 10
-       :weight 0
+       :weight 5
        }
       (get-in db [:transient :factor-active]))]
     (-> db
