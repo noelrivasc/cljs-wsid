@@ -5,32 +5,29 @@
 ; -- UTILITIES ----------------------
 (def nil-or-map (s/or :empty nil? :map map?))
 (def nil-or-number (s/or :empty nil? :number number?))
-(def id (s/or :empty (s/and string? #(= 0 (count %))) 
+(def id (s/or :empty (s/and string? #(= 0 (count %)))
               :uuid (s/and string? #(= 36 (count %)))))
 
 ; -- FACTORS ------------------------
 (s/def :factor/id id)
-(s/def :factor/min (s/and int? #(<= -10 % 0)))
-(s/def :factor/max (s/and int? #(<= 0 % 10)))
+(s/def :factor/weight (s/and int? #(<= 0 % 10)))
 (s/def :factor/title (s/and string? #(<= 1 (count %) 50)))
-(s/def :factor/description (s/and string? #(<= (count %) 120)))
+(s/def :factor/description (s/and string? #(<= (count %) 200)))
 
 ; {
 ;  :id ""
 ;  :title ""
 ;  :description ""
-;  :min -10
-;  :max 10
 ;  :weight 0
 ;  }
-(s/def ::factor (s/keys :req-un [:factor/title :factor/min :factor/max]
+(s/def ::factor (s/keys :req-un [:factor/title :factor/weight]
                         :opt-un [:factor/id :factor/description]))
 (s/def :factors/all (s/coll-of ::factor :kind vector?))
 
 ; -- SCENARIOS ----------------------
 (s/def :scenario/id id)
 (s/def :scenario/title (s/and string? #(<= 1 (count %) 50)))
-(s/def :scenario/description (s/and string? #(<= (count %) 120)))
+(s/def :scenario/description (s/and string? #(<= (count %) 400)))
 (s/def ::scenario (s/keys :req-un [:scenario/title]
                           :opt-un [:scenario/id :scenario/description]))
 
@@ -54,7 +51,9 @@
 (s/def :app-db/scenarios (s/coll-of ::scenario :kind vector?))
 
 ; A map of scenarios with nested maps of factor values
-(s/def :app-db/scenario-factor-values (s/map-of string? (s/map-of string? nil-or-number)))
+(s/def :app-db/scenario-factor-values (s/map-of string? ; outer map is keyed by scenario-id
+                                                (s/map-of string? ; inner map is keyed by factor-id
+                                                          nil-or-number)))
 (s/def ::app-db (s/keys :req-un [:app-db/transient
                                  :app-db/factors
                                  :app-db/scenarios

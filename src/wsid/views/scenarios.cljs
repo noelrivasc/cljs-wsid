@@ -14,13 +14,13 @@
      [:div.scenario-factor-item__title (:title scenario-factor)]
      [:div.scenario-factor-item__value
       [:datalist.scenario-factor-item__datalist {:id datalist-id}
-       (for [x (range (:min scenario-factor) (+ 1 (:max scenario-factor)))]
+       (for [x (range -10 11)]
          [:option {:value x :label x :key x}])]
       [:input.scenario-factor-item__slider
        {:type "range"
         :default-value (:scenario-value scenario-factor)
-        :min (:min scenario-factor)
-        :max (:max scenario-factor)
+        :min -10
+        :max 10
         :on-change (fn [el] (value-update-callback (:id scenario-factor) (-> el .-target .-value js/parseInt)))}]]]))
 
 (defn v-scenario-factors [scenario-id]

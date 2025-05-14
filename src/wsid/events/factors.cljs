@@ -25,9 +25,7 @@
        :id ""
        :title ""
        :description ""
-       :min -10
-       :max 10
-       :weight 0
+       :weight 5
        }
       (get-in db [:transient :factor-active]))]
     (-> db
@@ -72,9 +70,8 @@
                     (assoc-in [:factors :all] factors)
                     (assoc-in [:transient :factor-edit-defaults] nil)
                     (assoc-in [:transient :factor-active] nil))]
-     (if is-new
-       (re-frame.core/dispatch [:scenario-factor-values-initialize-factor (:id factor-prepared)])
-       (re-frame.core/dispatch [:scenario-factor-values-clip-factor (:id factor-prepared)]))
+     (when is-new
+       (re-frame.core/dispatch [:scenario-factor-values-initialize-factor (:id factor-prepared)]))
      
      new-db)
    ))

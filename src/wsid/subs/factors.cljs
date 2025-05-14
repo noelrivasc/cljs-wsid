@@ -22,7 +22,9 @@
  (fn [db]
    (nil? (get-in db [:transient :factor-active]))))
 
-(re-frame/reg-sub
+; TODO use in scenarios or remove.
+; This will end up in scenarios. Keeping as reference.
+#_(re-frame/reg-sub
  :factor-active-range-interpretation
  (fn [_ _]
    (re-frame/subscribe [:factor-active]))

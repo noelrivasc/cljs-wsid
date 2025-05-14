@@ -36,8 +36,13 @@
 
 (re-frame/reg-sub
  :scenario-score
- (fn [db [_ scenario-id]]
-   (apply + (vals (get-in db [:scenario-factor-values scenario-id])))))
+ (fn [[_ scenario-id]]
+   [(subscribe [:scenario-factor-values scenario-id])
+    (subscribe [:factors-sorted])])
+
+ (fn [[values factors]]
+   ; sum the weighted factor values for the scenario
+   (apply + (map #(* (get values (:id %)) (:weight %)) factors))))
 
 (re-frame/reg-sub
  :scenario-factor-values

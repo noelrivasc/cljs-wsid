@@ -47,13 +47,6 @@
              [:scenario-factor-values scenario-id]
              (zipmap (map :id (get-in db [:factors :all])) (repeat nil)))))
 
-(defn clip-value
-  "Clips the given value to prevent it from overflowing minimum and maximum,
-   inclusive. Preserves nil values."
-  [v minimum maximum]
-  (if (nil? v) v
-      (min maximum
-           (max minimum v))))
 
 (re-frame/reg-event-db
  :scenario-factor-values-initialize-factor
@@ -63,18 +56,6 @@
                           (fn [s]
                             (assoc s factor-id nil))))))
 
-(re-frame/reg-event-db
- :scenario-factor-values-clip-factor
- (fn [db [_ factor-id]]
-   (assoc-in db [:scenario-factor-values]
-             (update-vals (get-in db [:scenario-factor-values])
-                          (fn [s]
-                            (let [factor (wsid.events.factors/get-factor-by-id (get-in db [:factors :all]) factor-id)
-                                  new-value (clip-value
-                                             (get s factor-id)
-                                             (:min factor)
-                                             (:max factor))]
-                              (assoc s factor-id new-value)))))))
 (re-frame/reg-event-db
  :scenario-factor-values-prune
  (fn [db [_ factor-id]]
@@ -131,12 +112,4 @@
  (fn [db [_ scenario-id values]]
    (assoc-in db [:scenario-factor-values scenario-id] values)))
 
-(re-frame/reg-event-db
- :scenario-factor-values-clip
- (fn [db [_ factor-id]]
-   (let [factors (get-in db [:factors :all])
-         clip #()
-         factor-values (get-in db [:scenario-factor-values])]
-     (assoc db :scenario-factor-values
-            ()))))
 
