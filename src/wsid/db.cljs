@@ -51,7 +51,9 @@
 (s/def :app-db/scenarios (s/coll-of ::scenario :kind vector?))
 
 ; A map of scenarios with nested maps of factor values
-(s/def :app-db/scenario-factor-values (s/map-of string? (s/map-of string? nil-or-number)))
+(s/def :app-db/scenario-factor-values (s/map-of string? ; outer map is keyed by scenario-id
+                                                (s/map-of string? ; inner map is keyed by factor-id
+                                                          nil-or-number)))
 (s/def ::app-db (s/keys :req-un [:app-db/transient
                                  :app-db/factors
                                  :app-db/scenarios
