@@ -7,13 +7,6 @@
    [clojure.spec.alpha :as s]))
 
 
-(defn get-factor-by-id
-  "Gets a factor from the factors vector, by ID. This ugly solution will be made obsolete when #4 is dealt with."
-  [factors factor-id]
-  (first (filter
-          #(= factor-id (:id %))
-          factors)))
-
 (re-frame/reg-event-db
  :factor-create
  (fn [db _]    
@@ -64,10 +57,10 @@
          factor-prepared (assoc active-factor :id factor-id)
          factors (conj
                   (vec (filter #(not (= (:id factor-prepared) (:id %)))
-                               (get-in db [:factors :all])))
+                               (:factors db)))
                   factor-prepared)
          new-db (-> db
-                    (assoc-in [:factors :all] factors)
+                    (assoc :factors factors)
                     (assoc-in [:transient :factor-edit-defaults] nil)
                     (assoc-in [:transient :factor-active] nil))]
      (when is-new
@@ -80,9 +73,9 @@
  :factor-active-delete
  (fn [db _]
    (let [factor-active (get-in db [:transient :factor-active])
-         factors (vec (filter #(not (= (:id %) (:id factor-active))) (get-in db [:factors :all])))
+         factors (vec (filter #(not (= (:id %) (:id factor-active))) (:factors db)))
          new-db (-> db
-                    (assoc-in [:factors :all] factors)
+                    (assoc :factors factors)
                     (assoc-in [:transient :factor-edit-defaults] nil)
                     (assoc-in [:transient :factor-active] nil))]
      (re-frame.core/dispatch [:scenario-factor-values-prune (:id factor-active)])

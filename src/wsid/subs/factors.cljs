@@ -3,9 +3,9 @@
    [re-frame.core :as re-frame]))
 
 (re-frame/reg-sub
- :factors-sorted
+ :factors
  (fn [db]
-   (get-in db [:factors :all])))
+   (:factors db)))
 
 (re-frame/reg-sub
  :factor-edit-defaults

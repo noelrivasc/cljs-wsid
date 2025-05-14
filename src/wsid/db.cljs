@@ -75,6 +75,6 @@
                :scenario-edit-defaults nil
                :scenario-active nil
                :scenario-active-validation {:is-valid nil}}
-   :factors {:all []}
+   :factors []
    :scenarios []
    :scenario-factor-values {}})

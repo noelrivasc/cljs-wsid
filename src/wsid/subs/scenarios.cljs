@@ -38,7 +38,7 @@
  :scenario-score
  (fn [[_ scenario-id]]
    [(subscribe [:scenario-factor-values scenario-id])
-    (subscribe [:factors-sorted])])
+    (subscribe [:factors])])
 
  (fn [[values factors]]
    ; sum the weighted factor values for the scenario
@@ -53,7 +53,7 @@
  :scenario-factors
  (fn [[_ scenario-id]]
    [(subscribe [:scenario-factor-values scenario-id])
-    (subscribe [:factors-sorted])])
+    (subscribe [:factors])])
 
  (fn [[values factors]]
    ;; Enrich the global factors with the values for the given scenario
