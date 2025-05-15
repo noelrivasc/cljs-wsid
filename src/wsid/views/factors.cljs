@@ -35,6 +35,7 @@
   [:div.factor-card {:key (:id factor)}
    [:div.factor-card__inner
     [:div.factor-card__title (:title factor)]
+    [:div.factor-card__description (:description factor)]
     [:button.factor-card__edit-button
      {:type "button"
       :value "edit"
