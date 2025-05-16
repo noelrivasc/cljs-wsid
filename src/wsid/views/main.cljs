@@ -1,6 +1,7 @@
 (ns wsid.views.main
   (:require
    [wsid.subs.main :as subs :refer [<sub]] 
+   [wsid.events.main :refer [evt>]]
    [wsid.util.theming
     :refer [apply-current-theme]
     :rename {apply-current-theme t}]
@@ -20,14 +21,10 @@
     [:h1.title "What Should I Do?"]]
 
    [:div.work-area
-    ; TABS
-    [:nav {:role "tablist" :aria-label "Tool sections"}
-     [:button.tab
-      {:role "tab" :aria-selected "true" :aria-controls "factors" :id "factors-tab"}
-      [:div.tab__inner "Factors"]]
-     [:button.tab
-      {:role "tab" :aria-selected "false" :aria-controls "scenarios" :id "scenarios-tab"}
-      [:div.tab__inner "Scenarios"]]]
+    [:div.work-area__file-tools
+     [:input {:type "button"
+              :value "Save"
+              :on-click #(evt> [:save-to-local-storage])}]]
 
     ; SECTIONS
     [:div.tool-container.tool-container--factors

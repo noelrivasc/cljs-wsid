@@ -22,7 +22,6 @@
 ;  }
 (s/def ::factor (s/keys :req-un [:factor/title :factor/weight]
                         :opt-un [:factor/id :factor/description]))
-(s/def :factors/all (s/coll-of ::factor :kind vector?))
 
 ; -- SCENARIOS ----------------------
 (s/def :scenario/id id)
@@ -47,7 +46,7 @@
                    :transient/scenario-edit-defaults
                    :transient/scenario-active
                    :transient/scenario-active-validation]))
-(s/def :app-db/factors (s/keys :req-un [:factors/all]))
+(s/def :app-db/factors (s/coll-of ::factor :kind vector?))
 (s/def :app-db/scenarios (s/coll-of ::scenario :kind vector?))
 
 ; A map of scenarios with nested maps of factor values
@@ -58,6 +57,10 @@
                                  :app-db/factors
                                  :app-db/scenarios
                                  :app-db/scenario-factor-values]))
+
+(s/def ::decision (s/keys :req-un [:app-db/factors
+                                          :app-db/scenarios
+                                          :app-db/scenario-factor-values]))
 
 (def default-db
   {; Information that is used for procedures but that is
