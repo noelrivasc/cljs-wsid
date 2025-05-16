@@ -58,6 +58,10 @@
                                  :app-db/scenarios
                                  :app-db/scenario-factor-values]))
 
+(s/def ::decision (s/keys :req-un [:app-db/factors
+                                          :app-db/scenarios
+                                          :app-db/scenario-factor-values]))
+
 (def default-db
   {; Information that is used for procedures but that is
    ; not the resulting data that is the goal of the program
