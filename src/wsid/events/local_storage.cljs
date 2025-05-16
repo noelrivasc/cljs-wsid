@@ -15,6 +15,6 @@
    (.setItem js/localStorage key val)))
 
 (re-frame/reg-event-fx
- ::save-to-local-storage
+ :save-to-local-storage
  (fn [{:keys [db]} _]
    {:local-storage/save {:key "wsid" :val (dissoc db :transient)}}))
