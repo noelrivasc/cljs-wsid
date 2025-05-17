@@ -10,18 +10,18 @@
 
 (defn v-scenario-factor-item [scenario-id scenario-factor value-update-callback]
   (let [datalist-id (str "datalist-" scenario-id "-" (:id scenario-factor))]
-    [:div.scenario-factor-item {:key (:id scenario-factor)}
-     [:div.scenario-factor-item__title (:title scenario-factor)]
-     [:div.scenario-factor-item__value
-      [:datalist.scenario-factor-item__datalist {:id datalist-id}
-       (for [x (range -10 11)]
-         [:option {:value x :label x :key x}])]
-      [:input.scenario-factor-item__slider
-       {:type "range"
-        :default-value (:scenario-value scenario-factor)
-        :min -10
-        :max 10
-        :on-change (fn [el] (value-update-callback (:id scenario-factor) (-> el .-target .-value js/parseInt)))}]]]))
+    [t [:div.scenario-factor-item {:key (:id scenario-factor)}
+        [:div.scenario-factor-item__title (:title scenario-factor)]
+        [:div.scenario-factor-item__value
+         [:datalist.scenario-factor-item__datalist {:id datalist-id}
+          (for [x (range -10 11)]
+            [:option {:value x :label x :key x}])]
+         [:input.scenario-factor-item__slider
+          {:type "range"
+           :default-value (:scenario-value scenario-factor)
+           :min -10
+           :max 10
+           :on-change (fn [el] (value-update-callback (:id scenario-factor) (-> el .-target .-value js/parseInt)))}]]]]))
 
 (defn v-scenario-factors [scenario-id]
   (let [scenario-factors (<sub [:scenario-factors scenario-id])
@@ -46,52 +46,51 @@
         update-value (fn [factor-id value]
                        (swap! live-values assoc factor-id value)
                        (set-debounce-timeout))]
-    [:details.scenario-card__factors
-     [:summary.scenario-card__factors__summary "Decision Factors"]
-     [:div.scenario-card__factors__instructions
-      "Move the slider to adjust the points this scenario gets for each decision factor."]
-     [:ul.scenario-card__factors-list
-      (for [f scenario-factors]
-        ^{:key (str "factor-" scenario-id "-" f)}
-        [t [v-scenario-factor-item
+    [t [:details.scenario-card__factors
+        [:summary.scenario-card__factors__summary "Decision Factors"]
+        [:div.scenario-card__factors__instructions
+         "Move the slider to adjust the points this scenario gets for each decision factor."]
+        [:ul.scenario-card__factors-list
+         (for [f scenario-factors]
+           ^{:key (str "factor-" scenario-id "-" f)}
+           [v-scenario-factor-item
             scenario-id
             (assoc f :scenario-value (get scenario-factor-values (:id f)))
-            update-value]])
-      ]]))
+            update-value])]]]))
 
 (defn v-scenario-card [scenario-id]
   (let [scenario (<sub [:scenario scenario-id])
         scenario-score (<sub [:scenario-score scenario-id])]
-    [:div.scenario-card {:key scenario-id}
-     [:div.scenario-card__inner
-      [:div.scenario-card__title (:title scenario)]
-      [:button.scenario-card__edit-button
-       {:type "button"
-        :value "edit"
-        :on-click #(evt> [:scenario-edit scenario])}
-       [:span.icon
-        [t (i/get-icon i/edit)]]]
-      [:div.scenario-card__description (:description scenario)]
-      [:div.scenario-card__score scenario-score]
-      [v-scenario-factors scenario-id]]]))
+    [t [:div.scenario-card
+        [:div.scenario-card__inner
+         [:div.scenario-card__title (:title scenario)]
+         [:button.scenario-card__edit-button
+          {:type "button"
+           :value "edit"
+           :on-click #(evt> [:scenario-edit scenario])}
+          [:span.icon
+           (i/get-icon i/edit)]]
+         [:div.scenario-card__description (:description scenario)]
+         [:div.scenario-card__score scenario-score]
+         [v-scenario-factors scenario-id]]]]))
 
 (defn v-scenarios-panel []
   (let [scenario-ids (<sub [:scenario-ids])]
-    [:div.scenarios-panel__wrapper
-     [:div.scenarios-panel
-      [:div.scenarios-panel__heading__wrapper
-       [:h2.scenarios-panel__heading "Scenarios"]
-       [:div.scenarios-panel__heading__add
-        [:button.scenarios-panel__heading__add__button
-         {:type "button"
-          :value "add"
-          :on-click #(evt> [:scenario-create-stub])}
-         [:span.icon
-          (i/get-icon i/square-plus)]]]]
-      [:ul.scenarios-panel__list
-       (for [id scenario-ids]
-         ^{:key id}
-         [t [v-scenario-card id]])]]]))
+    [t [:div.scenarios-panel__wrapper
+        [:div.scenarios-panel
+         [:div.scenarios-panel__heading__wrapper
+          [:h2.scenarios-panel__heading "Scenarios"]
+          [:div.scenarios-panel__heading__add
+           [:button.scenarios-panel__heading__add__button
+            {:type "button"
+             :value "add"
+             :on-click #(evt> [:scenario-create-stub])}
+            [:span.icon
+             (i/get-icon i/square-plus)]]]]
+         [:ul.scenarios-panel__list
+          (for [id scenario-ids]
+            ^{:key id}
+            [v-scenario-card id])]]]]))
 
 (defn v-scenario-form []
   (let [scenario-edit-defaults (<sub [:scenario-edit-defaults])

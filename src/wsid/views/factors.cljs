@@ -32,33 +32,35 @@
                :width (str positive-width "px") }}]]))
 
 (defn v-factor-card [factor]
-  [:div.factor-card {:key (:id factor)}
-   [:div.factor-card__inner
-    [:div.factor-card__title (:title factor)]
-    [:div.factor-card__description (:description factor)]
-    [:button.factor-card__edit-button
-     {:type "button"
-      :value "edit"
-      :on-click #(evt> [:factor-edit factor])}
-     [:span.icon
-      [t (i/get-icon i/edit)]]]]])
+  [t [:div.factor-card
+      [:div.factor-card__inner
+       [:div.factor-card__title (:title factor)]
+       [:div.factor-card__description (:description factor)]
+       [:button.factor-card__edit-button
+        {:type "button"
+         :value "edit"
+         :on-click #(evt> [:factor-edit factor])}
+        [:span.icon
+         (i/get-icon i/edit)]]]]])
 
 
 (defn v-factors-panel []
   (let [factors (<sub [:factors])] ; OPTIMIZE: subscribe to list of factor ids rather than factors
-    [:div.factors-panel__wrapper
-     [:div.factors-panel
-      [:div.factors-panel__heading__wrapper
-       [:h2.factors-panel__heading "Factors"]
-       [:div.factors-panel__heading__add
-        [:button.factors-panel__heading__add__button
-         {:type "button"
-          :value "add"
-          :on-click #(evt> [:factor-create])}
-         [:span.icon
-          [t (i/get-icon i/square-plus)]]]]]
-      [:ul.factors-panel__list
-       (map #(t (v-factor-card %)) factors)]]]))
+    [t [:div.factors-panel__wrapper
+        [:div.factors-panel
+         [:div.factors-panel__heading__wrapper
+          [:h2.factors-panel__heading "Factors"]
+          [:div.factors-panel__heading__add
+           [:button.factors-panel__heading__add__button
+            {:type "button"
+             :value "add"
+             :on-click #(evt> [:factor-create])}
+            [:span.icon
+             (i/get-icon i/square-plus)]]]]
+         [:ul.factors-panel__list
+          (for [f factors]
+           ^{:key (:id f)}
+           [v-factor-card f])]]]]))
 
 (defn v-factor-form []
   (let [factor-edit-defaults (<sub [:factor-edit-defaults])

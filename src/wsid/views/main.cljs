@@ -9,35 +9,34 @@
    [wsid.views.scenarios :refer [v-scenarios-panel v-scenario-form]]))
 
 (defn v-modal-dialog [render? content-fn]
-  [:dialog.modal-container (conj {}
-                                 (if render? {:open true} nil))
-   (if render? (content-fn) nil)])
+  [t [:dialog.modal-container (conj {}
+                                    (if render? {:open true} nil))
+      (if render? (content-fn) nil)]])
 
 (defn v-main-panel []
-  [:main.main-container
+  [t [:main.main-container
+      [:div.title__wrapper
+       [:span.title__acronym "w.s.i.d ?"]
+       [:h1.title "What Should I Do?"]]
 
-   [:div.title__wrapper
-    [:span.title__acronym "w.s.i.d ?"]
-    [:h1.title "What Should I Do?"]]
-
-   [:div.work-area
-    [:div.work-area__file-tools
-     [:input {:type "button"
-              :value "Save"
-              :on-click #(evt> [:save-to-local-storage])}]]
+      [:div.work-area
+       [:div.work-area__file-tools
+        [:input {:type "button"
+                 :value "Save"
+                 :on-click #(evt> [:save-to-local-storage])}]]
 
     ; SECTIONS
-    [:div.tool-container.tool-container--factors
-     {:id "factors" :role "tabpanel" :aria-labelledby "factors-tab"}
-     [t (v-factors-panel)]]
-    [:div.tool-container.tool-container--scenarios
-     {:id "scenarios" :role "tabpanel" :aria-labelledby "scenarios-tab"}
-     [t (v-scenarios-panel)]]]])
+       [:div.tool-container.tool-container--factors
+        {:id "factors" :role "tabpanel" :aria-labelledby "factors-tab"}
+        [v-factors-panel]]
+       [:div.tool-container.tool-container--scenarios
+        {:id "scenarios" :role "tabpanel" :aria-labelledby "scenarios-tab"}
+        [v-scenarios-panel]]]]])
 
 (defn v-main []
   (let [factor-active (<sub [:factor-active-is-set])
         scenario-active (<sub [:scenario-active-is-set])]
   [:div.wsid-app
-   [t (v-main-panel)]
-   [t (v-modal-dialog (not factor-active) v-factor-form)]
-   [t (v-modal-dialog (not scenario-active) v-scenario-form)]]))
+   [v-main-panel]
+   [v-modal-dialog (not factor-active) v-factor-form]
+   [v-modal-dialog (not scenario-active) v-scenario-form]]))
