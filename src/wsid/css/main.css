@@ -30,4 +30,5 @@ font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@f
 body {
     font-family: Merriweather;
     font-weight: 300;
+    background-color: var(--color-stone-100);
 }
