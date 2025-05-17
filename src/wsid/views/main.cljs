@@ -8,20 +8,23 @@
    [wsid.views.factors :refer [v-factors-panel v-factor-form]]
    [wsid.views.scenarios :refer [v-scenarios-panel v-scenario-form]]))
 
-(defn v-modal-dialog [render? content-fn]
-  [t [:dialog.modal-container (conj {}
-                                    (if render? {:open true} nil))
-      (if render? (content-fn) nil)]])
+(defn v-modal-dialog [render? content-fn title]
+  (when render?
+    [t [:div.modal
+        [:div.modal__backdrop
+         [:div.modal__dialog
+          [:div.modal-container__heading title]
+          [:div.modal-container__main [content-fn]]]]]]))
 
 (defn v-main-panel []
   [t [:main.main-container
       [:div.title__wrapper
-       [:span.title__acronym "w.s.i.d ?"]
+       [:span.title__acronym "w.s.i.d"]
        [:h1.title "What Should I Do?"]]
 
       [:div.work-area
        [:div.work-area__file-tools
-        [:input {:type "button"
+        [:input.button {:type "button"
                  :value "Save"
                  :on-click #(evt> [:save-to-local-storage])}]]
 
@@ -38,5 +41,5 @@
         scenario-active (<sub [:scenario-active-is-set])]
   [:div.wsid-app
    [v-main-panel]
-   [v-modal-dialog (not factor-active) v-factor-form]
-   [v-modal-dialog (not scenario-active) v-scenario-form]]))
+   [v-modal-dialog (not factor-active) v-factor-form "Edit Factor"]
+   [v-modal-dialog (not scenario-active) v-scenario-form "Edit Scenario"]]))

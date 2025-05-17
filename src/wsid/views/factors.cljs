@@ -70,45 +70,44 @@
                                      value (-> el .-target .-value)]
                                  (evt> [:factor-active-update property
                                         (if (= type "number") (parse-long value) value)])))]
-    [:details {:open true}
-     [:summary "Edit Factor"]
-     [:form.factor-active-edit
-      [:label {:for "factor-title"} "Title"
-       [:input.factor-active-edit__input
-        {:defaultValue (:title factor-edit-defaults)
-         :id "factor-title"
-         :name "title"
-         :on-change update-factor}]]
-      [:label {:for "factor-description"} "Description"
-       [:textarea.factor-active-edit__textarea
-        {:defaultValue (:description factor-edit-defaults)
-         :id "factor-description"
-         :name "description"
-         :on-change update-factor}]]
-      [:label {:for "factor-weight"} "Weight"
-       [:input.factor-active-edit__input.factor-active-edit__input--number
-        {:defaultValue (:weight factor-edit-defaults)
-         :type "number"
-         :min 1
-         :max 10
-         :id "factor-weight"
-         :name "weight"
-         :on-change update-factor}]]
+    [t [:div.factor-form
+        [:form.factor-active-edit
+         [:label {:for "factor-title"} "Title"
+          [:input.factor-active-edit__input
+           {:defaultValue (:title factor-edit-defaults)
+            :id "factor-title"
+            :name "title"
+            :on-change update-factor}]]
+         [:label {:for "factor-description"} "Description"
+          [:textarea.factor-active-edit__textarea
+           {:defaultValue (:description factor-edit-defaults)
+            :id "factor-description"
+            :name "description"
+            :on-change update-factor}]]
+         [:label {:for "factor-weight"} "Weight"
+          [:input.factor-active-edit__input.factor-active-edit__input--number
+           {:defaultValue (:weight factor-edit-defaults)
+            :type "number"
+            :min 1
+            :max 10
+            :id "factor-weight"
+            :name "weight"
+            :on-change update-factor}]]
 
-      [:div.factor-form__actions
-       (if (:id factor-edit-defaults)
-         [:input.factor-form__actions__button.factor-form__actions__button--delete
-          {:type "button"
-           :value "delete"
-           :on-click #(evt> [:factor-active-delete])}]
-         nil)
-       [:input.factor-form__actions__button.factor-form__actions__button--cancel
-        {:type "button"
-         :value "cancel"
-         :on-click #(evt> [:factor-active-cancel])}]
+         [:div.factor-form__actions
+          (if (:id factor-edit-defaults)
+            [:input.button.button--danger
+             {:type "button"
+              :value "delete"
+              :on-click #(evt> [:factor-active-delete])}]
+            nil)
+          [:input.button
+           {:type "button"
+            :value "cancel"
+            :on-click #(evt> [:factor-active-cancel])}]
 
-       [:input.factor-form__actions__button.factor-form__actions__button--save
-        (conj {:type "button"
-               :value "save"
-               :on-click #(evt> [:factor-active-save])}
-              (when-not factor-valid? {:disabled true}))]]]]))
+          [:input.button.button--primary
+           (conj {:type "button"
+                  :value "save"
+                  :on-click #(evt> [:factor-active-save])}
+                 (when-not factor-valid? {:disabled true}))]]]]]))
