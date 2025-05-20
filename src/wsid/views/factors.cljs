@@ -3,6 +3,9 @@
    [wsid.views.icons :as i]
    [wsid.subs.main :as subs :refer [<sub]]
    [wsid.events.main :refer [evt>]]
+   [wsid.theming-config
+    :refer [theme]
+    :rename {theme ->theme}]
    [wsid.util.theming
     :refer [apply-current-theme]
     :rename {apply-current-theme t}]))
@@ -32,16 +35,16 @@
                :width (str positive-width "px") }}]]))
 
 (defn v-factor-card [factor]
-  [t [:div.factor-card
-      [:div.factor-card__inner
-       [:div.factor-card__title (:title factor)]
-       [:div.factor-card__description (:description factor)]
-       [:button.factor-card__edit-button
-        {:type "button"
-         :value "edit"
-         :on-click #(evt> [:factor-edit factor])}
-        [:span.icon
-         (i/get-icon i/edit)]]]]])
+  (->theme [:div.factor-card
+            [:div.factor-card__inner
+             [:div.factor-card__title (:title factor)]
+             [:div.factor-card__description (:description factor)]
+             [:button.factor-card__edit-button
+              {:type "button"
+               :value "edit"
+               :on-click #(evt> [:factor-edit factor])}
+              [:span.icon
+               (i/get-icon i/edit)]]]]))
 
 
 (defn v-factors-panel []
