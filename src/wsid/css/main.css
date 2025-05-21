@@ -1,22 +1,33 @@
 @import "tailwindcss";
 
 @utility icon { @apply w-4 h-4; }
+
+/* -- Main -------------------------------------- */
+@utility main-container { @apply mx-auto max-w-2xl px-4 md:px-0 text-cyan-700; }
+@utility title { @apply text-lg; }
+@utility title__wrapper { @apply my-4; }
+@utility title__acronym { @apply text-3xl uppercase; }
+
+/* -- Modal ------------------------------------- */
+@utility modal { @apply fixed w-screen h-screen left-0 top-0 text-cyan-700; }
+@utility modal__dialog { @apply shadow-2xl min-h-20 min-w-150 mx-auto rounded-sm border border-slate-300 bg-slate-100; }
+@utility modal-container__heading { @apply py-2 px-4 bg-slate-200 border-b border-slate-300 font-normal; }
+@utility modal-container__main { @apply py-2 px-4; }
+@utility modal__backdrop { @apply size-full flex items-center bg-stone-100/80 backdrop-blur-xs; }
+
+/* -- Forms ------------------------------------- */
+@utility form { @apply flex flex-col; }
+@utility form__field { @apply flex flex-col mb-4; }
+@utility form__label { @apply font-bold; }
+@utility form__input { @apply border border-gray-300 rounded-sm p-1 focus:outline-none focus:ring-2 focus:ring-cyan-500; }
+@utility form__actions { @apply my-4 flex flex-row justify-end gap-2; }
 @utility button { @apply font-sans px-1 rounded-sm border border-b-4 border-slate-300 bg-slate-100 hover:bg-slate-200 transition-colors duration-250; }
 @utility button--danger { @apply border-b-red-400; }
 @utility button--primary { @apply border-b-slate-400; }
 
-@utility modal__dialog { @apply shadow-2xl min-h-20 mx-auto rounded-sm border border-slate-300 bg-slate-100; }
-@utility main-container { @apply mx-auto max-w-2xl px-4 md:px-0 text-cyan-700; }
+/* -- Factors ----------------------------------- */
 @utility factor-card { @apply bg-slate-200 hover:bg-slate-400; }
-@utility title__wrapper { @apply my-4; }
-@utility modal-container__heading { @apply py-2 px-4 bg-slate-200 border-b border-slate-300 font-normal; }
-@utility modal-container__main { @apply py-2 px-4; }
-@utility modal__backdrop { @apply size-full flex items-center bg-stone-100/80 backdrop-blur-xs; }
-@utility factor-form__heading { @apply text-xl bg-slate-200; }
-@utility modal { @apply fixed w-screen h-screen left-0 top-0 text-cyan-700; }
-@utility title { @apply text-lg; }
-@utility title__acronym { @apply text-3xl uppercase; }
-@utility factor-form__actions { @apply flex gap-1 justify-end mt-4 mb-2; }
+
 
 /* merriweather-300 - latin */
 @font-face {

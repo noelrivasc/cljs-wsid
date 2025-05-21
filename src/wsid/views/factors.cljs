@@ -68,30 +68,36 @@
                                  (evt> [:factor-active-update property
                                         (if (= type "number") (parse-long value) value)])))]
     [:div.factor-form
-     [:form.factor-active-edit
-      [:label {:for "factor-title"} "Title"
-       [:input.factor-active-edit__input
+     [:form.form.form--factor-active-edit
+      [:div.form__field
+       [:label.form__label {:for "factor-title"} "Title"]
+       [:input.form__input
         {:defaultValue (:title factor-edit-defaults)
          :id "factor-title"
          :name "title"
          :on-change update-factor}]]
-      [:label {:for "factor-description"} "Description"
-       [:textarea.factor-active-edit__textarea
+
+      [:div.form__field
+       [:label.form__label {:for "factor-description"} "Description"]
+       [:textarea.form__input.form__input--textarea
         {:defaultValue (:description factor-edit-defaults)
          :id "factor-description"
          :name "description"
          :on-change update-factor}]]
-      [:label {:for "factor-weight"} "Weight"
-       [:input.factor-active-edit__input.factor-active-edit__input--number
+
+      [:div.form__field
+       [:label.form__label {:for "factor-weight"} "Importance"]
+       [:input.form__input.form__input--number
         {:defaultValue (:weight factor-edit-defaults)
-         :type "number"
+         :type "range"
          :min 1
          :max 10
+         :step 1
          :id "factor-weight"
          :name "weight"
          :on-change update-factor}]]
 
-      [:div.factor-form__actions
+      [:div.form__actions
        (if (:id factor-edit-defaults)
          [:input.button.button--danger
           {:type "button"
