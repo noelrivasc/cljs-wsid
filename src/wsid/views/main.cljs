@@ -2,39 +2,36 @@
   (:require
    [wsid.subs.main :as subs :refer [<sub]] 
    [wsid.events.main :refer [evt>]]
-   [wsid.util.theming
-    :refer [apply-current-theme]
-    :rename {apply-current-theme t}]
    [wsid.views.factors :refer [v-factors-panel v-factor-form]]
    [wsid.views.scenarios :refer [v-scenarios-panel v-scenario-form]]))
 
 (defn v-modal-dialog [render? content-fn title]
   (when render?
-    [t [:div.modal
-        [:div.modal__backdrop
-         [:div.modal__dialog
-          [:div.modal-container__heading title]
-          [:div.modal-container__main [content-fn]]]]]]))
+    [:div.modal
+     [:div.modal__backdrop
+      [:div.modal__dialog
+       [:div.modal-container__heading title]
+       [:div.modal-container__main [content-fn]]]]]))
 
 (defn v-main-panel []
-  [t [:main.main-container
-      [:div.title__wrapper
-       [:span.title__acronym "w.s.i.d"]
-       [:h1.title "What Should I Do?"]]
+  [:main.main-container
+   [:div.title__wrapper
+    [:span.title__acronym "w.s.i.d"]
+    [:h1.title "What Should I Do?"]]
 
-      [:div.work-area
-       [:div.work-area__file-tools
-        [:input.button {:type "button"
-                 :value "Save"
-                 :on-click #(evt> [:save-to-local-storage])}]]
+   [:div.work-area
+    [:div.work-area__file-tools
+     [:input.button {:type "button"
+                     :value "Save"
+                     :on-click #(evt> [:save-to-local-storage])}]]
 
-    ; SECTIONS
-       [:div.tool-container.tool-container--factors
-        {:id "factors" :role "tabpanel" :aria-labelledby "factors-tab"}
-        [v-factors-panel]]
-       [:div.tool-container.tool-container--scenarios
-        {:id "scenarios" :role "tabpanel" :aria-labelledby "scenarios-tab"}
-        [v-scenarios-panel]]]]])
+ ; SECTIONS
+    [:div.tool-container.tool-container--factors
+     {:id "factors" :role "tabpanel" :aria-labelledby "factors-tab"}
+     [v-factors-panel]]
+    [:div.tool-container.tool-container--scenarios
+     {:id "scenarios" :role "tabpanel" :aria-labelledby "scenarios-tab"}
+     [v-scenarios-panel]]]])
 
 (defn v-main []
   (let [factor-active (<sub [:factor-active-is-set])

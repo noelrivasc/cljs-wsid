@@ -2,13 +2,7 @@
   (:require 
    [wsid.views.icons :as i]
    [wsid.subs.main :as subs :refer [<sub]]
-   [wsid.events.main :refer [evt>]]
-   [wsid.theming-config
-    :refer [theme]
-    :rename {theme ->theme}]
-   [wsid.util.theming
-    :refer [apply-current-theme]
-    :rename {apply-current-theme t}]))
+   [wsid.events.main :refer [evt>]]))
 
 ; TODO use for result visualization or remove
 #_(defn v-factor-range [minimum maximum width height]
@@ -35,35 +29,35 @@
                :width (str positive-width "px") }}]]))
 
 (defn v-factor-card [factor]
-  (->theme [:div.factor-card
-            [:div.factor-card__inner
-             [:div.factor-card__title (:title factor)]
-             [:div.factor-card__description (:description factor)]
-             [:button.factor-card__edit-button
-              {:type "button"
-               :value "edit"
-               :on-click #(evt> [:factor-edit factor])}
-              [:span.icon
-               (i/get-icon i/edit)]]]]))
+  [:div.factor-card
+   [:div.factor-card__inner
+    [:div.factor-card__title (:title factor)]
+    [:div.factor-card__description (:description factor)]
+    [:button.factor-card__edit-button
+     {:type "button"
+      :value "edit"
+      :on-click #(evt> [:factor-edit factor])}
+     [:span.icon
+      (i/get-icon i/edit)]]]])
 
 
 (defn v-factors-panel []
   (let [factors (<sub [:factors])] ; OPTIMIZE: subscribe to list of factor ids rather than factors
-    [t [:div.factors-panel__wrapper
-        [:div.factors-panel
-         [:div.factors-panel__heading__wrapper
-          [:h2.factors-panel__heading "Factors"]
-          [:div.factors-panel__heading__add
-           [:button.factors-panel__heading__add__button
-            {:type "button"
-             :value "add"
-             :on-click #(evt> [:factor-create])}
-            [:span.icon
-             (i/get-icon i/square-plus)]]]]
-         [:ul.factors-panel__list
-          (for [f factors]
-           ^{:key (:id f)}
-           [v-factor-card f])]]]]))
+    [:div.factors-panel__wrapper
+     [:div.factors-panel
+      [:div.factors-panel__heading__wrapper
+       [:h2.factors-panel__heading "Factors"]
+       [:div.factors-panel__heading__add
+        [:button.factors-panel__heading__add__button
+         {:type "button"
+          :value "add"
+          :on-click #(evt> [:factor-create])}
+         [:span.icon
+          (i/get-icon i/square-plus)]]]]
+      [:ul.factors-panel__list
+       (for [f factors]
+         ^{:key (:id f)}
+         [v-factor-card f])]]]))
 
 (defn v-factor-form []
   (let [factor-edit-defaults (<sub [:factor-edit-defaults])
@@ -73,44 +67,44 @@
                                      value (-> el .-target .-value)]
                                  (evt> [:factor-active-update property
                                         (if (= type "number") (parse-long value) value)])))]
-    [t [:div.factor-form
-        [:form.factor-active-edit
-         [:label {:for "factor-title"} "Title"
-          [:input.factor-active-edit__input
-           {:defaultValue (:title factor-edit-defaults)
-            :id "factor-title"
-            :name "title"
-            :on-change update-factor}]]
-         [:label {:for "factor-description"} "Description"
-          [:textarea.factor-active-edit__textarea
-           {:defaultValue (:description factor-edit-defaults)
-            :id "factor-description"
-            :name "description"
-            :on-change update-factor}]]
-         [:label {:for "factor-weight"} "Weight"
-          [:input.factor-active-edit__input.factor-active-edit__input--number
-           {:defaultValue (:weight factor-edit-defaults)
-            :type "number"
-            :min 1
-            :max 10
-            :id "factor-weight"
-            :name "weight"
-            :on-change update-factor}]]
+    [:div.factor-form
+     [:form.factor-active-edit
+      [:label {:for "factor-title"} "Title"
+       [:input.factor-active-edit__input
+        {:defaultValue (:title factor-edit-defaults)
+         :id "factor-title"
+         :name "title"
+         :on-change update-factor}]]
+      [:label {:for "factor-description"} "Description"
+       [:textarea.factor-active-edit__textarea
+        {:defaultValue (:description factor-edit-defaults)
+         :id "factor-description"
+         :name "description"
+         :on-change update-factor}]]
+      [:label {:for "factor-weight"} "Weight"
+       [:input.factor-active-edit__input.factor-active-edit__input--number
+        {:defaultValue (:weight factor-edit-defaults)
+         :type "number"
+         :min 1
+         :max 10
+         :id "factor-weight"
+         :name "weight"
+         :on-change update-factor}]]
 
-         [:div.factor-form__actions
-          (if (:id factor-edit-defaults)
-            [:input.button.button--danger
-             {:type "button"
-              :value "delete"
-              :on-click #(evt> [:factor-active-delete])}]
-            nil)
-          [:input.button
-           {:type "button"
-            :value "cancel"
-            :on-click #(evt> [:factor-active-cancel])}]
+      [:div.factor-form__actions
+       (if (:id factor-edit-defaults)
+         [:input.button.button--danger
+          {:type "button"
+           :value "delete"
+           :on-click #(evt> [:factor-active-delete])}]
+         nil)
+       [:input.button
+        {:type "button"
+         :value "cancel"
+         :on-click #(evt> [:factor-active-cancel])}]
 
-          [:input.button.button--primary
-           (conj {:type "button"
-                  :value "save"
-                  :on-click #(evt> [:factor-active-save])}
-                 (when-not factor-valid? {:disabled true}))]]]]]))
+       [:input.button.button--primary
+        (conj {:type "button"
+               :value "save"
+               :on-click #(evt> [:factor-active-save])}
+              (when-not factor-valid? {:disabled true}))]]]]))
