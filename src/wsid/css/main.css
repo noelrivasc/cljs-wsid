@@ -1,5 +1,55 @@
 @import "tailwindcss";
 
+@utility icon { @apply w-4 h-4 fill-amber-600; }
+
+/* -- Main -------------------------------------- */
+@utility main-container { @apply mx-auto max-w-2xl px-4 md:px-0 text-cyan-700; }
+@utility title { @apply text-lg; }
+@utility title__wrapper { @apply my-4; }
+@utility title__acronym { @apply text-3xl uppercase; }
+
+/* -- Modal ------------------------------------- */
+@utility modal { @apply fixed w-screen h-screen left-0 top-0 text-cyan-700; }
+@utility modal__dialog { @apply shadow-2xl min-h-20 min-w-150 mx-auto rounded-sm border border-slate-300 bg-slate-100; }
+@utility modal-container__header { @apply py-2 px-4 bg-slate-200 border-b border-slate-300 font-normal; }
+@utility modal-container__main { @apply py-2 px-4; }
+@utility modal__backdrop { @apply size-full flex items-center bg-stone-100/80 backdrop-blur-xs; }
+
+/* -- Forms ------------------------------------- */
+@utility form { @apply flex flex-col; }
+@utility form__field { @apply flex flex-col mb-4; }
+@utility form__label { @apply font-bold; }
+@utility form__input { @apply border border-gray-300 rounded-sm p-1 focus:outline-none focus:ring-2 focus:ring-cyan-500; }
+@utility form__actions { @apply my-4 flex flex-row justify-end gap-2; }
+@utility button { @apply font-sans px-1 rounded-sm border border-b-4 border-slate-300 bg-slate-100 hover:bg-slate-200 transition-colors duration-250; }
+@utility button--danger { @apply border-b-red-400; }
+@utility button--primary { @apply border-b-slate-400; }
+
+/* -- Panel ------------------------------------- */
+@utility panel { @apply my-12 rounded-sm border border-white bg-slate-200 shadow-xl; }
+@utility panel__header { @apply py-2 px-4 flex flex-row border-b border-dashed border-b-white; }
+@utility panel__title { @apply font-normal grow; }
+@utility panel__list { @apply py-2 px-4 border-t border-dashed border-t-slate-300; }
+
+/* -- Cards ------------------------------------- */
+@utility card { @apply my-4  p-2 flex flex-nowrap rounded-sm transition-colors hover:bg-slate-300; }
+@utility card__start { @apply w-11/12 ; }
+@utility card__end { @apply w-1/12 min-w-4 flex justify-end items-start ; }
+@utility card__title { @apply flex-grow font-bold; }
+@utility card__description { @apply w-full; }
+
+/* -- Factors ----------------------------------- */
+@utility card--factor { @apply border-b border-slate-300; }
+
+/* -- Scenarios --------------------------------- */
+@utility card__score { @apply flex flex-nowrap items-baseline my-4; }
+@utility score-label { @apply uppercase font-light text-xs mr-8; }
+@utility scenario-factors { @apply w-full mt-4 bg-slate-200 rounded-sm border border-dotted border-slate-400 p-2; }
+@utility scenario-factors__instructions { @apply text-sm text-slate-500; }
+@utility scenario-factor-item { @apply mt-4; }
+@utility scenario-factor-item__header { @apply mt-4 flex uppercase font-light text-sm; }
+@utility scenario-factor-item__value { @apply ml-2; }
+
 /* merriweather-300 - latin */
 @font-face {
     font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
@@ -30,4 +80,5 @@ font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@f
 body {
     font-family: Merriweather;
     font-weight: 300;
+    background-color: var(--color-stone-100);
 }

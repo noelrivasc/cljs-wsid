@@ -3,25 +3,24 @@
     [wsid.events.main :refer [evt>]]
    [wsid.subs.main :as subs :refer [<sub]]
    [wsid.views.icons :as i]
-   [wsid.util.theming
-    :refer [apply-current-theme]
-    :rename {apply-current-theme t}]
    [reagent.core :as r]))
 
 (defn v-scenario-factor-item [scenario-id scenario-factor value-update-callback]
   (let [datalist-id (str "datalist-" scenario-id "-" (:id scenario-factor))]
-    [t [:div.scenario-factor-item {:key (:id scenario-factor)}
-        [:div.scenario-factor-item__title (:title scenario-factor)]
-        [:div.scenario-factor-item__value
-         [:datalist.scenario-factor-item__datalist {:id datalist-id}
-          (for [x (range -10 11)]
-            [:option {:value x :label x :key x}])]
-         [:input.scenario-factor-item__slider
-          {:type "range"
-           :default-value (:scenario-value scenario-factor)
-           :min -10
-           :max 10
-           :on-change (fn [el] (value-update-callback (:id scenario-factor) (-> el .-target .-value js/parseInt)))}]]]]))
+    [:div.scenario-factor-item {:key (:id scenario-factor)}
+     [:div.scenario-factor-item__header
+      [:div.scenario-factor-item__title (:title scenario-factor)]
+      [:div.scenario-factor-item__value (:scenario-value scenario-factor)]]
+     [:div.scenario-factor-item__slider
+      [:datalist.scenario-factor-item__datalist {:id datalist-id}
+       (for [x (range -10 11)]
+         [:option {:value x :label x :key x}])]
+      [:input.scenario-factor-item__slider
+       {:type "range"
+        :default-value (:scenario-value scenario-factor)
+        :min -10
+        :max 10
+        :on-change (fn [el] (value-update-callback (:id scenario-factor) (-> el .-target .-value js/parseInt)))}]]]))
 
 (defn v-scenario-factors [scenario-id]
   (let [scenario-factors (<sub [:scenario-factors scenario-id])
@@ -46,90 +45,93 @@
         update-value (fn [factor-id value]
                        (swap! live-values assoc factor-id value)
                        (set-debounce-timeout))]
-    [t [:details.scenario-card__factors
-        [:summary.scenario-card__factors__summary "Decision Factors"]
-        [:div.scenario-card__factors__instructions
-         "Move the slider to adjust the points this scenario gets for each decision factor."]
-        [:ul.scenario-card__factors-list
-         (for [f scenario-factors]
-           ^{:key (str "factor-" scenario-id "-" f)}
-           [v-scenario-factor-item
-            scenario-id
-            (assoc f :scenario-value (get scenario-factor-values (:id f)))
-            update-value])]]]))
+    [:details.scenario-factors
+     [:summary.scenario-factors__summary "Decision Factors"]
+     [:div.scenario-factors__instructions
+      "Move the slider to adjust the points this scenario gets for each decision factor."]
+     [:ul.scenario-factors__list
+      (for [f scenario-factors]
+        ^{:key (str "factor-" scenario-id "-" f)}
+        [v-scenario-factor-item
+         scenario-id
+         (assoc f :scenario-value (get scenario-factor-values (:id f)))
+         update-value])]]))
 
 (defn v-scenario-card [scenario-id]
   (let [scenario (<sub [:scenario scenario-id])
         scenario-score (<sub [:scenario-score scenario-id])]
-    [t [:div.scenario-card
-        [:div.scenario-card__inner
-         [:div.scenario-card__title (:title scenario)]
-         [:button.scenario-card__edit-button
-          {:type "button"
-           :value "edit"
-           :on-click #(evt> [:scenario-edit scenario])}
-          [:span.icon
-           (i/get-icon i/edit)]]
-         [:div.scenario-card__description (:description scenario)]
-         [:div.scenario-card__score scenario-score]
-         [v-scenario-factors scenario-id]]]]))
+    [:div.card
+     [:div.card__start
+      [:div.card__title (:title scenario)]
+      [:div.card__description (:description scenario)]
+      [:div.card__score
+       [:div.score-label "Score"]
+       [:div.score-value scenario-score]]
+      [v-scenario-factors scenario-id]]
+     [:div.card__end
+      [:button.card__edit-button
+       {:type "button"
+        :value "edit"
+        :on-click #(evt> [:scenario-edit scenario])}
+       [:span.icon
+        (i/get-icon i/edit)]]]]))
 
 (defn v-scenarios-panel []
   (let [scenario-ids (<sub [:scenario-ids])]
-    [t [:div.scenarios-panel__wrapper
-        [:div.scenarios-panel
-         [:div.scenarios-panel__heading__wrapper
-          [:h2.scenarios-panel__heading "Scenarios"]
-          [:div.scenarios-panel__heading__add
-           [:button.scenarios-panel__heading__add__button
-            {:type "button"
-             :value "add"
-             :on-click #(evt> [:scenario-create-stub])}
-            [:span.icon
-             (i/get-icon i/square-plus)]]]]
-         [:ul.scenarios-panel__list
-          (for [id scenario-ids]
-            ^{:key id}
-            [v-scenario-card id])]]]]))
+    [:div.panel__wrapper
+     [:div.panel
+      [:div.panel__header
+       [:h2.panel__title "Scenarios"]
+       [:button.panel__add-button
+        {:type "button"
+         :value "add"
+         :on-click #(evt> [:scenario-create-stub])}
+        [:span.icon
+         (i/get-icon i/square-plus)]]]
+      [:ul.panel__list
+       (for [id scenario-ids]
+         ^{:key id}
+         [v-scenario-card id])]]]))
 
 (defn v-scenario-form []
   (let [scenario-edit-defaults (<sub [:scenario-edit-defaults])
         scenario-valid? (<sub [:scenario-active-is-valid])
         update-scenario (fn [el] (let [type (-> el .-target .-type)
-                                     property (-> el .-target .-name)
-                                     value (-> el .-target .-value)]
-                                 (evt> [:scenario-active-update property
-                                        (if (= type "number") (parse-long value) value)])))]
-    [:details {:open true}
-     [:summary "Edit Scenario"]
-     [:form.scenario-active-edit
-      [:label {:for "scenario-title"} "Title"
-       [:input.scenario-active-edit__input
-        {:defaultValue (:title scenario-edit-defaults)
-         :id "scenario-title"
-         :name "title"
-         :on-change update-scenario}]]
-      [:label {:for "scenario-description"} "Description"
-       [:textarea.scenario-active-edit__textarea
-        {:defaultValue (:description scenario-edit-defaults)
-         :id "scenario-description"
-         :name "description"
-         :on-change update-scenario}]]
+                                       property (-> el .-target .-name)
+                                       value (-> el .-target .-value)]
+                                   (evt> [:scenario-active-update property
+                                          (if (= type "number") (parse-long value) value)])))]
+    [:form.form
+     [:div.form__field
+      [:label.form__label {:for "scenario-title"} "Title"]
+      [:input.form__input
+       {:defaultValue (:title scenario-edit-defaults)
+        :id "scenario-title"
+        :name "title"
+        :on-change update-scenario}]]
 
-      [:div.scenario-form__actions
-       (if (:id scenario-edit-defaults)
-         [:input.scenario-form__actions__button.scenario-form__actions__button--delete
-          {:type "button"
-           :value "delete"
-           :on-click #(evt> [:scenario-active-delete])}]
-         nil)
-       [:input.scenario-form__actions__button.scenario-form__actions__button--cancel
-        {:type "button"
-         :value "cancel"
-         :on-click #(evt> [:scenario-active-cancel])}]
+     [:div.form__field
+      [:label.form__label {:for "scenario-description"} "Description"]
+      [:textarea.form__input.form__input--textarea
+       {:defaultValue (:description scenario-edit-defaults)
+        :id "scenario-description"
+        :name "description"
+        :on-change update-scenario}]]
 
-       [:input.scenario-form__actions__button.scenario-form__actions__button--save
-        (conj {:type "button"
-               :value "save"
-               :on-click #(evt> [:scenario-active-save])}
-              (when-not scenario-valid? {:disabled true}))]]]]))
+     [:div.form__actions
+      (if (:id scenario-edit-defaults)
+        [:input.button.button--danger
+         {:type "button"
+          :value "delete"
+          :on-click #(evt> [:scenario-active-delete])}]
+        nil)
+      [:input.button
+       {:type "button"
+        :value "cancel"
+        :on-click #(evt> [:scenario-active-cancel])}]
+
+      [:input.button.button--primary
+       (conj {:type "button"
+              :value "save"
+              :on-click #(evt> [:scenario-active-save])}
+             (when-not scenario-valid? {:disabled true}))]]]))
