@@ -10,7 +10,7 @@
     [:div.modal
      [:div.modal__backdrop
       [:div.modal__dialog
-       [:div.modal-container__heading title]
+       [:div.modal-container__header title]
        [:div.modal-container__main [content-fn]]]]]))
 
 (defn v-main-panel []

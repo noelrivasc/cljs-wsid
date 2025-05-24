@@ -30,31 +30,31 @@
 
 (defn v-factor-card [factor]
   [:div.factor-card
-   [:div.factor-card__inner
+   {:on-click #(evt> [:factor-edit factor])}
+   [:div.factor-card__start
     [:div.factor-card__title (:title factor)]
-    [:div.factor-card__description (:description factor)]
+    [:div.factor-card__description (:description factor)]]
+   [:div.factor-card__end
     [:button.factor-card__edit-button
      {:type "button"
-      :value "edit"
-      :on-click #(evt> [:factor-edit factor])}
-     [:span.icon
+      :value "edit"}
+     [:button.icon
       (i/get-icon i/edit)]]]])
 
 
 (defn v-factors-panel []
   (let [factors (<sub [:factors])] ; OPTIMIZE: subscribe to list of factor ids rather than factors
-    [:div.factors-panel__wrapper
-     [:div.factors-panel
-      [:div.factors-panel__heading__wrapper
-       [:h2.factors-panel__heading "Factors"]
-       [:div.factors-panel__heading__add
-        [:button.factors-panel__heading__add__button
-         {:type "button"
-          :value "add"
-          :on-click #(evt> [:factor-create])}
-         [:span.icon
-          (i/get-icon i/square-plus)]]]]
-      [:ul.factors-panel__list
+    [:div.panel__wrapper
+     [:div.panel
+      [:div.panel__header
+       [:h2.panel__title "Factors"]
+       [:button.panel__add-button
+        {:type "button"
+         :value "add"
+         :on-click #(evt> [:factor-create])}
+        [:span.icon
+         (i/get-icon i/square-plus)]]]
+      [:ul.panel__list
        (for [f factors]
          ^{:key (:id f)}
          [v-factor-card f])]]]))
