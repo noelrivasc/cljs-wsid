@@ -29,13 +29,13 @@
                :width (str positive-width "px") }}]]))
 
 (defn v-factor-card [factor]
-  [:div.factor-card
+  [:div.card.card--factor
    {:on-click #(evt> [:factor-edit factor])}
-   [:div.factor-card__start
-    [:div.factor-card__title (:title factor)]
-    [:div.factor-card__description (:description factor)]]
-   [:div.factor-card__end
-    [:button.factor-card__edit-button
+   [:div.card__start
+    [:div.card__title (:title factor)]
+    [:div.card__description (:description factor)]]
+   [:div.card__end
+    [:button.card__edit-button
      {:type "button"
       :value "edit"}
      [:button.icon
