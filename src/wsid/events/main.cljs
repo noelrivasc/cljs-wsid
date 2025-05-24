@@ -23,7 +23,7 @@
       parsed
       (do
         (println "Failed to load decision from local store:")
-        (s/explain ::db/stored-decision parsed)))))
+        (s/explain ::db/decision parsed)))))
 
 (re-frame/reg-event-fx
  ::initialize-db
