@@ -38,7 +38,7 @@
     [:button.card__edit-button
      {:type "button"
       :value "edit"}
-     [:button.icon
+     [:span.icon
       (i/get-icon i/edit)]]]])
 
 
