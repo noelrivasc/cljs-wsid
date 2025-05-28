@@ -43,7 +43,7 @@
 
 
 (defn v-factors-panel []
-  (let [factors (<sub [:factors])] ; OPTIMIZE: subscribe to list of factor ids rather than factors
+  (let [factors (<sub [:factors-sorted])] ; OPTIMIZE: subscribe to list of factor ids rather than factors
     [:div.panel__wrapper
      [:div.panel
       [:div.panel__header

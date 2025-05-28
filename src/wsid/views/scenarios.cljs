@@ -77,7 +77,7 @@
         (i/get-icon i/edit)]]]]))
 
 (defn v-scenarios-panel []
-  (let [scenario-ids (<sub [:scenario-ids])]
+  (let [scenario-ids (<sub [:scenario-ids-sorted])]
     [:div.panel__wrapper
      [:div.panel
       [:div.panel__header
