@@ -8,6 +8,12 @@
    (:factors db)))
 
 (re-frame/reg-sub
+ :factors-sorted
+ :<- [:factors]
+ (fn [f _]
+   (sort-by :title f)))
+
+(re-frame/reg-sub
  :factor-edit-defaults
  (fn [db]
    (get-in db [:transient :factor-edit-defaults])))
