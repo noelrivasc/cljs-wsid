@@ -66,7 +66,7 @@
                                      property (-> el .-target .-name)
                                      value (-> el .-target .-value)]
                                  (evt> [:factor-active-update property
-                                        (if (= type "number") (parse-long value) value)])))]
+                                        (if (#{"number" "range"} type) (parse-long value) value)])))]
     [:div.factor-form
      [:form.form.form--factor-active-edit
       [:div.form__field
