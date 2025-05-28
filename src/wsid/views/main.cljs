@@ -3,15 +3,20 @@
    [wsid.subs.main :as subs :refer [<sub]] 
    [wsid.events.main :refer [evt>]]
    [wsid.views.factors :refer [v-factors-panel v-factor-form]]
-   [wsid.views.scenarios :refer [v-scenarios-panel v-scenario-form]]))
+   [wsid.views.scenarios :refer [v-scenarios-panel v-scenario-form]]
+   ["react-transition-group" :as rtg]))
 
 (defn v-modal-dialog [render? content-fn title]
-  (when render?
-    [:div.modal
-     [:div.modal__backdrop
-      [:div.modal__dialog
-       [:div.modal-container__header title]
-       [:div.modal-container__main [content-fn]]]]]))
+  [:> rtg/CSSTransition
+   {:in render?
+    :timeout 300
+    :class-names "fade" ; fade-enter fade-enter-done fade-exit fade-exit-done
+    :unmount-on-exit true}
+   [:div.modal
+    [:div.modal__backdrop
+     [:div.modal__dialog
+      [:div.modal-container__header title]
+      [:div.modal-container__main [content-fn]]]]]])
 
 (defn v-main-panel []
   [:main.main-container
@@ -34,9 +39,9 @@
      [v-scenarios-panel]]]])
 
 (defn v-main []
-  (let [factor-active (<sub [:factor-active-is-set])
-        scenario-active (<sub [:scenario-active-is-set])]
+  (let [f-active (<sub [:factor-active-is-set])
+        s-active (<sub [:scenario-active-is-set])]
   [:div.wsid-app
    [v-main-panel]
-   [v-modal-dialog (not factor-active) v-factor-form "Edit Factor"]
-   [v-modal-dialog (not scenario-active) v-scenario-form "Edit Scenario"]]))
+   [v-modal-dialog f-active v-factor-form "Edit Factor"]
+   [v-modal-dialog s-active v-scenario-form "Edit Scenario"]]))
