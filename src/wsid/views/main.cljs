@@ -39,9 +39,9 @@
      [v-scenarios-panel]]]])
 
 (defn v-main []
-  (let [factor-active (<sub [:factor-active-is-set])
-        scenario-active (<sub [:scenario-active-is-set])]
+  (let [f-active (<sub [:factor-active-is-set])
+        s-active (<sub [:scenario-active-is-set])]
   [:div.wsid-app
    [v-main-panel]
-   [v-modal-dialog (not factor-active) v-factor-form "Edit Factor"]
-   [v-modal-dialog (not scenario-active) v-scenario-form "Edit Scenario"]]))
+   [v-modal-dialog f-active v-factor-form "Edit Factor"]
+   [v-modal-dialog s-active v-scenario-form "Edit Scenario"]]))

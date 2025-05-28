@@ -10,9 +10,15 @@
    (get-in db [:transient :scenario-edit-defaults])))
 
 (re-frame/reg-sub
- :scenario-active-is-set
+ :scenario-active
  (fn [db]
-   (nil? (get-in db [:transient :scenario-active]))))
+   (get-in db [:transient :scenario-active])))
+
+(re-frame/reg-sub
+ :scenario-active-is-set
+ :<- [:scenario-active]
+ (fn [s _]
+   (not (nil? s))))
 
 (re-frame/reg-sub
  :scenario-active-is-valid
