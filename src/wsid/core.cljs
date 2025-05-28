@@ -2,7 +2,6 @@
   (:require
    [reagent.dom :as rdom]
    [re-frame.core :as re-frame]
-   [wsid.events.main :as events]
    [wsid.views.main :as views]
    [wsid.config :as config]))
 
@@ -17,6 +16,6 @@
     (rdom/render [views/v-main] root-el)))
 
 (defn init []
-  (re-frame/dispatch-sync [::events/initialize-db])
+  (re-frame/dispatch-sync [:app/initialize-db])
   (dev-setup)
   (mount-root))

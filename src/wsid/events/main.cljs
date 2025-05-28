@@ -26,7 +26,7 @@
         (s/explain ::db/decision parsed)))))
 
 (re-frame/reg-event-fx
- ::initialize-db
+ :app/initialize-db
  [(inject-cofx :local-storage/load)]
  (fn [{db :db local-storage :local-storage/load} _]
    (let [stored-decision (validate-decision local-storage)]
