@@ -2,6 +2,12 @@
 
 @utility icon { @apply w-4 h-4 fill-amber-600; }
 
+/* -- Transitions -------------------------------------- */
+@utility fade-enter { @apply transition-opacity duration-250 opacity-100; }
+@utility fade-enter-done { @apply opacity-100; }
+@utility fade-exit { @apply transition-opacity duration-250 opacity-0; }
+@utility fade-exit-done { @apply opacity-0; }
+
 /* -- Main -------------------------------------- */
 @utility main-container { @apply mx-auto max-w-2xl px-4 md:px-0 text-cyan-700; }
 @utility title { @apply text-lg; }
@@ -9,7 +15,7 @@
 @utility title__acronym { @apply text-3xl uppercase; }
 
 /* -- Modal ------------------------------------- */
-@utility modal { @apply fixed w-screen h-screen left-0 top-0 text-cyan-700; }
+@utility modal { @apply fixed w-screen h-screen left-0 top-0 text-cyan-700 opacity-0; }
 @utility modal__dialog { @apply shadow-2xl md:min-h-20 md:min-w-150 mx-auto rounded-sm border border-slate-300 bg-slate-100; }
 @utility modal-container__header { @apply py-2 px-4 bg-slate-200 border-b border-slate-300 font-normal; }
 @utility modal-container__main { @apply py-2 px-4; }

@@ -5,15 +5,15 @@
 		"tailwind-watch": "npx @tailwindcss/cli -i ./src/wsid/css/main.css -o ./resources/public/css/main.css --content './src/cljs/**/*.cljs' --watch",
 		"shadow-watch": "npx shadow-cljs watch app browser-test karma-test",
 		"watch": "npm run shadow-watch & npm run tailwind-watch",
-
-    "tailwind-release": "npx @tailwindcss/cli -i ./src/wsid/css/main.css -o ./resources/public/css/main.css --content './src/cljs/**/*.cljs' -m",
+		"tailwind-release": "npx @tailwindcss/cli -i ./src/wsid/css/main.css -o ./resources/public/css/main.css --content './src/cljs/**/*.cljs' -m",
 		"app-release": "npx shadow-cljs release app",
-    "release": "npm run tailwind-release & npm run app-release",
+		"release": "npm run tailwind-release & npm run app-release",
 		"build-report": "npx shadow-cljs run shadow.cljs.build-report app target/build-report.html"
 	},
 	"dependencies": {
 		"react": "17.0.2",
-		"react-dom": "17.0.2"
+		"react-dom": "17.0.2",
+		"react-transition-group": "^4.4.5"
 	},
 	"devDependencies": {
 		"@tailwindcss/cli": "^4.0.15",

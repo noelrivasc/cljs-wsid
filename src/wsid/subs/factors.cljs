@@ -25,8 +25,9 @@
 
 (re-frame/reg-sub
  :factor-active-is-set
- (fn [db]
-   (nil? (get-in db [:transient :factor-active]))))
+ :<- [:factor-active]
+ (fn [f _]
+   (not (nil? f))))
 
 ; TODO use in scenarios or remove.
 ; This will end up in scenarios. Keeping as reference.
