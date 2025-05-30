@@ -30,15 +30,18 @@
         body (str "It's " time)]
     (ok body)))
 
+; ROUTES ----------------------
 (def routes
   (route/expand-routes
    #{["/ping" :get ping :route-name :ping]}))
 
+; CONFIGURATION ---------------
 (def service-map
   {::http/routes routes
    ::http/type :jetty
    ::http/port 8890})
 
+; SERVER MANAGEMENT -----------
 (defn start []
   (http/start (http/create-server service-map)))
 
