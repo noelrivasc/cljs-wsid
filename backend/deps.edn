@@ -1,3 +1,15 @@
 {:paths ["src"]
  :deps  {io.pedestal/pedestal.jetty {:mvn/version "0.7.2"}
-         org.slf4j/slf4j-simple     {:mvn/version "2.0.10"}}}
+         org.slf4j/slf4j-simple     {:mvn/version "2.0.10"}
+         ;; AWS Lambda dependencies
+         com.amazonaws/aws-lambda-java-core {:mvn/version "1.2.3"}
+         com.amazonaws/aws-lambda-java-events {:mvn/version "3.11.0"}
+         ;; Ring adapter for Lambda (converts between API Gateway and Ring)
+         ring-apigw-lambda-proxy/ring-apigw-lambda-proxy {:mvn/version "0.3.0"}}
+ 
+ ;; Build configuration for creating deployable uberjar
+ :aliases {:uberjar {:replace-deps {com.github.seancorfield/depstar {:mvn/version "2.1.303"}}
+                     :exec-fn hf.depstar/uberjar
+                     :exec-args {:aot true
+                                :jar "target/wsid-lambda.jar"
+                                :main-class "wsid"}}}}

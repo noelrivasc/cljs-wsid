@@ -1,7 +1,8 @@
 (ns wsid
   (:gen-class)
   (:require [io.pedestal.http :as http]
-            [io.pedestal.http.route :as route])
+            [io.pedestal.http.route :as route]
+            [ring.middleware.apigw :refer [wrap-apigw-lambda-proxy]])
   (:import [java.time ZonedDateTime ZoneId]
            [java.time.format DateTimeFormatter]))
 
@@ -63,3 +64,9 @@
 
 (defn -main []
   (start))
+
+; LAMBDA HANDLER ---------------
+; Convert Pedestal service to Ring handler and wrap for API Gateway
+(def lambda-handler
+  (wrap-apigw-lambda-proxy
+   (::http/service-fn (http/create-servlet service-map))))

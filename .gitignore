@@ -22,3 +22,7 @@
 .aider*
 .idea
 .vscode
+
+# Backend
+/backend/.cpcache
+/backend/target
