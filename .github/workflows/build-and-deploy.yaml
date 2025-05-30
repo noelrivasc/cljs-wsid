@@ -6,6 +6,9 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     environment: prod
+    defaults:
+      run:
+        working-directory: ./frontend
 
     steps:
       - name: Configure AWS credentials
