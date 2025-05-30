@@ -2,7 +2,6 @@
 /frontend/resources/public/css/main.css
 /frontend/target/
 /frontend/*-init.clj
-/fronten/frontendd/*.log
 
 # Leiningen
 /frontend/.lein-*
@@ -13,10 +12,11 @@
 # shadow-cljs cache, port files
 /frontend/.shadow-cljs/
 
-/frontend/.calva
-/frontend/.idea
-/frontend/.clj-kondo
-/frontend/.lsp
+# Common CLJ directories
+/**/.calva
+/**/.idea
+/**/.clj-kondo
+/**/.lsp
 
 .DS_Store
 .aider*
