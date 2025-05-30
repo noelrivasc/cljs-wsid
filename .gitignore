@@ -1,25 +1,24 @@
-/out/
-/resources/public/js/compiled/
-/target/
-/*-init.clj
-/*.log
+/frontend/resources/public/js/compiled/
+/frontend/resources/public/css/main.css
+/frontend/target/
+/frontend/*-init.clj
+/fronten/frontendd/*.log
 
 # Leiningen
-/.lein-*
-/.nrepl-port
+/frontend/.lein-*
+/frontend/.nrepl-port
 
-# Node.js dependencies
-/node_modules/
+/frontend/node_modules/
 
 # shadow-cljs cache, port files
-/.shadow-cljs/
+/frontend/.shadow-cljs/
 
-.calva
-.idea
-.clj-kondo
-.lsp
+/frontend/.calva
+/frontend/.idea
+/frontend/.clj-kondo
+/frontend/.lsp
 
 .DS_Store
 .aider*
-
-resources/public/css/main.css
+.idea
+.vscode
