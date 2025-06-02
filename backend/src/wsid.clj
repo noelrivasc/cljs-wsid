@@ -2,7 +2,7 @@
   (:gen-class
    :methods [^:static 
              [handler [String] String]
-             [handlertest1 [String] String]])
+             [handlertest1 [Object Object] Object]])
   (:require [io.pedestal.http :as http]
             [io.pedestal.http.route :as route]
             [ring.middleware.apigw :refer [wrap-apigw-lambda-proxy]])
@@ -70,8 +70,11 @@
 
 ; LAMBDA HANDLER ---------------
 ; Convert Pedestal service to Ring handler and wrap for API Gateway
-(defn -handlertest1 [evt]
-  (str "We got the event"))
+(defn -handlertest1 [evt context]
+  {"statusCode" 200
+   "headers" {"Content-Type" "application/json"}
+   "body" (str "{\"message\": \"Hello from Lambda!\", \"event\": \""
+               (.toString evt) "\"}")})
 
 (defn wait
   [evt context]
