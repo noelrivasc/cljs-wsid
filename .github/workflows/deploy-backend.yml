@@ -52,7 +52,7 @@ jobs:
         run: |
           aws lambda update-function-code \
             --function-name wsid-backend \
-            --zip-file fileb://backend/target/wsid-lambda.jar
+            --zip-file fileb://target/wsid-lambda.jar
             
       - name: Test deployment
         run: |
