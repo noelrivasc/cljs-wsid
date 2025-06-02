@@ -1,5 +1,8 @@
 (ns wsid
-  (:gen-class)
+  (:gen-class
+   :methods [^:static 
+             [handler [String] String]
+             [handlertest1 [String] String]])
   (:require [io.pedestal.http :as http]
             [io.pedestal.http.route :as route]
             [ring.middleware.apigw :refer [wrap-apigw-lambda-proxy]])
@@ -67,7 +70,10 @@
 
 ; LAMBDA HANDLER ---------------
 ; Convert Pedestal service to Ring handler and wrap for API Gateway
-(defn wallaby
+(defn -handlertest1 [evt]
+  (str "We got the event" evt))
+
+(defn wait
   [evt context]
   ((wrap-apigw-lambda-proxy
     (::http/service-fn (http/create-servlet service-map)))
