@@ -2,7 +2,7 @@
   (:gen-class
    :methods [^:static
              [handler [String] String]
-             [handlertest1 [Object Context] Object]])
+             [handlertest1 [Object com.amazonaws.services.lambda.runtime.Context] Object]])
   (:require [io.pedestal.http :as http]
             [io.pedestal.http.route :as route]
             [ring.middleware.apigw :refer [wrap-apigw-lambda-proxy]])
