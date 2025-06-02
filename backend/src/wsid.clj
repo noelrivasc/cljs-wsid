@@ -71,7 +71,7 @@
 ; LAMBDA HANDLER ---------------
 ; Convert Pedestal service to Ring handler and wrap for API Gateway
 (defn -handlertest1 [evt]
-  (str "We got the event" evt))
+  (str "We got the event"))
 
 (defn wait
   [evt context]
