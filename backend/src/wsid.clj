@@ -67,7 +67,7 @@
 
 ; LAMBDA HANDLER ---------------
 ; Convert Pedestal service to Ring handler and wrap for API Gateway
-(defn lambda_handler
+(defn wallaby
   [evt context]
   ((wrap-apigw-lambda-proxy
     (::http/service-fn (http/create-servlet service-map)))
