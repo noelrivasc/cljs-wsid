@@ -1,13 +1,15 @@
 (ns wsid
   (:gen-class
-   :methods [^:static 
+   :methods [^:static
              [handler [String] String]
-             [handlertest1 [Object Object] Object]])
+             [handlertest1 [Object Context] Object]])
   (:require [io.pedestal.http :as http]
             [io.pedestal.http.route :as route]
             [ring.middleware.apigw :refer [wrap-apigw-lambda-proxy]])
-  (:import [java.time ZonedDateTime ZoneId]
-           [java.time.format DateTimeFormatter]))
+  (:import
+   [com.amazonaws.services.lambda.runtime Context]
+   [java.time ZonedDateTime ZoneId]
+   [java.time.format DateTimeFormatter]))
 
 ; objetivo de ahora, sólo poner un hello world para poder probar localmente y luego aventar a aws somehow
 
