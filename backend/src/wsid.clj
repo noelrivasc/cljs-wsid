@@ -72,46 +72,25 @@
 
 ; LAMBDA HANDLER ---------------
 ; Convert Pedestal service to Ring handler and wrap for API Gateway
-(defn -handleRequest [evt context]
+(defn -dummyRequestHandler [evt context]
   {"statusCode" 200
    "headers" {"Content-Type" "application/json"}
    "body" (str "{\"message\": \"Hello from Lambda!\", \"event\": \""
                (.toString evt) "\"}")})
 
-(def -zhandleRequest
+(def -proxyRequestHandler
   (wrap-apigw-lambda-proxy
    (::http/service-fn (http/create-servlet service-map))))
 
-; Copied from the ring-apigw-lambda-proxy library
-(defn- generate-query-string [params]
-  (string/join "&" (map (fn [[k v]]
-                          (str (URLEncoder/encode (name k)) "=" (URLEncoder/encode v)))
-                        params)))
+(defn -handleRequest [request context]
+  (-dummyRequestHandler request context))
 
-(defn- request->http-method [request]
-  (-> (:httpMethod request)
-      (string/lower-case)
-      (keyword)))
-
-(defn- keyword->lowercase-string [k]
-  (string/lower-case (name k)))
-
-(defn- map-keys [f m]
-  (into {} (map (fn [[k v]] [(f k) v]) m)))
-
-(defn- apigw-request->ring-request [apigw-request]
-  {:pre [(every? #(contains? apigw-request %) [:httpMethod :path :queryStringParameters])
-         (contains? #{"GET" "POST" "OPTIONS" "DELETE" "PUT" "PATCH"} (:httpMethod apigw-request))]}
-  {:uri (:path apigw-request)
-   :query-string (generate-query-string (:queryStringParameters apigw-request))
-   :request-method (request->http-method apigw-request)
-   :headers (map-keys keyword->lowercase-string (:headers apigw-request))
-   :body (when-let [body (:body apigw-request)] (ByteArrayInputStream. (.getBytes body "UTF-8")))})
-
-(defn -handleRequest [request _]
+#_(defn -handleRequest [request context]
   (let [ring-request (apigw-request->ring-request request)
-        handler (::http/service-fn (http/create-servlet service-map))]
-    (handler ring-request)))
+        response ((::http/service-fn (http/create-servlet service-map)) ring-request)]
+    {:statusCode (:status response)
+     :headers (:headers response)
+     :body (:body response)}))
 
 #_(defn -handleRequest
     [evt context]
