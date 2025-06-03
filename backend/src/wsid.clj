@@ -77,7 +77,11 @@
    "body" (str "{\"message\": \"Hello from Lambda!\", \"event\": \""
                (.toString evt) "\"}")})
 
-(defn -handleRequest
+(def -handleRequest
+  (wrap-apigw-lambda-proxy
+   (::http/service-fn (http/create-servlet service-map))))
+
+#_(defn -handleRequest
   [evt context]
   ((wrap-apigw-lambda-proxy
     (::http/service-fn (http/create-servlet service-map)))
