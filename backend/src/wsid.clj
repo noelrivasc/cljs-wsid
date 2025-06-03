@@ -1,9 +1,7 @@
 (ns wsid
   (:gen-class
    :implements [com.amazonaws.services.lambda.runtime.RequestHandler]
-   #_ #_:methods [^:static
-             [handler [String] String]
-             [handleRequest [java.util.Map com.amazonaws.services.lambda.runtime.Context] java.util.Map]])
+   :methods [^:static [handleRequest [java.util.Map com.amazonaws.services.lambda.runtime.Context] java.util.Map]])
   (:require [io.pedestal.http :as http]
             [io.pedestal.http.route :as route]
             [ring.middleware.apigw :refer [wrap-apigw-lambda-proxy]])
