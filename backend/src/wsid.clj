@@ -1,8 +1,9 @@
 (ns wsid
   (:gen-class
-   :methods [^:static
+   :implements [com.amazonaws.services.lambda.runtime.RequestHandler]
+   #_ #_:methods [^:static
              [handler [String] String]
-             [handlertest1 [java.util.Map com.amazonaws.services.lambda.runtime.Context] java.util.Map]])
+             [handleRequest [java.util.Map com.amazonaws.services.lambda.runtime.Context] java.util.Map]])
   (:require [io.pedestal.http :as http]
             [io.pedestal.http.route :as route]
             [ring.middleware.apigw :refer [wrap-apigw-lambda-proxy]])
@@ -72,7 +73,7 @@
 
 ; LAMBDA HANDLER ---------------
 ; Convert Pedestal service to Ring handler and wrap for API Gateway
-(defn -handlertest1 [evt context]
+(defn -handleRequest [evt context]
   {"statusCode" 200
    "headers" {"Content-Type" "application/json"}
    "body" (str "{\"message\": \"Hello from Lambda!\", \"event\": \""
