@@ -4,33 +4,50 @@
   (:import [java.io ByteArrayInputStream]
            [com.amazonaws.services.lambda.runtime Context]))
 
+(comment
+  "The functions in this file are almost a straight copy from those found
+   in io.pedestal.http.aws.lambda.utils. The difference is that these can
+   take either API Gateway events, or events from Lambdas with an URL.")
+
 (defn lambda-request-map
-  "Given a parsed JSON event from API Gateway,
+  "Given a parsed JSON event from API Gateway or Lambda Function URL,
   return a Ring compatible request map.
 
+  Supports both API Gateway events and Lambda Function URL events (payload version 2.0).
+  
   Optionally, you can decide to `process-headers?`, lower-casing them all to conform with the Ring spec
    defaults to `true`
 
-  This assumes the apigw event has strings as keys
+  This assumes the event has strings as keys
   -- no conversion has taken place on the JSON object other than the original parse.
   -- This ensures parse optimizations can be made without affecting downstream code."
-  ([apigw-event]
-   (lambda-request-map apigw-event true))
-  ([apigw-event process-headers?]
-   (let [path (get apigw-event "path" "/")
-         headers (get apigw-event "headers" {})
+  ([event]
+   (lambda-request-map event true))
+  ([event process-headers?]
+   (let [is-lambda-url? (and (= "2.0" (get event "version"))
+                             (contains? event "rawPath"))
+         path (if is-lambda-url?
+                (get event "rawPath" "/")
+                (get event "path" "/"))
+         headers (get event "headers" {})
          [http-version host] (string/split (get headers "Via" "") #" ")
          port (try (Integer/parseInt (get headers "X-Forwarded-Port" "")) (catch Throwable t 80))
-         source-ip (get-in apigw-event ["requestContext" "identity" "sourceIp"] "")]
+         source-ip (if is-lambda-url?
+                     (get-in event ["requestContext" "http" "sourceIp"] "")
+                     (get-in event ["requestContext" "identity" "sourceIp"] ""))
+         http-method (if is-lambda-url?
+                       (get-in event ["requestContext" "http" "method"])
+                       (get event "httpMethod"))
+         query-string-params (get event "queryStringParameters")]
      {:server-port port
       :server-name (or host "")
       :remote-addr source-ip
       :uri path
-      ;:query-string query-string
-      :query-string-params (get apigw-event "queryStringParameters")
-      :path-params (get apigw-event "pathParameters" {})
+      :query-string (when is-lambda-url? (get event "rawQueryString"))
+      :query-string-params query-string-params
+      :path-params (get event "pathParameters" {})
       :scheme (get headers "X-Forwarded-Proto" "http")
-      :request-method (some-> (get apigw-event "httpMethod")
+      :request-method (some-> http-method
                               string/lower-case
                               keyword)
       :headers (if process-headers?
@@ -39,8 +56,7 @@
                                       (transient {})
                                       headers))
                  headers)
-      ;:ssl-client-cert ssl-client-cert
-      :body (when-let [body (get apigw-event "body")]
+      :body (when-let [body (get event "body")]
               (ByteArrayInputStream. (.getBytes ^String body "UTF-8")))
       :path-info path
       :protocol (str "HTTP/" (or http-version "1.1"))
