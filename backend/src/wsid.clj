@@ -1,17 +1,15 @@
 (ns wsid
-  #_(:gen-class
-   :implements [com.amazonaws.services.lambda.runtime.RequestHandler]
-   :methods [^:static [handleRequest [java.util.Map com.amazonaws.services.lambda.runtime.Context] java.util.Map]])
+  (:gen-class
+   :main true ;; for -main method in the Uberjar
+   :methods [^:static [handler [Object com.amazonaws.services.lambda.runtime.Context] Object]]) ; for the AWS Lambda/APIGW hook
   (:require
    [io.pedestal.http :as http]
-   [io.pedestal.http.route :as route]
-   [clojure.java.io :as io]
-   [cheshire.core :refer [parse-stream generate-stream]]
-   [lambda-url :refer [wrap-lambda-url-proxy]]
-   [uswitch.lambada.core :refer [deflambdafn]])
+   [io.pedestal.http.aws.lambda.utils :as lambda]
+   [io.pedestal.http.route :as route])
   (:import
    [java.time ZoneId ZonedDateTime]
-   [java.time.format DateTimeFormatter]))
+   [java.time.format DateTimeFormatter]
+   [com.amazonaws.services.lambda.runtime Context]))
 
 ; CONFIG AND DEFAULTS ---------
 (def defaults {:timezone "America/Mexico_City"
@@ -68,7 +66,23 @@
 (defn -main []
   (start))
 
-(defn -dummyRequestHandler [evt context]
+; Code taken from example at
+; 
+(def lambda-service (-> service-map
+                        (merge {:env :lambda})
+                        http/default-interceptors
+                        lambda/direct-apigw-provider))
+
+;; Note: Optionally, use the lambda.utils macros instead of the :gen-class setup here
+(def lambda-service-fn (:io.pedestal.aws.lambda/apigw-handler lambda-service))
+
+(defn -handler [^Object req ^Context ctx]
+  (lambda-service-fn req ctx))
+
+; Ill- adviced code below, a pattern suggested by Claude
+; This is a Pedestal app, not a ring app.
+
+#_(defn -dummyRequestHandler [evt context]
   {"statusCode" 200
    "headers" {"Content-Type" "application/json"}
    "body" (str "{\"message\": \"Hello from Lambda!\", \"event\": \""
@@ -76,15 +90,14 @@
 
 ;; Create a Ring handler from Pedestal service map
 ;; Use http/create-server instead of create-servlet to get proper Ring handler
-(def handler 
+#_(def handler 
   (wrap-lambda-url-proxy
    (::http/service-fn (http/create-server service-map))))
 
 ; LAMBDA HANDLER ---------------
 ; Convert Pedestal service to Ring handler and wrap url lambda
 
-#_{:clj-kondo/ignore [:unresolved-symbol]}
-(deflambdafn wsid.handle [is os ctx]
+#_(deflambdafn wsid.handle [is os ctx]
   (with-open [writer (io/writer os)]
     (let [request (parse-stream (io/reader is :encoding "UTF-8") true)]
       (generate-stream (handler request) writer))))
