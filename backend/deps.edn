@@ -10,6 +10,7 @@
          ;                                   :git/sha "58f9263934a01f7bc66aa372176d9e6617c42f9f"}
          uswitch/lambada {:mvn/version "0.1.2"}
          cheshire/cheshire {:mvn/version "6.0.0"}
+         io.pedestal/pedestal.aws {:mvn/version "0.5.9"}
          }
  
  ;; Build configuration for creating deployable uberjar
