@@ -48,9 +48,8 @@
 (defn wrap-lambda-url-proxy
   ([handler] (wrap-lambda-url-proxy handler {}))
   ([handler {:keys [scheduled-event-route]}]
-   (fn h
-     ([request _] (h request))
-     ([request] (let [response (handler (lambda-url->ring-request request scheduled-event-route))]
-                  {:statusCode (:status response)
-                   :headers (:headers response)
-                   :body (:body response)})))))
+   (fn [request]
+     (let [response (handler (lambda-url->ring-request request scheduled-event-route))]
+       {:statusCode (:status response)
+        :headers (:headers response)
+        :body (:body response)}))))

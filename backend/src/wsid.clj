@@ -1,11 +1,14 @@
 (ns wsid
-  (:gen-class
+  #_(:gen-class
    :implements [com.amazonaws.services.lambda.runtime.RequestHandler]
    :methods [^:static [handleRequest [java.util.Map com.amazonaws.services.lambda.runtime.Context] java.util.Map]])
   (:require
    [io.pedestal.http :as http]
    [io.pedestal.http.route :as route]
-   [lambda-url :refer [wrap-lambda-url-proxy]])
+   [clojure.java.io :as io]
+   [cheshire.core :refer [parse-stream generate-stream]]
+   [lambda-url :refer [wrap-lambda-url-proxy]]
+   [uswitch.lambada.core :refer [deflambdafn]])
   (:import
    [java.time ZoneId ZonedDateTime]
    [java.time.format DateTimeFormatter]))
@@ -79,6 +82,15 @@
 
 (defn -handleRequest [request context]
   (-proxyRequestHandler request context))
+
+(def handler (wrap-lambda-url-proxy
+              (::http/service-fn (http/create-servlet service-map))))
+
+#_{:clj-kondo/ignore [:unresolved-symbol]}
+(deflambdafn wsid.handle [is os ctx]
+  (with-open [writer (io/writer os)]
+    (let [request (parse-stream (io/reader is :encoding "UTF-8") true)]
+      (generate-stream (handler request) writer))))
 
 #_(defn -handleRequest [request context]
     (let [ring-request (apigw-request->ring-request request)
