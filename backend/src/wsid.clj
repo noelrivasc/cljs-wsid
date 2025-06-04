@@ -68,23 +68,28 @@
 (defn -main []
   (start))
 
-; LAMBDA HANDLER ---------------
-; Convert Pedestal service to Ring handler and wrap for API Gateway
 (defn -dummyRequestHandler [evt context]
   {"statusCode" 200
    "headers" {"Content-Type" "application/json"}
    "body" (str "{\"message\": \"Hello from Lambda!\", \"event\": \""
                (.toString evt) "\"}")})
 
-(def -proxyRequestHandler
+;; Convert Pedestal's async service-fn to a synchronous Ring handler
+;; Pedestal service-fn expects: (service-fn request respond-callback) -> nil
+;; Ring handler expects: (handler request) -> response
+;; We use promise/deliver to bridge async -> sync
+(def handler 
   (wrap-lambda-url-proxy
-   (::http/service-fn (http/create-servlet service-map))))
+   (fn [request]
+     (let [service-fn (::http/service-fn (http/create-servlet service-map))
+           response-promise (promise)]  ; Create container for eventual response
+       ;; Call Pedestal service-fn with callback that delivers response to promise
+       (service-fn request #(deliver response-promise %))
+       ;; Block until response is delivered, then return it
+       @response-promise))))
 
-(defn -handleRequest [request context]
-  (-proxyRequestHandler request context))
-
-(def handler (wrap-lambda-url-proxy
-              (::http/service-fn (http/create-servlet service-map))))
+; LAMBDA HANDLER ---------------
+; Convert Pedestal service to Ring handler and wrap url lambda
 
 #_{:clj-kondo/ignore [:unresolved-symbol]}
 (deflambdafn wsid.handle [is os ctx]
