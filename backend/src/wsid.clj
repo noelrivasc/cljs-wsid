@@ -70,7 +70,7 @@
 ; 
 (def lambda-service (-> service-map
                         (merge {:env :lambda})
-                        http/default-interceptors
+                        ; http/default-interceptors
                         lambda/direct-apigw-provider))
 
 ;; Note: Optionally, use the lambda.utils macros instead of the :gen-class setup here
