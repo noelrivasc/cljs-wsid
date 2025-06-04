@@ -5,14 +5,10 @@
   (:require
    [io.pedestal.http :as http]
    [io.pedestal.http.route :as route]
-   [ring.middleware.lambda-url :refer [wrap-lambda-url-proxy]])
+   [lambda-url :refer [wrap-lambda-url-proxy]])
   (:import
-   [java.io ByteArrayInputStream]
-   [java.net URLEncoder]
    [java.time ZoneId ZonedDateTime]
    [java.time.format DateTimeFormatter]))
-
-; objetivo de ahora, sólo poner un hello world para poder probar localmente y luego aventar a aws somehow
 
 ; CONFIG AND DEFAULTS ---------
 (def defaults {:timezone "America/Mexico_City"
