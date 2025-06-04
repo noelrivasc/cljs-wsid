@@ -6,8 +6,8 @@
          com.amazonaws/aws-lambda-java-events {:mvn/version "3.11.0"}
          ;; Ring adapter for Lambda (converts between API Gateway and Ring)
          noelrivasc/ring-lambda-url-proxy {:git/url "https://github.com/noelrivasc/ring-lambda-url-proxy.git"
-                                           :git/tag "0.0.1"
-                                           :git/sha "f44862f7befc7ab5d4665b84a67c166d08d42ebe"}}
+                                           :git/tag "0.0.2"
+                                           :git/sha "58f9263934a01f7bc66aa372176d9e6617c42f9f"}}
  
  ;; Build configuration for creating deployable uberjar
  :aliases {:uberjar {:replace-deps {com.github.seancorfield/depstar {:mvn/version "2.1.303"}}
