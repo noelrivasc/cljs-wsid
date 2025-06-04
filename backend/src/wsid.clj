@@ -3,10 +3,9 @@
    :implements [com.amazonaws.services.lambda.runtime.RequestHandler]
    :methods [^:static [handleRequest [java.util.Map com.amazonaws.services.lambda.runtime.Context] java.util.Map]])
   (:require
-   [clojure.string :as string]
    [io.pedestal.http :as http]
    [io.pedestal.http.route :as route]
-   [ring.middleware.apigw :refer [wrap-apigw-lambda-proxy]])
+   [ring.middleware.lambda-url :refer [wrap-lambda-url-proxy]])
   (:import
    [java.io ByteArrayInputStream]
    [java.net URLEncoder]
@@ -79,18 +78,18 @@
                (.toString evt) "\"}")})
 
 (def -proxyRequestHandler
-  (wrap-apigw-lambda-proxy
+  (wrap-lambda-url-proxy
    (::http/service-fn (http/create-servlet service-map))))
 
 (defn -handleRequest [request context]
-  (-dummyRequestHandler request context))
+  (-proxyRequestHandler request context))
 
 #_(defn -handleRequest [request context]
-  (let [ring-request (apigw-request->ring-request request)
-        response ((::http/service-fn (http/create-servlet service-map)) ring-request)]
-    {:statusCode (:status response)
-     :headers (:headers response)
-     :body (:body response)}))
+    (let [ring-request (apigw-request->ring-request request)
+          response ((::http/service-fn (http/create-servlet service-map)) ring-request)]
+      {:statusCode (:status response)
+       :headers (:headers response)
+       :body (:body response)}))
 
 #_(defn -handleRequest
     [evt context]
