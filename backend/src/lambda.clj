@@ -87,14 +87,14 @@
 ;;     It will perform the JSON parse automatically ---
 (defn direct-lambda-provider
   "Given a service map, return a service map with a provider function
-  for an AWS API Gateway event, under `:io.pedestal.aws.lambda/apigw-handler`.
+  for an AWS API Gateway event, under `:io.pedestal.aws.lambda/lambda-handler`.
 
-  This provider function takes the apigw-event map and the runtime.Context
+  This provider function takes the lambda-event map and the runtime.Context
   and returns an AWS API Gateway response map (containing -- :statusCode :body :headers)
   You may want to add a custom interceptor in your chain to handle Scheduled Events.
 
   This chain terminates if a Ring `:response` is found in the context
-  or an API Gateway `:apigw-response` map is found.
+  or an API Gateway `:lambda-response` map is found.
 
   All additional conversion, coercion, writing, and extension should be handled by
   interceptors in the interceptor chain."
@@ -105,26 +105,26 @@
                                [:io.pedestal.http/container-options :body-processor]
                                (resolve-body-processor))]
     (assoc service-map
-           :io.pedestal.aws.lambda/apigw-handler
-           (fn [apigw-event ^Context context] ;[^InputStream input-stream ^OutputStream output-stream ^Context context]
+           :io.pedestal.aws.lambda/lambda-handler
+           (fn [lambda-event ^Context context] ;[^InputStream input-stream ^OutputStream output-stream ^Context context]
              (let [;event (json/parse-stream
                    ;        (java.io.PushbackReader. (java.io.InputStreamReader. input-stream))
                    ;        nil
                    ;        nil)
-                   request (lambda-request-map apigw-event)
+                   request (lambda-request-map lambda-event)
                    initial-context (merge {;:aws.lambda/input-stream input-stream
                                            ;:aws.lambda/output-stream output-stream
                                            :aws.lambda/context context
-                                           :aws.apigw/event apigw-event
+                                           :aws.lambda/event lambda-event
                                            :request request
                                            ::chain/terminators [#(let [resp (:response %)]
                                                                    (and (map? resp)
                                                                         (integer? (:status resp))
                                                                         (map? (:headers resp))))
-                                                                #(map? (:apigw-response %))]}
+                                                                #(map? (:lambda-response %))]}
                                           default-context)
                    response-context (chain/execute initial-context interceptors)
-                   response-map (or (:apigw-response response-context)
+                   response-map (or (:lambda-response response-context)
                                     ;; Use `or` to prevent evaluation
                                     (some-> (:response response-context)
                                             (lambda-response body-processor)))]
