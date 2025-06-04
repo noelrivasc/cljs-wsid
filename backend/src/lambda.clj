@@ -38,7 +38,8 @@
          http-method (if is-lambda-url?
                        (get-in event ["requestContext" "http" "method"])
                        (get event "httpMethod"))
-         query-string-params (get event "queryStringParameters")]
+         query-string-params (when-let [params (get event "queryStringParameters")]
+                               (into {} params))]
      {:server-port port
       :server-name (or host "")
       :remote-addr source-ip
