@@ -74,19 +74,11 @@
    "body" (str "{\"message\": \"Hello from Lambda!\", \"event\": \""
                (.toString evt) "\"}")})
 
-;; Convert Pedestal's async service-fn to a synchronous Ring handler
-;; Pedestal service-fn expects: (service-fn request respond-callback) -> nil
-;; Ring handler expects: (handler request) -> response
-;; We use promise/deliver to bridge async -> sync
+;; Create a Ring handler from Pedestal service map
+;; Use http/create-server instead of create-servlet to get proper Ring handler
 (def handler 
   (wrap-lambda-url-proxy
-   (fn [request]
-     (let [service-fn (::http/service-fn (http/create-servlet service-map))
-           response-promise (promise)]  ; Create container for eventual response
-       ;; Call Pedestal service-fn with callback that delivers response to promise
-       (service-fn request #(deliver response-promise %))
-       ;; Block until response is delivered, then return it
-       @response-promise))))
+   (::http/service-fn (http/create-server service-map))))
 
 ; LAMBDA HANDLER ---------------
 ; Convert Pedestal service to Ring handler and wrap url lambda
