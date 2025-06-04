@@ -4,7 +4,7 @@
    :methods [^:static [handler [Object com.amazonaws.services.lambda.runtime.Context] Object]]) ; for the AWS Lambda/APIGW hook
   (:require
    [io.pedestal.http :as http]
-   [io.pedestal.http.aws.lambda.utils :as lambda]
+   [lambda :as lambda]
    [io.pedestal.http.route :as route])
   (:import
    [java.time ZoneId ZonedDateTime]
@@ -70,8 +70,8 @@
 ; 
 (def lambda-service (-> service-map
                         (merge {:env :lambda})
-                        ; http/default-interceptors
-                        lambda/direct-apigw-provider))
+                        http/default-interceptors
+                        lambda/direct-lambda-provider))
 
 ;; Note: Optionally, use the lambda.utils macros instead of the :gen-class setup here
 (def lambda-service-fn (:io.pedestal.aws.lambda/apigw-handler lambda-service))
