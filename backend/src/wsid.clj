@@ -1,11 +1,9 @@
 (ns wsid
-  (:gen-class
-   :main true ;; for -main method in the Uberjar
-   :methods [^:static [handler [Object com.amazonaws.services.lambda.runtime.Context] Object]]) ; for the AWS Lambda/APIGW hook
   (:require
    [io.pedestal.http :as http]
    [lambda :as lambda]
-   [io.pedestal.http.route :as route])
+   [io.pedestal.http.route :as route]
+   [auth :as auth])
   (:import
    [java.time ZoneId ZonedDateTime]
    [java.time.format DateTimeFormatter]
@@ -29,13 +27,15 @@
   (let [timezone (get-in request [:query-params :timezone] (:timezone defaults))
         format (get-in request [:query-params :format] (:time-format defaults))
         time (formatted-time-in-timezone timezone format)
-        body (str "It's " time)]
+        user (:user request)
+        body (str "It's " time " for user " (:email user))]
     (ok body)))
 
 ; ROUTES ----------------------
 (def routes
   (route/expand-routes
-   #{["/ping" :get ping :route-name :ping]}))
+   #{["/ping" :get [auth/auth-interceptor ping] :route-name :ping]
+     ["/login" :post auth/login-handler :route-name :login]}))
 
 ; CONFIGURATION ---------------
 (def service-map
@@ -67,7 +67,7 @@
   (start))
 
 ; Code taken from example at
-; 
+; https://github.com/pedestal/pedestal/tree/0.6.1/samples/aws-codestar-lambda
 (def lambda-service (-> service-map
                         (merge {:env :lambda})
                         http/default-interceptors
@@ -76,41 +76,12 @@
 ;; Note: Optionally, use the lambda.utils macros instead of the :gen-class setup here
 (def lambda-service-fn (:io.pedestal.aws.lambda/lambda-handler lambda-service))
 
+(gen-class
+ ; when gen-class is included as part of the ns form, the name can be omitted, and it defaults to the ns
+ :name "wsid"
+
+ ; The handler method _must_ be static; otherwise it seems to be ignored, the class called with 3 args (stream input and output)
+ :methods [^:static [handler [Object com.amazonaws.services.lambda.runtime.Context] Object]]) 
+
 (defn -handler [^Object req ^Context ctx]
   (lambda-service-fn req ctx))
-
-; Ill- adviced code below, a pattern suggested by Claude
-; This is a Pedestal app, not a ring app.
-
-#_(defn -dummyRequestHandler [evt context]
-  {"statusCode" 200
-   "headers" {"Content-Type" "application/json"}
-   "body" (str "{\"message\": \"Hello from Lambda!\", \"event\": \""
-               (.toString evt) "\"}")})
-
-;; Create a Ring handler from Pedestal service map
-;; Use http/create-server instead of create-servlet to get proper Ring handler
-#_(def handler 
-  (wrap-lambda-url-proxy
-   (::http/service-fn (http/create-server service-map))))
-
-; LAMBDA HANDLER ---------------
-; Convert Pedestal service to Ring handler and wrap url lambda
-
-#_(deflambdafn wsid.handle [is os ctx]
-  (with-open [writer (io/writer os)]
-    (let [request (parse-stream (io/reader is :encoding "UTF-8") true)]
-      (generate-stream (handler request) writer))))
-
-#_(defn -handleRequest [request context]
-    (let [ring-request (apigw-request->ring-request request)
-          response ((::http/service-fn (http/create-servlet service-map)) ring-request)]
-      {:statusCode (:status response)
-       :headers (:headers response)
-       :body (:body response)}))
-
-#_(defn -handleRequest
-    [evt context]
-    ((wrap-apigw-lambda-proxy
-      (::http/service-fn (http/create-servlet service-map)))
-     evt context))

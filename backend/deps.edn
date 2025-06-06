@@ -2,6 +2,11 @@
  :deps  {io.pedestal/pedestal.jetty {:mvn/version "0.7.2"}
          org.slf4j/slf4j-simple     {:mvn/version "2.0.10"}
          io.pedestal/pedestal.aws {:mvn/version "0.5.9"}
+         org.postgresql/postgresql {:mvn/version "42.7.1"}
+         com.github.seancorfield/next.jdbc {:mvn/version "1.3.909"}
+         buddy/buddy-hashers {:mvn/version "2.0.167"}
+         buddy/buddy-sign {:mvn/version "3.5.351"}
+         cheshire/cheshire {:mvn/version "5.12.0"}
          }
  
  ;; Build configuration for creating deployable uberjar

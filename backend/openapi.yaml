@@ -1,0 +1,151 @@
+openapi: 3.0.3
+info:
+  title: WSID Backend API
+  description: Decision tracking application backend API
+  version: 1.0.0
+  contact:
+    name: WSID Team
+servers:
+  - url: http://localhost:8890
+    description: Local development server
+  - url: https://api.wsid.example.com
+    description: Production server
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  
+  schemas:
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: user@example.com
+        password:
+          type: string
+          format: password
+          example: mypassword123
+    
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          description: JWT authentication token
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        user:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              example: 550e8400-e29b-41d4-a716-446655440000
+            email:
+              type: string
+              format: email
+              example: user@example.com
+    
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message
+          example: Invalid credentials
+    
+    PingResponse:
+      type: string
+      description: Current time and user information
+      example: "It's 2025-01-06 15:30:45 CST for user user@example.com"
+
+paths:
+  /login:
+    post:
+      summary: User login
+      description: Authenticate a user with email and password, returns JWT token
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '400':
+          description: Bad request - missing email or password
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized - invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /ping:
+    get:
+      summary: Health check with authentication
+      description: Returns current time with user information (requires authentication)
+      tags:
+        - Health
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: timezone
+          in: query
+          description: Timezone for the response (optional)
+          required: false
+          schema:
+            type: string
+            default: "America/Mexico_City"
+            example: "America/New_York"
+        - name: format
+          in: query
+          description: Time format pattern (optional)
+          required: false
+          schema:
+            type: string
+            default: "yyyy-MM-dd HH:mm:ss z"
+            example: "yyyy-MM-dd HH:mm:ss z"
+      responses:
+        '200':
+          description: Current time and user information
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/PingResponse'
+        '401':
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+tags:
+  - name: Authentication
+    description: User authentication endpoints
+  - name: Health
+    description: Health check and status endpoints
