@@ -1,41 +1,19 @@
-(ns wsid
+(ns wsid.core
   (:require
    [io.pedestal.http :as http]
    [lambda :as lambda]
    [io.pedestal.http.route :as route]
-   [auth :as auth])
+   [wsid.auth :as auth]
+   [wsid.handlers.ping :as ping]
+   [wsid.handlers.user :as user])
   (:import
-   [java.time ZoneId ZonedDateTime]
-   [java.time.format DateTimeFormatter]
    [com.amazonaws.services.lambda.runtime Context]))
-
-; CONFIG AND DEFAULTS ---------
-(def defaults {:timezone "America/Mexico_City"
-               :time-format "yyyy-MM-dd HH:mm:ss z"})
-
-; UTILITIES -------------------
-(defn ok [body]
-  {:status 200 :body body})
-
-(defn formatted-time-in-timezone [timezone-str format-pattern]
-  (-> (ZoneId/of timezone-str)
-      (ZonedDateTime/now)
-      (.format (DateTimeFormatter/ofPattern format-pattern))))
-
-; HANDLERS --------------------
-(defn ping [request]
-  (let [timezone (get-in request [:query-params :timezone] (:timezone defaults))
-        format (get-in request [:query-params :format] (:time-format defaults))
-        time (formatted-time-in-timezone timezone format)
-        user (:user request)
-        body (str "It's " time " for user " (:email user))]
-    (ok body)))
 
 ; ROUTES ----------------------
 (def routes
   (route/expand-routes
-   #{["/ping" :get [auth/auth-interceptor ping] :route-name :ping]
-     ["/login" :post auth/login-handler :route-name :login]}))
+   #{["/ping" :get [auth/auth-interceptor ping/ping-handler] :route-name :ping]
+     ["/login" :post user/login-handler :route-name :login]}))
 
 ; CONFIGURATION ---------------
 (def service-map
