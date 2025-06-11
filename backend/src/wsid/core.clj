@@ -4,8 +4,10 @@
    [lambda :as lambda]
    [io.pedestal.http.route :as route]
    [wsid.auth :as auth]
+   [wsid.util :as util]
    [wsid.handlers.ping :as ping]
-   [wsid.handlers.user :as user])
+   [wsid.handlers.user :as user]
+   [wsid.db :as db])
   (:import
    [com.amazonaws.services.lambda.runtime Context]))
 
@@ -13,7 +15,7 @@
 (def routes
   (route/expand-routes
    #{["/ping" :get [auth/auth-interceptor ping/ping-handler] :route-name :ping]
-     ["/login" :post user/login-handler :route-name :login]}))
+     ["/login" :post [util/parse-body-interceptor db/db-interceptor user/login-handler] :route-name :login]}))
 
 ; CONFIGURATION ---------------
 (def service-map
@@ -33,7 +35,6 @@
           (http/start (http/create-server
                        (assoc service-map
                               ::http/join? false)))))
-
 (defn stop-dev []
   (http/stop @server))
 
