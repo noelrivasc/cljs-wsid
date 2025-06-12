@@ -47,8 +47,8 @@
                   token (if (:valid validation-result)
                           (create-user-token user)
                           nil)
-                  response (if token
+                  r (if token
                              (ok token)
                              (response 401 "Invalid credentials"))]
 
-              (assoc context :response response)))})
+              (assoc context :response r)))})
