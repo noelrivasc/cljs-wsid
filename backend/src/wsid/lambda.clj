@@ -1,4 +1,4 @@
-(ns lambda
+(ns wsid.lambda
   (:require [clojure.string :as string]
             [io.pedestal.interceptor.chain :as chain])
   (:import [java.io ByteArrayInputStream]

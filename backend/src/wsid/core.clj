@@ -1,7 +1,7 @@
 (ns wsid.core
   (:require
    [io.pedestal.http :as http]
-   [lambda :as lambda]
+   [wsid.lambda :as lambda]
    [io.pedestal.http.route :as route]
    [wsid.auth :as auth]
    [wsid.util :as util]
@@ -23,24 +23,8 @@
    ::http/type :jetty
    ::http/port 8890})
 
-; SERVER MANAGEMENT -----------
 (defn start []
   (http/start (http/create-server service-map)))
-
-;; For interactive development
-(defonce server (atom nil))
-
-(defn start-dev []
-  (reset! server
-          (http/start (http/create-server
-                       (assoc service-map
-                              ::http/join? false)))))
-(defn stop-dev []
-  (http/stop @server))
-
-(defn restart []
-  (stop-dev)
-  (start-dev))
 
 (defn -main []
   (start))
