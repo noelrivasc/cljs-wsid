@@ -5,7 +5,15 @@ meta {
 }
 
 get {
-  url: http://localhost:8890/ping
+  url: {{protocol}}://{{server_url}}/ping?timezone=America/Mexico_City
   body: none
   auth: inherit
+}
+
+params:query {
+  timezone: America/Mexico_City
+}
+
+headers {
+  ~Authorization: Bearer (token)
 }
