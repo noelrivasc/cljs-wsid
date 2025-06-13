@@ -20,6 +20,13 @@
 ; CONFIGURATION ---------------
 (def service-map
   {::http/routes routes
+
+   ; Turn off logging and tracing that I don't understand yet
+   ::http/request-logger nil
+   ::http/tracing nil
+
+   ; The following only affect the server when started
+   ; with http/start —not the lambda handler.
    ::http/type :jetty
    ::http/port 8890})
 
