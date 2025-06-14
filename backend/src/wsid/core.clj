@@ -1,21 +1,33 @@
 (ns wsid.core
   (:require
+   [clojure.set]
    [io.pedestal.http :as http]
    [wsid.lambda :as lambda]
    [io.pedestal.http.route :as route]
    [wsid.auth :as auth]
    [wsid.util :as util]
+   [wsid.config :refer [config]]
    [wsid.handlers.ping :as ping]
+   [wsid.handlers.diagnostics :as diagnostics]
    [wsid.handlers.user :as user]
    [wsid.db :as db])
   (:import
    [com.amazonaws.services.lambda.runtime Context]))
 
 ; ROUTES ----------------------
+(def app-routes
+  #{["/ping" :get [auth/auth-interceptor ping/ping-handler] :route-name :ping]
+    ["/login" :post [util/parse-body-interceptor db/db-interceptor user/login-handler] :route-name :login]})
+
+(def diagnostic-routes
+  #{["/diagnostics/db-connection" :get [db/db-interceptor diagnostics/db-connection]]})
+
 (def routes
-  (route/expand-routes
-   #{["/ping" :get [auth/auth-interceptor ping/ping-handler] :route-name :ping]
-     ["/login" :post [util/parse-body-interceptor db/db-interceptor user/login-handler] :route-name :login]}))
+  (let [route-set (if (:debug-mode config)
+                    (clojure.set/union app-routes diagnostic-routes)
+                    app-routes)]
+    (route/expand-routes route-set))
+  )
 
 ; CONFIGURATION ---------------
 (def service-map

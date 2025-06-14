@@ -1,5 +1,7 @@
 (ns wsid.config)
 
+(def ^:dynamic *debug-enabled* false)
+
 ; CONFIG AND DEFAULTS ---------
 (def config {:default-timezone "America/Mexico_City"
              :time-format "yyyy-MM-dd HH:mm:ss z"
@@ -12,4 +14,6 @@
                        :password (or (System/getenv "DB_PASSWORD") "wsid_password")}
 
              :jwt-token-expiration-hours (or (System/getenv "JWT_EXPIRATION_HOURS") 24)
-             :jwt-secret (or (System/getenv "JWT_SECRET") "default-dev-secret")})
+             :jwt-secret (or (System/getenv "JWT_SECRET") "default-dev-secret")
+             
+             :debug-mode (or (System/getenv "DEBUG") *debug-enabled*)})
