@@ -1,6 +1,7 @@
 (ns wsid.db
   (:require
    [wsid.config :refer [config]]
+   [io.pedestal.log]
    [next.jdbc :as jdbc]))
 
 (def db-interceptor
@@ -10,14 +11,14 @@
    :enter (fn [context]
             (try
               (when (:db-connection context)
-                (println "Error initializing database connection: db-connection already present in context.")
+                (io.pedestal.log/error :msg "Error initializing database connection: db-connection already present in context.")
                 (throw (Exception. "Database error")))
 
               (let [connection (jdbc/get-connection (:db-spec config))]
                 (assoc context :db-connection connection))
 
               (catch Exception e
-                (println "Database error: " (.getMessage e))
+                (io.pedestal.log/error :msg "Error opening a db connection." :error (.getMessage e))
                 (assoc context :response {:status 500
                                           :body "Database error"}))))
    :exit (fn [context]
