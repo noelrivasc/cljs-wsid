@@ -2,11 +2,45 @@
  :deps  {io.pedestal/pedestal.jetty {:mvn/version "0.7.2"}
          org.slf4j/slf4j-simple     {:mvn/version "2.0.10"}
          io.pedestal/pedestal.aws {:mvn/version "0.5.9"}
+         org.postgresql/postgresql {:mvn/version "42.7.1"}
+         com.github.seancorfield/next.jdbc {:mvn/version "1.3.909"}
+         buddy/buddy-hashers {:mvn/version "2.0.167"}
+         buddy/buddy-sign {:mvn/version "3.5.351"}
+         cheshire/cheshire {:mvn/version "6.0.0"}
          }
  
- ;; Build configuration for creating deployable uberjar
- :aliases {:uberjar {:replace-deps {com.github.seancorfield/depstar {:mvn/version "2.1.303"}}
+ :aliases {; REPL SERVERS
+           ; clj -M:jack-in
+           ; Allow Calva to "jack-in" (start its own REPL server and connect to it)
+           :jack-in {:extra-deps {nrepl/nrepl {:mvn/version "1.0.0"}
+                                  cider/cider-nrepl {:mvn/version "0.31.0"}}}
+           
+           ; clj -M:nrepl
+           ; Start an nREPL server - then connect from Calva or other CLI
+           :nrepl {:extra-deps {nrepl/nrepl {:mvn/version "1.0.0"}
+                                cider/cider-nrepl {:mvn/version "0.31.0"}}
+                   :main-opts ["-m" "nrepl.cmdline" "--middleware" "[cider.nrepl/cider-middleware]"]}
+
+           ; REPL CLIENTS
+           ; nRebel connected to nREPL
+           ; clojure -T:nrebel :port `cat .nrepl-port`
+           :nrebel {:extra-deps {com.bhauman/rebel-readline-nrepl {:mvn/version "0.1.5"}}
+                    :exec-fn rebel-readline.nrepl/connect
+                    :exec-args {:background-print false} ;; Optional configuration parameters
+                    :main-opts ["-m" "rebel-readline.nrepl.main"]}
+           
+           ; nREPL CLI
+           ; clj -M:nrepl-client --port `cat .nrepl-port`
+           :nrepl-client {:extra-deps {nrepl/nrepl {:mvn/version "1.0.0"}}
+                          :main-opts ["-m" "nrepl.cmdline" "--connect" "--host" "localhost"]}
+
+           ; BUILD TOOLS
+           ; Create an uberjar - a jar with all of the dependencies
+           ; clojure -X:uberjar
+           :uberjar {:replace-deps {com.github.seancorfield/depstar {:mvn/version "2.1.303"}}
                      :exec-fn hf.depstar/uberjar
                      :exec-args {:aot true
-                                :jar "target/wsid-lambda.jar"
-                                :main-class "wsid"}}}}
+                                 :jar "target/wsid-lambda.jar"
+                                 :main-class "wsid.core"}}}}
+
+; clj -Sdeps '{:deps {nrepl/nrepl {:mvn/version "1.0.0"}}}' -M -m nrepl.cmdline --connect --host localhost --port `cat .nrepl-port`

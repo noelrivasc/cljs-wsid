@@ -1,0 +1,19 @@
+meta {
+  name: Ping
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{protocol}}://{{server_url}}/ping?timezone=America/Mexico_City
+  body: none
+  auth: inherit
+}
+
+params:query {
+  timezone: America/Mexico_City
+}
+
+headers {
+  ~Authorization: Bearer (token)
+}
