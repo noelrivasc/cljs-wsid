@@ -143,6 +143,27 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /diagnostics/db-connection:
+    get:
+      summary: Confirm ability to connect to the database
+      description: Returns either a confirmation string, or an error
+      tags:
+        - Health
+      responses:
+        '200':
+          description: Current time and user information
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "db-connection"
+        '500':
+          description: Database error
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Database error"
 
 tags:
   - name: Authentication
