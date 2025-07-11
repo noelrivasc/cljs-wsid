@@ -27,12 +27,35 @@ A Clojure-based backend for WSID built with Pedestal and deployed on AWS Lambda.
    clj -P
    ```
 
-4. **Start the development server:**
+4. **Start a development server:**
+
+Option 1: run the main function (no REPL). Use this when focusing on the frontend.
+
    ```bash
-   clj -M -m wsid
+   clj -M -m wsid.core
+   ```
+The server will start on `http://localhost:8890`
+   
+Option 2: nREPL with optional debug mode
+
+   ```bash
+   # Pass any other env variables if needed, or omit DEBUG
+   DEBUG=TRUE clj -M:nrepl
    ```
 
-The server will start on `http://localhost:8890`
+5. Connect to the REPL
+
+clojure -T:nrebel :port `cat .nrepl-port`
+
+6. Start server from REPL
+
+    ```clojure
+    (require 'dev.repl)
+    (dev.repl/start-dev)
+    ; RELOAD all the wsid.* namespaces and restart the server
+    (dev.repl/reboot)
+    ```
+
 
 ### Test User
 - Email: `test@example.com`
