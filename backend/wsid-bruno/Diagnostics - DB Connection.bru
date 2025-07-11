@@ -1,0 +1,11 @@
+meta {
+  name: Diagnostics - DB Connection
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{protocol}}://{{server_url}}/diagnostics/db-connection
+  body: none
+  auth: inherit
+}
