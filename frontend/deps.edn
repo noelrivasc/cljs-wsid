@@ -1,0 +1,18 @@
+{:paths ["src"]
+ 
+ :aliases {
+           ; REPL CLIENTS
+           ; nRebel connected to nREPL
+           ; clojure -T:nrebel :port `cat .nrepl-port`
+           :nrebel {:extra-deps {com.bhauman/rebel-readline-nrepl {:mvn/version "0.1.5"}}
+                    :exec-fn rebel-readline.nrepl/connect
+                    :exec-args {:background-print false} ;; Optional configuration parameters
+                    :main-opts ["-m" "rebel-readline.nrepl.main"]}
+           
+           ; nREPL CLI
+           ; clj -M:nrepl-client --port `cat .nrepl-port`
+           :nrepl-client {:extra-deps {nrepl/nrepl {:mvn/version "1.0.0"}}
+                          :main-opts ["-m" "nrepl.cmdline" "--connect" "--host" "localhost"]}
+           }}
+
+; clj -Sdeps '{:deps {nrepl/nrepl {:mvn/version "1.0.0"}}}' -M -m nrepl.cmdline --connect --host localhost --port `cat .nrepl-port`
