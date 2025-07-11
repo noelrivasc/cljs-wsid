@@ -24,10 +24,11 @@
 
 (def routes
   (let [route-set (if (:debug-mode config)
-                    (clojure.set/union app-routes diagnostic-routes)
+                    (do (println "DEBUG MODE ENABLED")
+                        (clojure.set/union app-routes diagnostic-routes))
                     app-routes)]
-    (route/expand-routes route-set))
-  )
+    (route/expand-routes route-set)))
+  
 
 ; CONFIGURATION ---------------
 (def service-map

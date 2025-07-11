@@ -13,6 +13,10 @@
               (when (:db-connection context)
                 (io.pedestal.log/error :msg "Error initializing database connection: db-connection already present in context.")
                 (throw (Exception. "Database error")))
+              
+              (when (:debug-mode config)
+                (io.pedestal.log/info :msg "Attempting to open connection with the configuration:"
+                                      :db-spec (dissoc (:db-spec config) :password)))
 
               (let [connection (jdbc/get-connection (:db-spec config))]
                 (assoc context :db-connection connection))
