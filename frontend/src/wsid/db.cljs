@@ -32,6 +32,7 @@
                           :opt-un [:scenario/id :scenario/description]))
 
 ; -- TRANSIENT ----------------------
+(s/def :transient/db-is-dirty (s/or :empty nil :bool boolean?))
 (s/def :transient/factor-edit-defaults nil-or-map)
 (s/def :transient/factor-active nil-or-map)
 (s/def :transient/factor-active-validation map?)
@@ -41,7 +42,8 @@
 
 ; -- APP DB -------------------------
 (s/def :app-db/transient
-  (s/keys :req-un [:transient/factor-edit-defaults
+  (s/keys :req-un [:transient/db-is-dirty
+                   :transient/factor-edit-defaults
                    :transient/factor-active
                    :transient/factor-active-validation
                    :transient/scenario-edit-defaults

@@ -13,10 +13,11 @@
    [wsid.events.local-storage :as local-storage]
    #_{:clj-kondo/ignore [:unused-namespace]}
    [wsid.events.decisions :as decisions]
+   [wsid.events.util :as util]
 
    [clojure.spec.alpha :as s]))
 
-(def evt> re-frame/dispatch)
+(def evt> util/evt>)
 
 (defn validate-decision [^str stored]
   (let [parsed (edn/read-string stored)
@@ -41,11 +42,23 @@
                 (assoc :scenario-factor-values (:scenario-factor-values stored-decision)))}
        {:db db/default-db}))))
 
-(re-frame/reg-event-db
-  :app/load-decision
-  (fn [db [_ decision]]
-    (-> db
-        (assoc :factors (:factors decision))
-        (assoc :scenarios (:scenarios decision))
-        (assoc :scenario-factor-values (:scenario-factor-values decision)))))
+#_(re-frame/reg-event-db
+    :app/load-decision
+    (fn [db [_ decision]]
+      (-> db
+          (assoc :title (:title decision))
+          (assoc :description (:description decision))
+          (assoc :factors (:factors decision))
+          (assoc :scenarios (:scenarios decision))
+          (assoc :scenario-factor-values (:scenario-factor-values decision)))))
 
+(re-frame/reg-event-fx
+ :app/compare-db-localstorage
+ [(inject-cofx :local-storage/load)]
+ (fn [{db :db local-storage :local-storage/load} _]
+   (let [stored-decision (validate-decision local-storage)
+         db-decision (dissoc db :transient)
+         is-dirty (not (= db-decision stored-decision))]
+     (println "We did a thorough review and found the database to be "
+              (if is-dirty "dirty" "not dirty"))
+     {:db (assoc-in db [:transient :db-is-dirty] is-dirty)})))

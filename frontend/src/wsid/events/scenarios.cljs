@@ -5,6 +5,7 @@
    [wsid.events.factors]
    ; [day8.re-frame.tracing :refer-macros [fn-traced]] ; TODO reimplement the fn-traced and figure out what it does and how to fix the macro errors in the editor
 
+   [wsid.events.util :refer [evt>]]
    [clojure.spec.alpha :as s]))
 
 (re-frame/reg-event-db
@@ -18,9 +19,9 @@
         :title ""
         :description ""}
        (get-in db active-scenario-path))]
-     (-> db
-         (assoc-in [:transient :scenario-edit-defaults] active-scenario)
-         (assoc-in [:transient :scenario-active] active-scenario)))))
+    (-> db
+        (assoc-in [:transient :scenario-edit-defaults] active-scenario)
+        (assoc-in [:transient :scenario-active] active-scenario)))))
 
 (re-frame/reg-event-db
  :scenario-edit
@@ -83,7 +84,7 @@
          scenarios (conj other-scenarios
                          scenario-prepared)]
      (when is-new
-       (re-frame.core/dispatch [:scenario-factor-values-initialize-scenario scenario-id]))
+       (evt> [:scenario-factor-values-initialize-scenario scenario-id]))
      (-> db
          (assoc-in [:scenarios] scenarios)
          (assoc-in [:transient :scenario-edit-defaults] nil)

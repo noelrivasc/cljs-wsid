@@ -2,6 +2,7 @@
   (:require
    [re-frame.core :as re-frame]
    [wsid.db :as db]
+   [wsid.events.util :refer [evt>]]
    ; [day8.re-frame.tracing :refer-macros [fn-traced]] ; TODO reimplement the fn-traced and figure out what it does and how to fix the macro errors in the editor
    
    [clojure.spec.alpha :as s]))
@@ -18,8 +19,8 @@
        :id ""
        :title ""
        :description ""
-       :weight 5
-       }
+       :weight 5}
+       
       (get-in db [:transient :factor-active]))]
     (-> db
         (assoc-in [:transient :factor-edit-defaults] active-factor)
@@ -64,10 +65,10 @@
                     (assoc-in [:transient :factor-edit-defaults] nil)
                     (assoc-in [:transient :factor-active] nil))]
      (when is-new
-       (re-frame.core/dispatch [:scenario-factor-values-initialize-factor (:id factor-prepared)]))
+       (evt> [:scenario-factor-values-initialize-factor (:id factor-prepared)]))
      
-     new-db)
-   ))
+     new-db)))
+   
 
 (re-frame/reg-event-db
  :factor-active-delete
@@ -78,7 +79,7 @@
                     (assoc :factors factors)
                     (assoc-in [:transient :factor-edit-defaults] nil)
                     (assoc-in [:transient :factor-active] nil))]
-     (re-frame.core/dispatch [:scenario-factor-values-prune (:id factor-active)])
+     (evt> [:scenario-factor-values-prune (:id factor-active)])
      new-db)))
 
 (re-frame/reg-event-db
