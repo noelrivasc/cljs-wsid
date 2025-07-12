@@ -30,11 +30,13 @@
    [:div.panel
     [:div.panel__header
      [:h2.panel__title "About this decision"]
-     [:button.panel__add-button
-      {:type "button"
-       :value "add"
-       :on-click #(evt> [:factor-create])}
-      [:span.icon
-       (i/get-icon i/square-plus)]]]
+     #_[:button.panel__add-button
+        {:type "button"
+         :value "add"
+         :class ["flex" "items-center"]
+         :on-click #(evt> [:factor-create])}
+        "Dictate "
+        [:span.icon
+         (i/get-icon i/microphone)]]]
     [:div.panel__list [v-decision-form]]]])
          
