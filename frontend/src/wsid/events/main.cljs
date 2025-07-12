@@ -34,6 +34,8 @@
    (let [stored-decision (validate-decision local-storage)]
      (if stored-decision
        {:db (-> db
+                (assoc :title (:title stored-decision))
+                (assoc :description (:description stored-decision))
                 (assoc :factors (:factors stored-decision))
                 (assoc :scenarios (:scenarios stored-decision))
                 (assoc :scenario-factor-values (:scenario-factor-values stored-decision)))}

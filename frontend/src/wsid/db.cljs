@@ -86,8 +86,8 @@
                :scenario-active nil
                :scenario-active-validation {:is-valid nil}}
 
-   :title ''
-   :description ''
+   :title ""
+   :description ""
    :factors []
    :scenarios []
    :scenario-factor-values {}})
