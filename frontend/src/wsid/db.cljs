@@ -8,6 +8,7 @@
 (def id (s/or :empty (s/and string? #(= 0 (count %)))
               :uuid (s/and string? #(= 36 (count %)))))
 
+
 ; -- FACTORS ------------------------
 (s/def :factor/id id)
 (s/def :factor/weight (s/and int? #(<= 0 % 10)))
@@ -58,9 +59,15 @@
                                  :app-db/scenarios
                                  :app-db/scenario-factor-values]))
 
-(s/def ::decision (s/keys :req-un [:app-db/factors
-                                          :app-db/scenarios
-                                          :app-db/scenario-factor-values]))
+; -- DECISION METADATA --------------
+(s/def :decision/title (s/and string? #(<= 1 (count %) 50)))
+(s/def :decision/description (s/and string? #(<= (count %) 5000)))
+
+(s/def ::decision (s/keys :req-un [:decision/title
+                                   :decision/description
+                                   :app-db/factors
+                                   :app-db/scenarios
+                                   :app-db/scenario-factor-values]))
 
 (def default-db
   {; Information that is used for procedures but that is
@@ -78,6 +85,9 @@
                :scenario-edit-defaults nil
                :scenario-active nil
                :scenario-active-validation {:is-valid nil}}
+
+   :title ""
+   :description ""
    :factors []
    :scenarios []
    :scenario-factor-values {}})

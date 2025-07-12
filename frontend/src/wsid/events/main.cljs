@@ -11,6 +11,8 @@
    [wsid.events.scenarios :as scenarios]
    #_{:clj-kondo/ignore [:unused-namespace]}
    [wsid.events.local-storage :as local-storage]
+   #_{:clj-kondo/ignore [:unused-namespace]}
+   [wsid.events.decisions :as decisions]
 
    [clojure.spec.alpha :as s]))
 
@@ -32,7 +34,18 @@
    (let [stored-decision (validate-decision local-storage)]
      (if stored-decision
        {:db (-> db
+                (assoc :title (:title stored-decision))
+                (assoc :description (:description stored-decision))
                 (assoc :factors (:factors stored-decision))
                 (assoc :scenarios (:scenarios stored-decision))
                 (assoc :scenario-factor-values (:scenario-factor-values stored-decision)))}
        {:db db/default-db}))))
+
+(re-frame/reg-event-db
+  :app/load-decision
+  (fn [db [_ decision]]
+    (-> db
+        (assoc :factors (:factors decision))
+        (assoc :scenarios (:scenarios decision))
+        (assoc :scenario-factor-values (:scenario-factor-values decision)))))
+
