@@ -13,7 +13,7 @@
 
         ; DEBOUNCING
         live-values (r/atom default-values)
-        commit-values #(evt> [:decision-metadata-update @live-values])
+        commit-values #(evt> ^:ls-compare [:decision-metadata-update @live-values])
         debounce-timeout-id (r/atom nil)
         debounce-time-ms 250
         set-debounce-timeout (fn []

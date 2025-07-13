@@ -1,6 +1,6 @@
 (ns wsid.views.scenarios
-  (:require 
-    [wsid.events.main :refer [evt>]]
+  (:require
+   [wsid.events.main :refer [evt>]]
    [wsid.subs.main :as subs :refer [<sub]]
    [wsid.views.icons :as i]
    [reagent.core :as r]))
@@ -36,7 +36,7 @@
 
         ; Each time live-values change, the debounce timeout is reset.
         ; The commit only goes out as an evt when the timeout expires.
-        commit-values #(evt> [:scenario-factor-values-update scenario-id @live-values])
+        commit-values #(evt> ^:ls-compare [:scenario-factor-values-update scenario-id @live-values])
         debounce-timeout-id (r/atom nil)
         debounce-time-ms 250
         set-debounce-timeout (fn []
@@ -123,7 +123,7 @@
         [:input.button.button--danger
          {:type "button"
           :value "delete"
-          :on-click #(evt> [:scenario-active-delete])}]
+          :on-click #(evt> ^:ls-compare [:scenario-active-delete])}]
         nil)
       [:input.button
        {:type "button"
@@ -133,5 +133,5 @@
       [:input.button.button--primary
        (conj {:type "button"
               :value "save"
-              :on-click #(evt> [:scenario-active-save])}
+              :on-click #(evt> ^:ls-compare [:scenario-active-save])}
              (when-not scenario-valid? {:disabled true}))]]]))

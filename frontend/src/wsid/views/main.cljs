@@ -5,6 +5,7 @@
    [wsid.views.factors :refer [v-factors-panel v-factor-form]]
    [wsid.views.scenarios :refer [v-scenarios-panel v-scenario-form]]
    [wsid.views.decisions :refer [v-decision-panel]]
+   [wsid.views.icons :as i]
    ["react-transition-group" :as rtg]))
 
 (defn v-modal-dialog [render? content-fn title]
@@ -20,27 +21,33 @@
       [:div.modal-container__main [content-fn]]]]]])
 
 (defn v-main-panel []
-  [:main.main-container
-   [:div.title__wrapper
-    [:span.title__acronym "w.s.i.d"]
-    [:h1.title "What Should I Do?"]]
+  (let [db-is-dirty (<sub [:db-is-dirty])]
+    [:main.main-container
+     [:div.title__wrapper
+      [:span.title__acronym "w.s.i.d"]
+      [:h1.title "What Should I Do?"]]
 
-   [:div.work-area
-    [:div.work-area__file-tools
-     [:input.button {:type "button"
-                     :value "Save to Browser"
-                     :on-click #(evt> [:save-to-local-storage])}]]
+     [:div.work-area
+      [:div.work-area__file-tools
+       [:div.work-are__save-to-browser
+        [:input.button 
+               {:type "button"
+                      :value "Save to Browser"
+                      :on-click #(evt> [:save-to-local-storage])}]
+        (when db-is-dirty 
+          [:span.icon
+            (i/get-icon i/edit)])]]
+        
+      [:div.tool-container.tool-container--decision
+       [v-decision-panel]]
+      
 
-    [:div.tool-container.tool-container--decision
-     [v-decision-panel]]
+      ; SECTIONS
+      [:div.tool-container.tool-container--factors
+       [v-factors-panel]]
+      [:div.tool-container.tool-container--scenarios
+       [v-scenarios-panel]]]]))
     
-
-    ; SECTIONS
-    [:div.tool-container.tool-container--factors
-     [v-factors-panel]]
-    [:div.tool-container.tool-container--scenarios
-     [v-scenarios-panel]]]])
-
 (defn v-main []
   (let [f-active (<sub [:factor-active-is-set])
         s-active (<sub [:scenario-active-is-set])]

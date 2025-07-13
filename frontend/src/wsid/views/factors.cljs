@@ -1,32 +1,32 @@
 (ns wsid.views.factors
-  (:require 
+  (:require
    [wsid.views.icons :as i]
    [wsid.subs.main :as subs :refer [<sub]]
    [wsid.events.main :refer [evt>]]))
 
 ; TODO use for result visualization or remove
 #_(defn v-factor-range [minimum maximum width height]
-  (let [negative-width (* (/ minimum 10) (/ width 2) -1)
-        positive-width (* (/ maximum 10) (/ width 2))
-        centerline-position (/ width 2)]
-    [:div.factor-range
-     {:style {:width (str width "px")
-              :height (str height "px")
-              :box-sizing "content-box"}}
-     [:div.factor-range__center-line
-      {:style {:position "absolute"
-               :left (str centerline-position "px")
-               :height (str height "px")}}]
-     [:div.factor-range__negative-bar
-      {:style {:position "absolute"
-               :left (str (+ (* -1 negative-width) centerline-position) "px")
-               :height (str height "px")
-               :width (str negative-width "px") }}]
-     [:div.factor-range__positive-bar
-      {:style {:position "absolute"
-               :left (str (+ 1 centerline-position) "px")
-               :height (str height "px")
-               :width (str positive-width "px") }}]]))
+    (let [negative-width (* (/ minimum 10) (/ width 2) -1)
+          positive-width (* (/ maximum 10) (/ width 2))
+          centerline-position (/ width 2)]
+      [:div.factor-range
+       {:style {:width (str width "px")
+                :height (str height "px")
+                :box-sizing "content-box"}}
+       [:div.factor-range__center-line
+        {:style {:position "absolute"
+                 :left (str centerline-position "px")
+                 :height (str height "px")}}]
+       [:div.factor-range__negative-bar
+        {:style {:position "absolute"
+                 :left (str (+ (* -1 negative-width) centerline-position) "px")
+                 :height (str height "px")
+                 :width (str negative-width "px")}}]
+       [:div.factor-range__positive-bar
+        {:style {:position "absolute"
+                 :left (str (+ 1 centerline-position) "px")
+                 :height (str height "px")
+                 :width (str positive-width "px")}}]]))
 
 (defn v-factor-card [factor]
   [:div.card.card--factor
@@ -40,7 +40,6 @@
       :value "edit"}
      [:span.icon
       (i/get-icon i/edit)]]]])
-
 
 (defn v-factors-panel []
   (let [factors (<sub [:factors-sorted])] ; OPTIMIZE: subscribe to list of factor ids rather than factors
@@ -102,7 +101,7 @@
          [:input.button.button--danger
           {:type "button"
            :value "delete"
-           :on-click #(evt> [:factor-active-delete])}]
+           :on-click #(evt> ^:ls-compare [:factor-active-delete])}]
          nil)
        [:input.button
         {:type "button"
@@ -112,5 +111,5 @@
        [:input.button.button--primary
         (conj {:type "button"
                :value "save"
-               :on-click #(evt> [:factor-active-save])}
+               :on-click #(evt> ^:ls-compare [:factor-active-save])}
               (when-not factor-valid? {:disabled true}))]]]]))
