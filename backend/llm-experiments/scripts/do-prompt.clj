@@ -15,7 +15,8 @@
  '[java.time.format DateTimeFormatter])
 
 ; See https://book.babashka.org/#_parsing_command_line_arguments
-(def opts-schema {:prompt-options {:default {}}
+(def opts-schema {:provider {:default "deepinfra"}
+                  :prompt-options {:default {}}
                   :output-base-dir {:default "output"}})
 (def opts-required [:prompt-path :provider :model])
 (def opts (cli/parse-opts *command-line-args* {:spec opts-schema
@@ -71,19 +72,5 @@
 
 (io/make-parents (str output-dir "/prompt")) ; create the output directory
 (spit (str output-dir "/prompt") prompt)
-(spit (str output-dir "/response.json") response)
+(spit (str output-dir "/response") (:body response))
 
-; (def parsed-response (json/parse-string (:body response) true))
-; (def message-content (-> parsed-response :choices first :message :content))
-; 
-; (println message-content)
-; 
-; (try
-;   (def edn-data (edn/read-string message-content))
-;   (println "\n")
-;   (println "\n")
-;   (println "- DECODED --------------------------------------")
-;   (println "\n")
-;   (println edn-data)
-;   (catch Exception e
-;     (println "Invalid edn produced by the llm")))
