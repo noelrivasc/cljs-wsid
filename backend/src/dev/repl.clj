@@ -3,7 +3,6 @@
    [io.pedestal.http :as http]
    [wsid.core]))
 
-
 ;; For interactive development
 (defonce server (atom nil))
 
@@ -21,15 +20,16 @@
   (http/stop @server)
   ::stop-dev-server)
 
-(defn restart []
-  (stop-dev)
-  (start-dev)
-  ::restart-dev-server)
-
 ; Find all the namespaces that start with wsid
 (defn wsid-ns [] (filter #(re-find #"^wsid" (str %)) (all-ns)))
 ; Reload all the wsid namespaces
 (defn reboot [] (apply require (conj (map #(symbol (str %)) (wsid-ns)) :reload)))
+
+(defn restart-dev []
+  (reboot)
+  (stop-dev)
+  (start-dev)
+  ::restart-dev-server)
 
 ; Reboot with debugging enabled
 ; Debugging will stay enabled in config
