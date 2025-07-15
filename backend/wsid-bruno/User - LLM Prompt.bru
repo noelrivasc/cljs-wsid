@@ -1,0 +1,23 @@
+meta {
+  name: User - LLM Prompt
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{protocol}}://{{server_url}}/llm-prompt
+  body: json
+  auth: inherit
+}
+
+headers {
+  ~Accept: application/edn
+}
+
+body:json {
+  {
+    "prompt": "Tell me a joke",
+    "model": "deepseek-ai/DeepSeek-R1-0528",
+    "provider": "deepinfra"
+  }
+}

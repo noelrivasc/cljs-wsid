@@ -10,6 +10,7 @@
    [wsid.handlers.ping :as ping]
    [wsid.handlers.diagnostics :as diagnostics]
    [wsid.handlers.user :as user]
+   [wsid.handlers.llm :as llm]
    [wsid.db :as db])
   (:import
    [com.amazonaws.services.lambda.runtime Context]))
@@ -24,7 +25,12 @@
                      util/coerce-body-interceptor
                      util/content-negotiation-interceptor
                      db/db-interceptor
-                     user/login-handler] :route-name :login]})
+                     user/login-handler] :route-name :login]
+    ["/llm-prompt" :post [util/parse-body-interceptor
+                          util/coerce-body-interceptor
+                          util/content-negotiation-interceptor
+                          db/db-interceptor
+                          llm/llm-prompt-handler] :route-name :llm-prompt]})
 
 (def diagnostic-routes
   #{["/diagnostics/db-connection" :get [db/db-interceptor diagnostics/db-connection]]})
