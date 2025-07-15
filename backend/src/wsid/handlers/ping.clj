@@ -18,5 +18,5 @@
         format (get-in request [:query-params :format] (:time-format config))
         time (formatted-time-in-timezone timezone format)
         user (:user request)
-        body (str "It's " time " for user " (:email user))]
+        body {:time (str "It's " time " for user " (:email user))}]
     (ok body)))

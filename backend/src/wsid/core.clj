@@ -16,8 +16,15 @@
 
 ; ROUTES ----------------------
 (def app-routes
-  #{["/ping" :get [auth/auth-interceptor ping/ping-handler] :route-name :ping]
-    ["/login" :post [util/parse-body-interceptor db/db-interceptor user/login-handler] :route-name :login]})
+  #{["/ping" :get [util/coerce-body-interceptor
+                   util/content-negotiation-interceptor
+                   auth/auth-interceptor
+                   ping/ping-handler] :route-name :ping]
+    ["/login" :post [util/parse-body-interceptor
+                     util/coerce-body-interceptor
+                     util/content-negotiation-interceptor
+                     db/db-interceptor
+                     user/login-handler] :route-name :login]})
 
 (def diagnostic-routes
   #{["/diagnostics/db-connection" :get [db/db-interceptor diagnostics/db-connection]]})
@@ -28,7 +35,6 @@
                         (clojure.set/union app-routes diagnostic-routes))
                     app-routes)]
     (route/expand-routes route-set)))
-  
 
 ; CONFIGURATION ---------------
 (def service-map
@@ -64,7 +70,7 @@
  :name "wsid"
 
  ; The handler method _must_ be static; otherwise it seems to be ignored, the class called with 3 args (stream input and output)
- :methods [^:static [handler [Object com.amazonaws.services.lambda.runtime.Context] Object]]) 
+ :methods [^:static [handler [Object com.amazonaws.services.lambda.runtime.Context] Object]])
 
 (defn -handler [^Object req ^Context ctx]
   (lambda-service-fn req ctx))
