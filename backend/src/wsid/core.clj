@@ -11,6 +11,7 @@
    [wsid.handlers.diagnostics :as diagnostics]
    [wsid.handlers.user :as user]
    [wsid.handlers.llm :as llm]
+   [wsid.handlers.example-handlers :as examples]
    [wsid.db :as db])
   (:import
    [com.amazonaws.services.lambda.runtime Context]))
@@ -21,6 +22,7 @@
                    util/content-negotiation-interceptor
                    auth/auth-interceptor
                    ping/ping-handler] :route-name :ping]
+    ["/test-exception" :post [examples/error-example-handler] :route-name :test-exception]
     ["/login" :post [util/parse-body-interceptor
                      util/coerce-body-interceptor
                      util/content-negotiation-interceptor
@@ -29,7 +31,7 @@
     ["/llm-prompt" :post [util/parse-body-interceptor
                           util/coerce-body-interceptor
                           util/content-negotiation-interceptor
-                          db/db-interceptor
+                          auth/auth-interceptor
                           llm/llm-prompt-handler] :route-name :llm-prompt]})
 
 (def diagnostic-routes
