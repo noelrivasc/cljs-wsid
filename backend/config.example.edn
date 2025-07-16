@@ -1,0 +1,15 @@
+; Example configuration used mostly for local
+; development. Save as config.local.edn
+; Individual values can be omitted to use the
+; hardcoded defaults
+{:default-timezone "America/New_York"
+ :time-format "dd/MM/yyyy HH:mm:ss z"
+ :db-host "prod-db.example.com"
+ :db-port 5433
+ :db-name "production_wsid"
+ :db-user "prod_user"
+ :db-password "secure-prod-password"
+ :jwt-expiration-hours 12
+ :jwt-secret "production-jwt-secret-key"
+ :api-token-deepinfra "prod-deepinfra-token"
+ :debug-mode false}
