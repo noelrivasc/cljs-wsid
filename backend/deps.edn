@@ -7,7 +7,8 @@
          buddy/buddy-hashers {:mvn/version "2.0.167"}
          buddy/buddy-sign {:mvn/version "3.5.351"}
          cheshire/cheshire {:mvn/version "6.0.0"}
-         clj-http/clj-http {:mvn/version "3.13.1"}}
+         clj-http/clj-http {:mvn/version "3.13.1"}
+         org.clojure/spec.alpha {:mvn/version "0.4.233"}}
 
  :aliases {; REPL SERVERS
            ; clj -M:jack-in
