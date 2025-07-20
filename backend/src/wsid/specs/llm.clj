@@ -12,7 +12,7 @@
 ;; LLM user input specs
 (s/def :llm.input/prompt (s/and string? (complement empty?)))
 (s/def :llm.input/prompt-template (s/and string? (complement empty?)))
-(s/def :llm.input/prompt-parameters (s/nilable map?))
+(s/def :llm.input/prompt-parameters (s/nilable (s/map-of keyword? string?)))
 (s/def :llm.input/model-name (s/and string? (complement empty?)))
 (s/def :llm.input/provider-name (s/and string? (complement empty?)))
 (s/def :llm.input/model-config :llm.model/config)
