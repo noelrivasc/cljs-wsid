@@ -1,11 +1,12 @@
 (ns wsid.handlers.llm
   (:require
    [wsid.util :refer [ok response]]
-   [clojure.string :as string]
    [cheshire.core :as json]
    [wsid.config :refer [config]]
    [clj-http.client :as http]
    [clojure.spec.alpha :as s]
+   [clojure.string :as string]
+   [clojure.java.io :as io]
    [wsid.specs.llm]))
 
 (def providers
@@ -18,6 +19,20 @@
   {"mistralai/Mistral-Small-3.2-24B-Instruct-2506"
    {:process-fn (fn mistal [r] r)}}) ; TODO - meaningful process of the responses
 
+(defn get-prompt-template
+  "Gets the contents of a template that matches the given keyword, if the
+   template exists. Throws an error otherwise."
+  [template-id]
+  (slurp (io/resource (str "wsid/prompt-templates/" (name template-id)))))
+
+(defn substitute-template
+  "Takes a template string with %%key%% placeholders and a map of parameters.
+   Returns the template with all placeholders replaced by their corresponding values."
+  [template params]
+  (reduce (fn [text [key value]]
+            (clojure.string/replace text (str "%%" (name key) "%%") (str value)))
+          template
+          params))
 
 #_(def large-prompt (slurp "llm-experiments/prompts/wsid-job-edn-output"))
 
@@ -35,7 +50,9 @@
   (let [request-body (:request-body request)
         prompt (:prompt request-body)
         prompt-template (:prompt-template request-body)
-        prompt-parameters (:prompt-parameters request-body)
+        ; Ensure keywords for prompt parameters; useful for JSON input
+        prompt-parameters (when-let [pp (:prompt-parameters request-body)]
+                            (into {} (map (fn [[k v]] [(keyword k) v]) pp)))
         provider-name (:provider request-body)
         provider-keyword (keyword provider-name)
         provider-config (provider-keyword providers)
@@ -60,11 +77,15 @@
   Since params are already validated, this function trusts all input is valid."
   [params]
   (let [model-name (:model-name params)
-        prompt (or (:prompt params) (:prompt-template params))
+        prompt (if (:prompt params)
+                 (:prompt params)
+                 (let [t (get-prompt-template (:prompt-template params))
+                       p (:prompt-parameters params)]
+                   (substitute-template t p)))
         llm-request-body {:model model-name
                           :messages [{:role "user" :content prompt}]}]
     
-    ;; Validate final structure with spec (defensive programming)
+    ;; Validate final structure with spec
     (when-not (s/valid? :llm.api/request-body llm-request-body)
       (throw (Exception. (str "Invalid LLM request body: " 
                               (s/explain-str :llm.api/request-body llm-request-body)))))
