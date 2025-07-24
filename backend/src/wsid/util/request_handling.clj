@@ -1,4 +1,4 @@
-(ns wsid.util
+(ns wsid.util.request-handling
   "Provides utilities to parse http input and produce output.
    Includes functions for content negotiation."
   (:require

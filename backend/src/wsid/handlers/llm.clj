@@ -1,6 +1,6 @@
 (ns wsid.handlers.llm
   (:require
-   [wsid.util :refer [ok response]]
+   [wsid.util.request-handling :refer [ok response]]
    [cheshire.core :as json]
    [wsid.config :refer [config]]
    [clj-http.client :as http]
@@ -33,12 +33,6 @@
             (clojure.string/replace text (str "%%" (name key) "%%") (str value)))
           template
           params))
-
-#_(def large-prompt (slurp "llm-experiments/prompts/wsid-job-edn-output"))
-
-#_(defn get-message-content
-  "Get the message content from the JSON response from the DeepInfra API"
-  [r] (-> r :choices first :message :content))
 
 #_(defn remove-think [r] (string/replace r #"(?s)<think>.*</think>" ""))
 

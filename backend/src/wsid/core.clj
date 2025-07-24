@@ -5,7 +5,7 @@
    [wsid.lambda :as lambda]
    [io.pedestal.http.route :as route]
    [wsid.auth :as auth]
-   [wsid.util :as util]
+   [wsid.util.request-handling :as util]
    [wsid.config :refer [config]]
    [wsid.handlers.ping :as ping]
    [wsid.handlers.diagnostics :as diagnostics]

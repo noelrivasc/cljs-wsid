@@ -1,7 +1,7 @@
 (ns wsid.handlers.ping
   (:require
    [wsid.config :refer [config]]
-   [wsid.util :refer [ok]])
+   [wsid.util.request-handling :refer [ok]])
   (:import
    [java.time ZoneId ZonedDateTime]
    [java.time.format DateTimeFormatter]))
