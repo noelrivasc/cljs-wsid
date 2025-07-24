@@ -12,6 +12,7 @@
    [wsid.handlers.user :as user]
    [wsid.handlers.llm :as llm]
    [wsid.handlers.example-handlers :as examples]
+   [wsid.logging :as logging]
    [wsid.db :as db])
   (:import
    [com.amazonaws.services.lambda.runtime Context]))
@@ -23,7 +24,8 @@
                    auth/auth-interceptor
                    ping/ping-handler] :route-name :ping]
     ["/test-exception" :post [examples/error-example-handler] :route-name :test-exception]
-    ["/login" :post [util/parse-body-interceptor
+    ["/login" :post [logging/start-time-interceptor
+                     util/parse-body-interceptor
                      util/coerce-body-interceptor
                      util/content-negotiation-interceptor
                      db/db-interceptor
