@@ -104,13 +104,14 @@
   (let [extract-response-fn (get-in request-params [:provider-config :extract-response-fn])
         process-fn (get-in request-params [:model-config :process-fn])]
     (if (<= 200 (:status http-response) 299)
-    ;; Success case
-    (ok {:response (-> (:body http-response)
-                       extract-response-fn
-                       process-fn)})
-    ;; HTTP error case
-    (response 500 {:message (get-in http-response [:body :message] "HTTP request failed")
-                   :body (:body http-response)}))))
+      ;; Success case
+      (ok {:response (-> (:body http-response)
+                         extract-response-fn
+                         process-fn)})
+      ;; HTTP error case
+      (response 500 {:message (get-in http-response [:body :message] "HTTP request failed")
+                     :body (:body http-response)}))))
+
 (def llm-prompt-handler
   "Handle LLM requests."
   {:name :llm-prompt-handler
