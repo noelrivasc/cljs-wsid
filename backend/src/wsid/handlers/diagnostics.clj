@@ -4,11 +4,7 @@
    [clj-http.client :as http-client]
    [io.pedestal.log :as log]
    [io.pedestal.http :as http]
-   [wsid.config :refer [config]]
-   [wsid.logging :as logging :refer [debug-timing] :rename {debug-timing dt}])
-  (:import
-   [java.net InetAddress NetworkInterface SocketAddress]
-   [java.io IOException]))
+   [wsid.logging :as logging :refer [debug-timing] :rename {debug-timing dt}]))
 
 (def db-connection
   "Attempt to connect to the DB and produce logs useful to diagnose the connection."
@@ -21,8 +17,9 @@
             
             (http/respond-with context 200 "db-connection"))})
 
-(defn get-network-interfaces []
+(defn get-network-interfaces 
   "Get all network interfaces and their details"
+  []
   (try
     (let [interfaces (enumeration-seq (NetworkInterface/getNetworkInterfaces))]
       (map (fn [iface]
@@ -38,8 +35,9 @@
     (catch Exception e
       [{:error (.getMessage e)}])))
 
-(defn test-dns-resolution [hostname]
+(defn test-dns-resolution
   "Test DNS resolution for a hostname"
+  [hostname]
   (try
     (let [start-time (System/nanoTime)
           address (InetAddress/getByName hostname)
@@ -54,8 +52,9 @@
        :error (.getMessage e)
        :success false})))
 
-(defn test-http-connectivity [url timeout-ms]
+(defn test-http-connectivity
   "Test HTTP connectivity to a URL with detailed timing"
+  [url timeout-ms]
   (try
     (let [start-time (System/nanoTime)]
       (dt {:request-start-time (java.time.Instant/now)} "Starting HTTP test" :data {:url url :timeout timeout-ms})
@@ -78,8 +77,9 @@
        :error (.getMessage e)
        :success false})))
 
-(defn get-environment-info []
+(defn get-environment-info
   "Get relevant environment information for AWS Lambda"
+  []
   {:java-version (System/getProperty "java.version")
    :java-vendor (System/getProperty "java.vendor")
    :os-name (System/getProperty "os.name")
@@ -116,4 +116,4 @@
               (log/info :msg "AWS Network Diagnostics Results" :data diagnostics-data)
               
               (http/respond-with context 200 {:content-type "application/json"
-                                             :body (json/generate-string diagnostics-data {:pretty true})}))))}))
+                                             :body (json/generate-string diagnostics-data {:pretty true})})))})
