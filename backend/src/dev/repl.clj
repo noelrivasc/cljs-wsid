@@ -31,6 +31,11 @@
   (start-dev)
   ::restart-dev-server)
 
+(comment
+  (start-dev)
+  (stop-dev)
+  (restart-dev))
+
 ; Reboot with debugging enabled
 ; Debugging will stay enabled in config
 #_(binding [wsid.config/*debug-enabled* true] (reboot))
