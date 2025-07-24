@@ -106,11 +106,9 @@
                    :environment (get-environment-info)
                    :network-interfaces (get-network-interfaces)
                    :dns-tests [(test-dns-resolution "api.deepinfra.com")
-                              (test-dns-resolution "google.com")
-                              (test-dns-resolution "aws.amazon.com")]
-                   :connectivity-tests [(test-http-connectivity "https://httpbin.org/get" 1000)
-                                       (test-http-connectivity "https://api.deepinfra.com" 1000)
-                                       (test-http-connectivity "https://google.com" 1000)]}]
+                               (test-dns-resolution "google.com")
+                               (test-dns-resolution "aws.amazon.com")]
+                   :connectivity-tests [(test-http-connectivity "https://httpbin.org/get" 1000)]}]
               
               (dt context "Network diagnostics completed" :data {:test-count (+ (count (:dns-tests diagnostics-data))
                                                                                 (count (:connectivity-tests diagnostics-data)))})
