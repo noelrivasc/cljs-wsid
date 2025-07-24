@@ -2,9 +2,11 @@
   (:require
    [cheshire.core :as json]
    [clj-http.client :as http-client]
-   [io.pedestal.log :as log]
    [io.pedestal.http :as http]
-   [wsid.logging :as logging :refer [debug-timing] :rename {debug-timing dt}]))
+   [io.pedestal.log :as log]
+   [wsid.logging :as logging :refer [debug-timing] :rename {debug-timing dt}]) 
+  (:import
+   [java.net InetAddress NetworkInterface]))
 
 (def db-connection
   "Attempt to connect to the DB and produce logs useful to diagnose the connection."
