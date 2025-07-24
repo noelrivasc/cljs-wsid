@@ -9,6 +9,17 @@
 (s/def :llm.api/model (s/and string? (complement empty?)))
 (s/def :llm.api/request-body (s/keys :req-un [:llm.api/model :llm.api/messages]))
 
+;; LLM model configuration specs
+(s/def :llm.model/process-fn fn?)
+(s/def :llm.model/config
+  (s/keys :req-un [:llm.model/process-fn]))
+
+;; LLM provider configuration specs  
+(s/def :llm.provider/endpoint-url (s/and string? (complement empty?)))
+(s/def :llm.provider/extract-response-fn fn?)
+(s/def :llm.provider/config
+  (s/keys :req-un [:llm.provider/endpoint-url :llm.provider/extract-response-fn]))
+
 ;; LLM user input specs
 (s/def :llm.input/prompt (s/and string? (complement empty?)))
 (s/def :llm.input/prompt-template (s/and string? (complement empty?)))
@@ -17,17 +28,6 @@
 (s/def :llm.input/provider-name (s/and string? (complement empty?)))
 (s/def :llm.input/model-config :llm.model/config)
 (s/def :llm.input/provider-config :llm.provider/config)
-
-;; LLM provider configuration specs  
-(s/def :llm.provider/endpoint-url (s/and string? (complement empty?)))
-(s/def :llm.provider/extract-response-fn fn?)
-(s/def :llm.provider/config
-  (s/keys :req-un [:llm.provider/endpoint-url :llm.provider/extract-response-fn]))
-
-;; LLM model configuration specs
-(s/def :llm.model/process-fn fn?)
-(s/def :llm.model/config
-  (s/keys :req-un [:llm.model/process-fn]))
 
 ;; Either prompt or prompt-template must be present (mutually exclusive)
 (s/def :llm.params/prompt-or-template
