@@ -7,14 +7,15 @@
          buddy/buddy-hashers {:mvn/version "2.0.167"}
          buddy/buddy-sign {:mvn/version "3.5.351"}
          cheshire/cheshire {:mvn/version "6.0.0"}
-         }
- 
+         clj-http/clj-http {:mvn/version "3.13.1"}
+         org.clojure/spec.alpha {:mvn/version "0.4.233"}}
+
  :aliases {; REPL SERVERS
            ; clj -M:jack-in
            ; Allow Calva to "jack-in" (start its own REPL server and connect to it)
            :jack-in {:extra-deps {nrepl/nrepl {:mvn/version "1.0.0"}
                                   cider/cider-nrepl {:mvn/version "0.31.0"}}}
-           
+
            ; clj -M:nrepl
            ; Start an nREPL server - then connect from Calva or other CLI
            :nrepl {:extra-deps {nrepl/nrepl {:mvn/version "1.0.0"}
@@ -28,7 +29,7 @@
                     :exec-fn rebel-readline.nrepl/connect
                     :exec-args {:background-print false} ;; Optional configuration parameters
                     :main-opts ["-m" "rebel-readline.nrepl.main"]}
-           
+
            ; nREPL CLI
            ; clj -M:nrepl-client --port `cat .nrepl-port`
            :nrepl-client {:extra-deps {nrepl/nrepl {:mvn/version "1.0.0"}}
