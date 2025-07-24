@@ -1,13 +1,14 @@
 (ns wsid.handlers.llm
   (:require
-   [wsid.util.request-handling :refer [ok response]]
    [cheshire.core :as json]
-   [wsid.config :refer [config]]
    [clj-http.client :as http]
+   [clojure.java.io :as io]
    [clojure.spec.alpha :as s]
    [clojure.string :as string]
-   [clojure.java.io :as io]
-   [wsid.specs.llm]))
+   [wsid.config :refer [config]]
+   [wsid.logging :as logging :refer [debug-timing] :rename {debug-timing dt}]
+   [wsid.specs.llm]
+   [wsid.util.request-handling :refer [ok response]]))
 
 (def providers
   {:deepinfra
@@ -110,15 +111,15 @@
     ;; HTTP error case
     (response 500 {:message (get-in http-response [:body :message] "HTTP request failed")
                    :body (:body http-response)}))))
-
-(defn llm-prompt-handler [request]
-  (try
-    (let [request-params (build-request-params request)
-          request-body (build-llm-request-body request-params)
-          http-response (make-llm-http-request request-params request-body)]
-      (process-llm-response request-params http-response))
-
-    (catch Exception e
-      ;; Exception case - most likely a request validation error
-      (response 500 {:message (.getMessage e)
-                     :type :exception}))))
+(def llm-prompt-handler
+  "Handle LLM requests."
+  {:name :llm-prompt-handler
+   :enter (fn [context]
+            (dt context "LLM handler starts")
+            (let [request (:request context)
+                  request-params (build-request-params request)
+                  request-body (build-llm-request-body request-params)
+                  http-response (make-llm-http-request request-params request-body)]
+              (dt context "LLM handler response")
+              (assoc context :response
+                     (process-llm-response request-params http-response))))})

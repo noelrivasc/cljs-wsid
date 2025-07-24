@@ -9,7 +9,7 @@
 (when (:debug-mode config)
   (System/setProperty "org.slf4j.simpleLogger.log.wsid" "DEBUG"))
 
-(def start-time-interceptor
+(def logging-interceptor
   "Interceptor that captures request start time for performance logging"
   {:name :start-time-interceptor
    :enter (fn [context]
@@ -18,8 +18,9 @@
 (defn elapsed-ms
   "Get elapsed milliseconds from request start time in context"
   [context]
-  (when-let [start-time (:request-start-time context)]
-    (.between ChronoUnit/MILLIS start-time (Instant/now))))
+  (if-let [start-time (:request-start-time context)]
+    (.between ChronoUnit/MILLIS start-time (Instant/now))
+    "missing logging interceptor"))
 
 (defn debug-timing
   "Log debug timing information if debug mode is enabled"

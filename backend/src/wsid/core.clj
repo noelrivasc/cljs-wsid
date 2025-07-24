@@ -2,18 +2,18 @@
   (:require
    [clojure.set]
    [io.pedestal.http :as http]
-   [wsid.lambda :as lambda]
    [io.pedestal.http.route :as route]
    [wsid.auth :as auth]
-   [wsid.util.request-handling :as util]
    [wsid.config :refer [config]]
-   [wsid.handlers.ping :as ping]
+   [wsid.db :as db]
    [wsid.handlers.diagnostics :as diagnostics]
-   [wsid.handlers.user :as user]
-   [wsid.handlers.llm :as llm]
    [wsid.handlers.example-handlers :as examples]
+   [wsid.handlers.llm :as llm]
+   [wsid.handlers.ping :as ping]
+   [wsid.handlers.user :as user]
+   [wsid.lambda :as lambda]
    [wsid.logging :as logging]
-   [wsid.db :as db])
+   [wsid.util.request-handling :as util])
   (:import
    [com.amazonaws.services.lambda.runtime Context]))
 
@@ -24,13 +24,14 @@
                    auth/auth-interceptor
                    ping/ping-handler] :route-name :ping]
     ["/test-exception" :post [examples/error-example-handler] :route-name :test-exception]
-    ["/login" :post [logging/start-time-interceptor
+    ["/login" :post [logging/logging-interceptor
                      util/parse-body-interceptor
                      util/coerce-body-interceptor
                      util/content-negotiation-interceptor
                      db/db-interceptor
                      user/login-handler] :route-name :login]
-    ["/llm-prompt" :post [util/parse-body-interceptor
+    ["/llm-prompt" :post [logging/logging-interceptor
+                          util/parse-body-interceptor
                           util/coerce-body-interceptor
                           util/content-negotiation-interceptor
                           auth/auth-interceptor
