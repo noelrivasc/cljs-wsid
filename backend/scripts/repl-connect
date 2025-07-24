@@ -1,0 +1,3 @@
+#!/bin/zsh
+
+clojure -T:nrebel :port $(cat .nrepl-port)
