@@ -38,7 +38,8 @@
                           llm/llm-prompt-handler] :route-name :llm-prompt]})
 
 (def diagnostic-routes
-  #{["/diagnostics/db-connection" :get [db/db-interceptor diagnostics/db-connection]]})
+  #{["/diagnostics/db-connection" :get [db/db-interceptor diagnostics/db-connection]]
+    ["/aws-network-diagnostics" :get [logging/logging-interceptor diagnostics/aws-network-diagnostics]]})
 
 (def routes
   (let [route-set (if (:debug-mode config)
