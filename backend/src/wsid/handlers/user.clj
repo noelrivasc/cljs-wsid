@@ -19,6 +19,12 @@
                      ["SELECT id, email, password_hash FROM users WHERE email = ?" email]
                      {:builder-fn rs/as-unqualified-lower-maps}))
 
+(defn derive-hash
+  "Derives a hash with the algorithm and configuration selected for the project."
+  [password]
+  (hashers/derive password {:alg :bcrypt+sha512
+                            :iterations 10}))
+
 (defn validate-password
   "Checks the given password against the password hash saved for the user."
   [user password]

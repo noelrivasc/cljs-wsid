@@ -3,7 +3,7 @@
 -- Insert a test user for development
 -- Password is '000000' hashed with bcrypt
 INSERT INTO users (email, password_hash) 
-VALUES ('test@example.com', 'bcrypt+sha512$8d5f1258f55e1a33acffd4404af754c7$12$b3f9439e5f0af84b9b0e35dc87f388f8ea54a1ee22bf574d')
+VALUES ('test@example.com', 'bcrypt+sha512$88187dac32bcb6cd9b22bb05b73a40e0$10$8b4591516207fbbbc34a4643ea49a28766b304b902df1aa0')
 ON CONFLICT (email) DO NOTHING;
 
 -- Note: The above hash was generated with bcrypt for password '000000'
