@@ -118,9 +118,13 @@
    :enter (fn [context]
             (dt context "LLM handler starts")
             (let [request (:request context)
+                  _ (dt context "Request extracted")
                   request-params (build-request-params request)
+                  _ (dt context "Request params obtained." {:data request-params})
                   request-body (build-llm-request-body request-params)
-                  http-response (make-llm-http-request request-params request-body)]
+                  _ (dt context "Request body built." {:data request-body})
+                  http-response (make-llm-http-request request-params request-body)
+                  _ (dt context "LLM HTTP response received")]
               (dt context "LLM handler response")
               (assoc context :response
                      (process-llm-response request-params http-response))))})
