@@ -1,7 +1,6 @@
 (ns wsid.handlers.diagnostics
   (:require
    [clj-http.client :as http-client]
-   [wsid.util.request-handling :refer [ok response]]
    [io.pedestal.http :as http]
    [io.pedestal.log :as log]
    [wsid.logging :as logging :refer [debug-timing] :rename {debug-timing dt}]))
@@ -25,6 +24,6 @@
             (let [http-response (http-client/get "https://httpbin.org/get")]
               (if (<= 200 (:status http-response) 299)
                 ;; Success case
-                (assoc context :response (ok {:response "HTTP call succeeded."}))
+                (http/respond-with context 200 {:response "HTTP call succeeded."})
                 ;; HTTP error case
-                (assoc context :response (response 500 {:response "HTTP call failed."})))))})
+                (http/respond-with context 500 {:response "HTTP call failed."}))))})

@@ -1,14 +1,14 @@
 (ns wsid.handlers.llm
   (:require
    [cheshire.core :as json]
-   [clj-http.client :as http]
+   [io.pedestal.http :as http]
+   [clj-http.client :as http-client]
    [clojure.java.io :as io]
    [clojure.spec.alpha :as s]
    [clojure.string :as string]
    [wsid.config :refer [config]]
    [wsid.logging :as logging :refer [debug-timing] :rename {debug-timing dt}]
-   [wsid.specs.llm]
-   [wsid.util.request-handling :refer [ok response]]))
+   [wsid.specs.llm]))
 
 (def providers
   {:deepinfra
@@ -90,7 +90,7 @@
 (defn make-llm-http-request
   "Makes the HTTP request to the LLM API endpoint."
   [request-params request-body]
-  (http/post (get-in request-params [:provider-config :endpoint-url])
+  (http-client/post (get-in request-params [:provider-config :endpoint-url])
              {:body (json/generate-string request-body)
               :headers {"Content-Type" "application/json"
                         "Authentication" (str "Bearer "
@@ -105,12 +105,12 @@
         process-fn (get-in request-params [:model-config :process-fn])]
     (if (<= 200 (:status http-response) 299)
       ;; Success case
-      (ok {:response (-> (:body http-response)
-                         extract-response-fn
-                         process-fn)})
+      {:success true :response (-> (:body http-response)
+                                   extract-response-fn
+                                   process-fn)}
       ;; HTTP error case
-      (response 500 {:message (get-in http-response [:body :message] "HTTP request failed")
-                     :body (:body http-response)}))))
+      {:success false :response {:message (get-in http-response [:body :message] "HTTP request failed")
+                                 :body (:body http-response)}})))
 
 (def llm-prompt-handler
   "Handle LLM requests."
@@ -118,13 +118,13 @@
    :enter (fn [context]
             (dt context "LLM handler starts")
             (let [request (:request context)
-                  _ (dt context "Request extracted")
                   request-params (build-request-params request)
-                  _ (dt context "Request params obtained." :data request-params)
                   request-body (build-llm-request-body request-params)
-                  _ (dt context "Request body built." :data request-body)
                   http-response (make-llm-http-request request-params request-body)
-                  _ (dt context "LLM HTTP response received")]
+                  extracted-response (process-llm-response request-params http-response)]
+
               (dt context "LLM handler response")
-              (assoc context :response
-                     (process-llm-response request-params http-response))))})
+
+              (if (:success extracted-response)
+                (http/respond-with context 200 (:response extracted-response))
+                (http/respond-with context 500 (:response extracted-response)))))})
