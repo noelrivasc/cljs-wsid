@@ -39,7 +39,7 @@
 
 (def diagnostic-routes
   #{["/diagnostics/db-connection" :get [db/db-interceptor diagnostics/db-connection]]
-    ["/aws-network-diagnostics" :get [logging/logging-interceptor diagnostics/aws-network-diagnostics]]})
+    ["/diagnostics/http-outbound-connectivity" :get [logging/logging-interceptor diagnostics/http-outbound-connectivity]]})
 
 (def routes
   (let [route-set (if (:debug-mode config)
