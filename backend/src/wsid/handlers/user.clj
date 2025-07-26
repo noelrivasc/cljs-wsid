@@ -5,7 +5,6 @@
    [next.jdbc :as jdbc]
    [next.jdbc.result-set :as rs]
    [wsid.config :refer [config]]
-   [wsid.logging :as logging :refer [debug-timing] :rename {debug-timing dt}]
    [wsid.util.request-handling :refer [ok response]])
   (:import
    [java.time Instant]
@@ -46,7 +45,6 @@
   "Handle login requests"
   {:name :login-handler
    :enter (fn [context]
-            (dt context "Login handler started")
             (let [{:keys [email password]} (get-in context [:request :request-body])
                   db-connection (:db-connection context)
                   user (get-user-by-email email db-connection)
@@ -58,5 +56,4 @@
                              (ok token)
                              (response 401 "Invalid credentials"))]
 
-              (dt context "Login handler response")
               (assoc context :response r)))})

@@ -12,7 +12,6 @@
    [wsid.handlers.ping :as ping]
    [wsid.handlers.user :as user]
    [wsid.lambda :as lambda]
-   [wsid.logging :as logging]
    [wsid.util.request-handling :as util])
   (:import
    [com.amazonaws.services.lambda.runtime Context]))
@@ -23,26 +22,23 @@
                    util/content-negotiation-interceptor
                    auth/auth-interceptor
                    ping/ping-handler] :route-name :ping]
-    ["/login" :post [logging/logging-interceptor
-                     util/parse-body-interceptor
+    ["/login" :post [util/parse-body-interceptor
                      util/coerce-body-interceptor
                      util/content-negotiation-interceptor
                      db/db-interceptor
                      user/login-handler] :route-name :login]
-    ["/llm/prompt" :post [logging/logging-interceptor
-                          util/parse-body-interceptor
+    ["/llm/prompt" :post [util/parse-body-interceptor
                           util/coerce-body-interceptor
                           util/content-negotiation-interceptor
                           auth/auth-interceptor
                           llm/llm-prompt-handler] :route-name :llm-prompt]
-    ["/prompt-templates" :get [logging/logging-interceptor
-                               util/content-negotiation-interceptor
+    ["/prompt-templates" :get [util/content-negotiation-interceptor
                                auth/auth-interceptor
                                prompts/llm-list-prompt-templates] :route-name :llm-list-prompt-templates]})
 
 (def diagnostic-routes
   #{["/diagnostics/db-connection" :get [db/db-interceptor diagnostics/db-connection]]
-    ["/diagnostics/http-outbound-connectivity" :get [logging/logging-interceptor diagnostics/http-outbound-connectivity]]})
+    ["/diagnostics/http-outbound-connectivity" :get [diagnostics/http-outbound-connectivity]]})
 
 (def routes
   (let [route-set (if (:debug-mode config)

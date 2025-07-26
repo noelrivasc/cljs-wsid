@@ -2,7 +2,6 @@
   (:require
    [clojure.java.io :as io]
    [io.pedestal.http :as http]
-   [wsid.logging :as logging :refer [debug-timing] :rename {debug-timing dt}]
    [wsid.util.prompts :refer [get-prompt-template]]))
 
 (defn- extract-template-variables
@@ -45,7 +44,5 @@
   "List the existing prompt templates with the options they take."
   {:name :llm-list-prompt-templates
    :enter (fn [context]
-            (dt context "LLM list promp templates starts")
             (let [templates-map (build-templates-map)]
-              (dt context "LLM list prompt templates completed")
               (http/respond-with context 200 templates-map)))})

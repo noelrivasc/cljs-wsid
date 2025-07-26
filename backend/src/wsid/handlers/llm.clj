@@ -6,7 +6,6 @@
    [clojure.string :as string]
    [io.pedestal.http :as http]
    [wsid.config :refer [config]]
-   [wsid.logging :as logging :refer [debug-timing] :rename {debug-timing dt}]
    [wsid.specs.llm]
    [wsid.util.prompts :refer [get-prompt-template]]))
 
@@ -110,14 +109,11 @@
   "Handle LLM requests."
   {:name :llm-prompt-handler
    :enter (fn [context]
-            (dt context "LLM handler starts")
             (let [request (:request context)
                   request-params (build-request-params request)
                   request-body (build-llm-request-body request-params)
                   http-response (make-llm-http-request request-params request-body)
                   extracted-response (process-llm-response request-params http-response)]
-
-              (dt context "LLM handler response")
 
               (if (:success extracted-response)
                 (http/respond-with context 200 (:response extracted-response))

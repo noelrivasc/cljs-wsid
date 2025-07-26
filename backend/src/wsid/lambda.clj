@@ -9,7 +9,7 @@
    in io.pedestal.http.aws.lambda.utils. The difference is that these can
    take either API Gateway events, or events from Lambdas with an URL.")
 
-(defn lambda-request-map
+(defn- lambda-request-map
   "Given a parsed JSON event from API Gateway or Lambda Function URL,
   return a Ring compatible request map.
 
@@ -63,11 +63,11 @@
       :protocol (str "HTTP/" (or http-version "1.1"))
       :async-supported? false})))
 
-(defn resolve-body-processor []
+(defn- resolve-body-processor []
   ;;TODO:
   identity)
 
-(defn lambda-response
+(defn- lambda-response
   ([ring-response]
    (lambda-response ring-response identity))
   ([ring-response body-process-fn]

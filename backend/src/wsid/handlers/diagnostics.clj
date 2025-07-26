@@ -2,8 +2,7 @@
   (:require
    [clj-http.client :as http-client]
    [io.pedestal.http :as http]
-   [io.pedestal.log :as log]
-   [wsid.logging :as logging :refer [debug-timing] :rename {debug-timing dt}]))
+   [io.pedestal.log :as log]))
 
 (def db-connection
   "Attempt to connect to the DB and produce logs useful to diagnose the connection."
@@ -20,7 +19,6 @@
   "Comprehensive AWS Lambda network diagnostics handler"
   {:name :aws-network-diagnostics
    :enter (fn [context]
-            (dt context "AWS network diagnostics starting")
             (let [http-response (http-client/get "https://httpbin.org/get")]
               (if (<= 200 (:status http-response) 299)
                 ;; Success case
