@@ -30,12 +30,16 @@
                      util/content-negotiation-interceptor
                      db/db-interceptor
                      user/login-handler] :route-name :login]
-    ["/llm-prompt" :post [logging/logging-interceptor
+    ["/llm/prompt" :post [logging/logging-interceptor
                           util/parse-body-interceptor
                           util/coerce-body-interceptor
                           util/content-negotiation-interceptor
                           auth/auth-interceptor
-                          llm/llm-prompt-handler] :route-name :llm-prompt]})
+                          llm/llm-prompt-handler] :route-name :llm-prompt]
+    ["/prompt-templates" :get [logging/logging-interceptor
+                               util/content-negotiation-interceptor
+                               auth/auth-interceptor
+                               llm/llm-list-prompt-templates] :route-name :llm-list-prompt-templates]})
 
 (def diagnostic-routes
   #{["/diagnostics/db-connection" :get [db/db-interceptor diagnostics/db-connection]]
