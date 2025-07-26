@@ -7,7 +7,6 @@
    [wsid.config :refer [config]]
    [wsid.db :as db]
    [wsid.handlers.diagnostics :as diagnostics]
-   [wsid.handlers.example-handlers :as examples]
    [wsid.handlers.llm :as llm]
    [wsid.handlers.ping :as ping]
    [wsid.handlers.user :as user]
@@ -23,7 +22,6 @@
                    util/content-negotiation-interceptor
                    auth/auth-interceptor
                    ping/ping-handler] :route-name :ping]
-    ["/test-exception" :post [examples/error-example-handler] :route-name :test-exception]
     ["/login" :post [logging/logging-interceptor
                      util/parse-body-interceptor
                      util/coerce-body-interceptor
