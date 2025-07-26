@@ -1,0 +1,19 @@
+meta {
+  name: Prompt Templates - list
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{protocol}}://{{server_url}}/prompt-templates
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{process.env.JWT_TOKEN}}
+}
+
+settings {
+  encodeUrl: true
+}

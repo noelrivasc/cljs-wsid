@@ -1,0 +1,28 @@
+meta {
+  name: User - LLM Prompt - template
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{protocol}}://{{server_url}}/llm/prompt
+  body: json
+  auth: bearer
+}
+
+headers {
+  ~Accept: application/edn
+}
+
+auth:bearer {
+  token: {{process.env.JWT_TOKEN}}
+}
+
+body:json {
+  {
+    "prompt-template": "wsid-1",
+    "prompt-parameters": {"user-situation": "I'm trying to decide between eating shawarma and just getting a protein bar."},
+    "model": "mistralai/Mistral-Small-3.2-24B-Instruct-2506",
+    "provider": "deepinfra"
+  }
+}

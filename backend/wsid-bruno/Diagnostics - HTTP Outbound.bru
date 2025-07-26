@@ -1,0 +1,11 @@
+meta {
+  name: Diagnostics - HTTP Outbound
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{protocol}}://{{server_url}}/diagnostics/http-outbound
+  body: none
+  auth: inherit
+}
