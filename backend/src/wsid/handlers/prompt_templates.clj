@@ -1,4 +1,4 @@
-(ns wsid.handlers.prompts 
+(ns wsid.handlers.prompt-templates 
   (:require
    [clojure.java.io :as io]
    [io.pedestal.http :as http]
@@ -40,7 +40,7 @@
             {}
             template-files)))
 
-(def llm-list-prompt-templates
+(def index
   "List the existing prompt templates with the options they take."
   {:name :llm-list-prompt-templates
    :enter (fn [context]

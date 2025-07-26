@@ -8,7 +8,7 @@
    [wsid.interceptors.db :as db]
    [wsid.handlers.diagnostics :as diagnostics]
    [wsid.handlers.llm :as llm]
-   [wsid.handlers.prompts :as prompts]
+   [wsid.handlers.prompt-templates :as prompt-templates]
    [wsid.handlers.ping :as ping]
    [wsid.handlers.user :as user]
    [wsid.lambda :as lambda]
@@ -21,24 +21,24 @@
   #{["/ping" :get [util/coerce-body-interceptor
                    util/content-negotiation-interceptor
                    auth/auth-interceptor
-                   ping/ping-handler] :route-name :ping]
-    ["/login" :post [util/parse-body-interceptor
-                     util/coerce-body-interceptor
-                     util/content-negotiation-interceptor
-                     db/db-interceptor
-                     user/login-handler] :route-name :login]
+                   ping/ping] :route-name :ping]
+    ["/user/login" :post [util/parse-body-interceptor
+                          util/coerce-body-interceptor
+                          util/content-negotiation-interceptor
+                          db/db-interceptor
+                          user/login] :route-name :user--login]
     ["/llm/prompt" :post [util/parse-body-interceptor
                           util/coerce-body-interceptor
                           util/content-negotiation-interceptor
                           auth/auth-interceptor
-                          llm/llm-prompt-handler] :route-name :llm-prompt]
+                          llm/prompt] :route-name :llm--prompt]
     ["/prompt-templates" :get [util/content-negotiation-interceptor
                                auth/auth-interceptor
-                               prompts/llm-list-prompt-templates] :route-name :llm-list-prompt-templates]})
+                               prompt-templates/index] :route-name :prompt-templates--index]})
 
 (def diagnostic-routes
-  #{["/diagnostics/db-connection" :get [db/db-interceptor diagnostics/db-connection]]
-    ["/diagnostics/http-outbound-connectivity" :get [diagnostics/http-outbound-connectivity]]})
+  #{["/diagnostics/db-connection" :get [db/db-interceptor diagnostics/db-connection] :route-name :diagnostics--db-connection]
+    ["/diagnostics/http-outbound" :get [diagnostics/http-outbound] :route-name :diagnostics--http-outbound]})
 
 (def routes
   (let [route-set (if (:debug-mode config)

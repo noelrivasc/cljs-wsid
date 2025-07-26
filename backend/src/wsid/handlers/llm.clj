@@ -19,7 +19,7 @@
   {"mistralai/Mistral-Small-3.2-24B-Instruct-2506"
    {:process-fn (fn mistal [r] r)}}) ; TODO - meaningful process of the responses
 
-(defn substitute-template
+(defn- substitute-template
   "Takes a template string with %%key%% placeholders and a map of parameters.
    Returns the template with all placeholders replaced by their corresponding values."
   [template params]
@@ -30,7 +30,7 @@
 
 #_(defn remove-think [r] (string/replace r #"(?s)<think>.*</think>" ""))
 
-(defn build-request-params
+(defn- build-request-params
   "Builds a map of request parameters. This map is for internal use during the
    request and has all the information needed to build a request to the LLM service,
    get parameter and model configurations."
@@ -60,7 +60,7 @@
       (throw (Exception. (str "Invalid request parameters: " 
                               (s/explain-str :llm.params/request-params params)))))))
 
-(defn build-llm-request-body
+(defn- build-llm-request-body
   "Builds the LLM request body to call the LLM service.
   The input params are assumed to be valid."
   [request-params]
@@ -80,7 +80,7 @@
     
     llm-request-body))
 
-(defn make-llm-http-request
+(defn- make-llm-http-request
   "Makes the HTTP request to the LLM API endpoint."
   [request-params request-body]
   (http-client/post (get-in request-params [:provider-config :endpoint-url])
@@ -91,7 +91,7 @@
               :throw-exceptions false
               :as :json}))
 
-(defn process-llm-response
+(defn- process-llm-response
   "Processes the LLM response message using the model's processing function."
   [request-params http-response]
   (let [extract-response-fn (get-in request-params [:provider-config :extract-response-fn])
@@ -105,7 +105,7 @@
       {:success false :response {:message (get-in http-response [:body :message] "HTTP request failed")
                                  :body (:body http-response)}})))
 
-(def llm-prompt-handler
+(def prompt
   "Handle LLM requests."
   {:name :llm-prompt-handler
    :enter (fn [context]

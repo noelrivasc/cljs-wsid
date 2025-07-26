@@ -10,7 +10,7 @@
    [java.time Instant]
    [java.time.temporal ChronoUnit]))
 
-(defn get-user-by-email
+(defn- get-user-by-email
   "Gets an user from the database. On error, throws lets the
    database exception out to be handled by the caller."
   [email db-connection]
@@ -18,19 +18,19 @@
                      ["SELECT id, email, password_hash FROM users WHERE email = ?" email]
                      {:builder-fn rs/as-unqualified-lower-maps}))
 
-(defn derive-hash
+(defn- derive-hash
   "Derives a hash with the algorithm and configuration selected for the project."
   [password]
   (hashers/derive password {:alg :bcrypt+sha512
                             :iterations 10}))
 
-(defn validate-password
+(defn- validate-password
   "Checks the given password against the password hash saved for the user."
   [user password]
   (let [result (hashers/verify password (:password_hash user))]
     result))
 
-(defn create-user-token
+(defn- create-user-token
   "Create a JWT token for a user"
   [user]
   (let [now (Instant/now)
@@ -41,7 +41,7 @@
                 :exp (.getEpochSecond exp)}]
     (jwt/sign claims (:jwt-secret config))))
 
-(def login-handler
+(def login
   "Handle login requests"
   {:name :login-handler
    :enter (fn [context]

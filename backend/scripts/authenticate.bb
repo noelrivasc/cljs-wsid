@@ -4,7 +4,7 @@
          '[clojure.java.io :as io]
          '[cheshire.core :as json])
 
-(def login-url "http://localhost:8890/login")
+(def login-url "http://localhost:8890/user/login")
 (def credentials {:email "test@example.com"
                   :password "000000"})
 (def env-file "wsid-bruno/.env")

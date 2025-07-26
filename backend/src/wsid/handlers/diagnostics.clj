@@ -15,7 +15,7 @@
             
             (http/respond-with context 200 "db-connection"))})
 
-(def http-outbound-connectivity
+(def http-outbound
   "Comprehensive AWS Lambda network diagnostics handler"
   {:name :aws-network-diagnostics
    :enter (fn [context]
