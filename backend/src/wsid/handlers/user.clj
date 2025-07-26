@@ -5,7 +5,7 @@
    [next.jdbc :as jdbc]
    [next.jdbc.result-set :as rs]
    [wsid.util.config :refer [config]]
-   [wsid.util.request-handling :refer [ok response]])
+   [wsid.util.response :refer [ok response]])
   (:import
    [java.time Instant]
    [java.time.temporal ChronoUnit]))

@@ -12,27 +12,27 @@
    [wsid.handlers.ping :as ping]
    [wsid.handlers.user :as user]
    [wsid.util.lambda :as lambda]
-   [wsid.util.request-handling :as util])
+   [wsid.interceptors.request :as request])
   (:import
    [com.amazonaws.services.lambda.runtime Context]))
 
 ; ROUTES ----------------------
 (def app-routes
-  #{["/ping" :get [util/coerce-body-interceptor
-                   util/content-negotiation-interceptor
+  #{["/ping" :get [request/coerce-body-interceptor
+                   request/content-negotiation-interceptor
                    auth/auth-interceptor
                    ping/ping] :route-name :ping]
-    ["/user/login" :post [util/parse-body-interceptor
-                          util/coerce-body-interceptor
-                          util/content-negotiation-interceptor
+    ["/user/login" :post [request/parse-body-interceptor
+                          request/coerce-body-interceptor
+                          request/content-negotiation-interceptor
                           db/db-interceptor
                           user/login] :route-name :user--login]
-    ["/llm/prompt" :post [util/parse-body-interceptor
-                          util/coerce-body-interceptor
-                          util/content-negotiation-interceptor
+    ["/llm/prompt" :post [request/parse-body-interceptor
+                          request/coerce-body-interceptor
+                          request/content-negotiation-interceptor
                           auth/auth-interceptor
                           llm/prompt] :route-name :llm--prompt]
-    ["/prompt-templates" :get [util/content-negotiation-interceptor
+    ["/prompt-templates" :get [request/content-negotiation-interceptor
                                auth/auth-interceptor
                                prompt-templates/index] :route-name :prompt-templates--index]})
 

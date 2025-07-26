@@ -1,20 +1,10 @@
-(ns wsid.util.request-handling
-  "Provides utilities to parse http input and produce output.
-   Includes functions for content negotiation."
+(ns wsid.interceptors.request 
   (:require
-   [io.pedestal.http.content-negotiation :as content-negotiation]
-   [clojure.string :as string]
+   [cheshire.core :as json]
    [clojure.edn :as edn]
-   [cheshire.core :as json]))
+   [clojure.string :as string]
+   [io.pedestal.http.content-negotiation :as content-negotiation]))
 
-; UTILITIES -------------------
-(defn ok [body]
-  {:status 200 :body body})
-
-(defn response [code body]
-  {:status code :body body})
-
-; UTILITY INTERCEPTORS---------
 (def parse-body-interceptor
   "Decode the request body and add it to the context as :request-body"
   {:name :auth
