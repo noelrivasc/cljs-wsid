@@ -4,7 +4,7 @@
    [buddy.sign.jwt :as jwt]
    [next.jdbc :as jdbc]
    [next.jdbc.result-set :as rs]
-   [wsid.config :refer [config]]
+   [wsid.util.config :refer [config]]
    [wsid.util.request-handling :refer [ok response]])
   (:import
    [java.time Instant]

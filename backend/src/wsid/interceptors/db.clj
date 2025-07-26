@@ -1,6 +1,6 @@
 (ns wsid.interceptors.db
   (:require
-   [wsid.config :refer [config]]
+   [wsid.util.config :refer [config]]
    [io.pedestal.log]
    [next.jdbc :as jdbc]))
 

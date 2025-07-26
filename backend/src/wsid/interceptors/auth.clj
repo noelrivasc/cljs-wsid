@@ -1,6 +1,6 @@
 (ns wsid.interceptors.auth
   (:require
-   [wsid.config :refer [config]]
+   [wsid.util.config :refer [config]]
    [buddy.sign.jwt :as jwt]))
 
 

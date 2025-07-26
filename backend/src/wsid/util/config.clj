@@ -1,4 +1,4 @@
-(ns wsid.config
+(ns wsid.util.config
   (:require
    [clojure.edn :as edn]))
 

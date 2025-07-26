@@ -5,7 +5,7 @@
    [clojure.spec.alpha :as s]
    [clojure.string :as string]
    [io.pedestal.http :as http]
-   [wsid.config :refer [config]]
+   [wsid.util.config :refer [config]]
    [wsid.specs.llm]
    [wsid.util.prompts :refer [get-prompt-template]]))
 

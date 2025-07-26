@@ -4,14 +4,14 @@
    [io.pedestal.http :as http]
    [io.pedestal.http.route :as route]
    [wsid.interceptors.auth :as auth]
-   [wsid.config :refer [config]]
+   [wsid.util.config :refer [config]]
    [wsid.interceptors.db :as db]
    [wsid.handlers.diagnostics :as diagnostics]
    [wsid.handlers.llm :as llm]
    [wsid.handlers.prompt-templates :as prompt-templates]
    [wsid.handlers.ping :as ping]
    [wsid.handlers.user :as user]
-   [wsid.lambda :as lambda]
+   [wsid.util.lambda :as lambda]
    [wsid.util.request-handling :as util])
   (:import
    [com.amazonaws.services.lambda.runtime Context]))
