@@ -1,12 +1,13 @@
-(ns wsid.db
+(ns wsid.interceptors.db
   (:require
    [wsid.config :refer [config]]
    [io.pedestal.log]
    [next.jdbc :as jdbc]))
 
 (def db-interceptor
-  "Pedestal interceptor to open and close db connections that
-   can be reused for the duration of the request."
+  "Interceptor to open a database connection on :enter, 
+   and close it on :exit. This allows the code to use the
+   connection at any point during the life of the request."
   {:name :db
    :enter (fn [context]
             (try

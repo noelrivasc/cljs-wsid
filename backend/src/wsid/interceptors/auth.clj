@@ -1,17 +1,17 @@
-(ns wsid.auth
+(ns wsid.interceptors.auth
   (:require
    [wsid.config :refer [config]]
    [buddy.sign.jwt :as jwt]))
 
 
-(defn extract-token-from-header
+(defn- extract-token-from-header
   "Extract JWT token from Authorization header"
   [request]
   (when-let [auth-header (get-in request [:headers "authorization"])]
     (when (.startsWith auth-header "Bearer ")
       (.substring auth-header 7))))
 
-(defn verify-jwt-token
+(defn- verify-jwt-token
   "Verify and decode a JWT token"
   [token]
   (try
@@ -20,7 +20,10 @@
       nil)))
 
 (def auth-interceptor
-  "Pedestal interceptor for JWT authentication"
+  "JWT authentication interceptor.
+   Reads and validates the JWT token from the Authorization header.
+   On success, adds the user information to the context under :user.
+   On error, returns a 401 response."
   {:name :auth
    :enter (fn [context]
             (let [request (:request context)
