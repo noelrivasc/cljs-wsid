@@ -1,14 +1,14 @@
 (ns wsid.handlers.llm
   (:require
    [cheshire.core :as json]
-   [io.pedestal.http :as http]
    [clj-http.client :as http-client]
-   [clojure.java.io :as io]
    [clojure.spec.alpha :as s]
    [clojure.string :as string]
+   [io.pedestal.http :as http]
    [wsid.config :refer [config]]
    [wsid.logging :as logging :refer [debug-timing] :rename {debug-timing dt}]
-   [wsid.specs.llm]))
+   [wsid.specs.llm]
+   [wsid.util.prompts :refer [get-prompt-template]]))
 
 (def providers
   {:deepinfra
@@ -19,12 +19,6 @@
 (def models
   {"mistralai/Mistral-Small-3.2-24B-Instruct-2506"
    {:process-fn (fn mistal [r] r)}}) ; TODO - meaningful process of the responses
-
-(defn get-prompt-template
-  "Gets the contents of a template that matches the given keyword, if the
-   template exists. Throws an error otherwise."
-  [template-id]
-  (slurp (io/resource (str "wsid/prompt-templates/" (name template-id)))))
 
 (defn substitute-template
   "Takes a template string with %%key%% placeholders and a map of parameters.
@@ -68,14 +62,14 @@
                               (s/explain-str :llm.params/request-params params)))))))
 
 (defn build-llm-request-body
-  "Builds the LLM request body from validated params.
-  Since params are already validated, this function trusts all input is valid."
-  [params]
-  (let [model-name (:model-name params)
-        prompt (if (:prompt params)
-                 (:prompt params)
-                 (let [t (get-prompt-template (:prompt-template params))
-                       p (:prompt-parameters params)]
+  "Builds the LLM request body to call the LLM service.
+  The input params are assumed to be valid."
+  [request-params]
+  (let [model-name (:model-name request-params)
+        prompt (if (:prompt request-params)
+                 (:prompt request-params)
+                 (let [t (get-prompt-template (:prompt-template request-params))
+                       p (:prompt-parameters request-params)]
                    (substitute-template t p)))
         llm-request-body {:model model-name
                           :messages [{:role "user" :content prompt}]}]
@@ -128,48 +122,3 @@
               (if (:success extracted-response)
                 (http/respond-with context 200 (:response extracted-response))
                 (http/respond-with context 500 (:response extracted-response)))))})
-
-(defn extract-template-variables
-  "Extracts variable names from a template string that are delimited by %%var-name%%"
-  [template-content]
-  (->> template-content
-       (re-seq #"%%([^%]+)%%")
-       (map second)
-       (into [])))
-
-(defn list-template-files
-  "Lists all files in the wsid/prompt-templates/ resource directory"
-  []
-  (let [resource-path "wsid/prompt-templates/"
-        resource-url (io/resource resource-path)]
-    (when resource-url
-      (let [template-dir (io/file (.getPath resource-url))]
-        (when (.exists template-dir)
-          (->> (.listFiles template-dir)
-               (filter #(.isFile %))
-               (map #(.getName %))
-               (into [])))))))
-
-(defn build-templates-map
-  "Builds a map of template names to their variables"
-  []
-  (let [template-files (list-template-files)]
-    (reduce (fn [acc template-name]
-              (try
-                (let [template-content (get-prompt-template (keyword template-name))
-                      variables (extract-template-variables template-content)]
-                  (assoc acc template-name variables))
-                (catch Exception e
-                  (println (str "Error processing template " template-name ": " (.getMessage e)))
-                  acc)))
-            {}
-            template-files)))
-
-(def llm-list-prompt-templates
-  "List the existing prompt templates with the options they take."
-  {:name :llm-list-prompt-templates
-   :enter (fn [context]
-            (dt context "LLM list promp templates starts")
-            (let [templates-map (build-templates-map)]
-              (dt context "LLM list prompt templates completed")
-              (http/respond-with context 200 templates-map)))})

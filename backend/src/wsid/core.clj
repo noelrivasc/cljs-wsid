@@ -8,6 +8,7 @@
    [wsid.db :as db]
    [wsid.handlers.diagnostics :as diagnostics]
    [wsid.handlers.llm :as llm]
+   [wsid.handlers.prompts :as prompts]
    [wsid.handlers.ping :as ping]
    [wsid.handlers.user :as user]
    [wsid.lambda :as lambda]
@@ -37,7 +38,7 @@
     ["/prompt-templates" :get [logging/logging-interceptor
                                util/content-negotiation-interceptor
                                auth/auth-interceptor
-                               llm/llm-list-prompt-templates] :route-name :llm-list-prompt-templates]})
+                               prompts/llm-list-prompt-templates] :route-name :llm-list-prompt-templates]})
 
 (def diagnostic-routes
   #{["/diagnostics/db-connection" :get [db/db-interceptor diagnostics/db-connection]]
