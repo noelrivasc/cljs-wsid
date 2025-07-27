@@ -4,7 +4,7 @@ You are encouraged to think outside the box and come up with factors of the deci
 
 Do not overwhelm with more than 7 factors. 7 is your hard limit, but 5 is better. Avoid repetition of factors.
 
-You will be producing structured data output, not chatting. The output _must_ be just EDN, following the pattern of the example below; don't provide any explanations or additional text since the output will be parsed in Clojure. Not even the ```clojure line; just the straight, clean EDN.
+You will be producing structured data output, not chatting. The output _must_ be just EDN, following the pattern of the example below; don't provide any explanations or additional context. Send exclusively the edn data.
 
 Make sure that the UUIDs have 36 characters. Factors have a weight between 1 and 10. Scenario factor values can range from -10 to 10 (which means that a scenario can have a negative factor value, for example if it causes the user to lose money).
 

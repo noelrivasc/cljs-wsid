@@ -17,10 +17,12 @@
 
 (defn- default-process-fn [r] r)
 (defn- remove-think [r] (string/replace r #"(?s)<think>.*</think>" ""))
+(defn- remove-md-code-delimiters [r] (second (re-find #"(?is)```(?:edn|clojure)(.*)```" r)))
 
 (def ^:private process-fns 
   {:default-process-fn default-process-fn
-   :remove-think remove-think})
+   :remove-think remove-think
+   :remove-md-code-delimiters remove-md-code-delimiters})
 
 (def models ["mistralai/Mistral-Small-3.2-24B-Instruct-2506"])
 
@@ -111,9 +113,9 @@
         process-fn (:process-fn request-params)]
     (if (<= 200 (:status http-response) 299)
       ;; Success case
-      {:success true :response (-> (:body http-response)
-                                   extract-response-fn
-                                   process-fn)}
+      {:success true :response {:llm-message (-> (:body http-response)
+                                    extract-response-fn
+                                    process-fn)}}
       ;; HTTP error case
       {:success false :response {:message (get-in http-response [:body :message] "HTTP request failed")
                                  :body (:body http-response)}})))
