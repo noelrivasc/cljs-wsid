@@ -10,9 +10,7 @@
 (s/def :llm.api/request-body (s/keys :req-un [:llm.api/model :llm.api/messages]))
 
 ;; LLM model configuration specs
-(s/def :llm.model/process-fn fn?)
-(s/def :llm.model/config
-  (s/keys :req-un [:llm.model/process-fn]))
+(s/def :llm.process/process-fn fn?)
 
 ;; LLM provider configuration specs  
 (s/def :llm.provider/endpoint-url (s/and string? (complement empty?)))
@@ -26,7 +24,6 @@
 (s/def :llm.input/prompt-parameters (s/nilable (s/map-of keyword? string?)))
 (s/def :llm.input/model-name (s/and string? (complement empty?)))
 (s/def :llm.input/provider-name (s/and string? (complement empty?)))
-(s/def :llm.input/model-config :llm.model/config)
 (s/def :llm.input/provider-config :llm.provider/config)
 
 ;; Either prompt or prompt-template must be present (mutually exclusive)
@@ -41,6 +38,8 @@
 ;; Complete request params spec
 (s/def :llm.params/request-params
   (s/and :llm.params/prompt-or-template
-         (s/keys :req-un [:llm.input/model-name :llm.input/provider-name 
-                          :llm.input/model-config :llm.input/provider-config]
+         (s/keys :req-un [:llm.input/model-name
+                          :llm.input/provider-name
+                          :llm.input/provider-config
+                          :llm.process/process-fn]
                  :opt-un [:llm.input/prompt-parameters])))

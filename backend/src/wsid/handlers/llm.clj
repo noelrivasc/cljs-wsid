@@ -15,9 +15,14 @@
     :extract-response-fn (fn [r] (-> r :choices first :message :content))
     :token (:llm-token-deepinfra config)}})
 
-(def models
-  {"mistralai/Mistral-Small-3.2-24B-Instruct-2506"
-   {:process-fn (fn mistal [r] r)}}) ; TODO - meaningful process of the responses
+(defn- default-process-fn [r] r)
+(defn- remove-think [r] (string/replace r #"(?s)<think>.*</think>" ""))
+
+(def ^:private process-fns 
+  {:default-process-fn default-process-fn
+   :remove-think remove-think})
+
+(def models ["mistralai/Mistral-Small-3.2-24B-Instruct-2506"])
 
 (defn- substitute-template
   "Takes a template string with %%key%% placeholders and a map of parameters.
@@ -28,7 +33,15 @@
           template
           params))
 
-#_(defn remove-think [r] (string/replace r #"(?s)<think>.*</think>" ""))
+(defn- get-process-fn
+  "Gets a process function by string name. If fn-name is nil, returns the default function.
+   If fn-name is a string but the function is not found, throws an exception."
+  [fn-name]
+  (if (nil? fn-name)
+    default-process-fn
+    (if-let [process-fn ((keyword fn-name) process-fns)]
+      process-fn
+      (throw (Exception. "Error getting the process function.")))))
 
 (defn- build-request-params
   "Builds a map of request parameters. This map is for internal use during the
@@ -44,13 +57,13 @@
         provider-name (:provider request-body)
         provider-keyword (keyword provider-name)
         provider-config (provider-keyword providers)
-        model-name (:model request-body)
-        model-config (get models model-name)
+        model-name (some #{(:model request-body)} models)
+        process-fn (get-process-fn (:process-fn request-body))
         params {:prompt prompt
                 :prompt-template prompt-template
                 :prompt-parameters prompt-parameters
                 :model-name model-name
-                :model-config model-config
+                :process-fn process-fn
                 :provider-name provider-name
                 :provider-config provider-config}]
     
@@ -95,7 +108,7 @@
   "Processes the LLM response message using the model's processing function."
   [request-params http-response]
   (let [extract-response-fn (get-in request-params [:provider-config :extract-response-fn])
-        process-fn (get-in request-params [:model-config :process-fn])]
+        process-fn (:process-fn request-params)]
     (if (<= 200 (:status http-response) 299)
       ;; Success case
       {:success true :response (-> (:body http-response)
