@@ -1,11 +1,11 @@
 meta {
-  name: User - LLM Prompt - template
+  name: LLM Prompt
   type: http
-  seq: 8
+  seq: 4
 }
 
 post {
-  url: {{protocol}}://{{server_url}}/llm/prompt
+  url: {{protocol}}://{{server_url}}/llm-prompt
   body: json
   auth: bearer
 }
@@ -20,8 +20,7 @@ auth:bearer {
 
 body:json {
   {
-    "prompt-template": "wsid-1",
-    "prompt-parameters": {"user-situation": "I'm trying to decide between eating shawarma and just getting a protein bar."},
+    "prompt": "Tell me a joke",
     "model": "mistralai/Mistral-Small-3.2-24B-Instruct-2506",
     "provider": "deepinfra"
   }
