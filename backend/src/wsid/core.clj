@@ -30,6 +30,11 @@
                           i/content-negotiation
                           i/auth
                           llm/prompt] :route-name :llm--prompt]
+    ["/llm/wsid-1--mistral" :post [i/parse-body
+                                   i/coerce-body
+                                   i/content-negotiation
+                                   i/auth
+                                   llm/wsid-1--mistral] :route-name :llm--wsid-1--mistral]
     ["/prompt-templates" :get [i/content-negotiation
                                i/auth
                                prompt-templates/index] :route-name :prompt-templates--index]})

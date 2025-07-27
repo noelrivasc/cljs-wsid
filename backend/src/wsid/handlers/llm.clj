@@ -5,8 +5,8 @@
    [clojure.spec.alpha :as s]
    [clojure.string :as string]
    [io.pedestal.http :as http]
-   [wsid.util.config :refer [config]]
    [wsid.specs.llm]
+   [wsid.util.config :refer [config]]
    [wsid.util.prompts :refer [get-prompt-template]]))
 
 (def providers
@@ -15,14 +15,30 @@
     :extract-response-fn (fn [r] (-> r :choices first :message :content))
     :token (:llm-token-deepinfra config)}})
 
+;; BASE process functions
+;; These are meant to be blocks that are assembled to compose a processing pipeline
 (defn- default-process-fn [r] r)
 (defn- remove-think [r] (string/replace r #"(?s)<think>.*</think>" ""))
 (defn- remove-md-code-delimiters [r] (second (re-find #"(?is)```(?:edn|clojure)(.*)```" r)))
+(defn- validate-edn 
+  "Parses an edn string to validate it, and re-encodes as string on success.
+   Throws an error if r is not valid edn."
+  [r] (when-let [parsed (read-string r)]
+                          (pr-str parsed)))
+
+
+;; COMPOSITE process functions
+;; TODO - implement error handling
+(defn- process--wsid-1--mistral [r] (-> r
+                               remove-md-code-delimiters
+                               validate-edn))
 
 (def ^:private process-fns 
   {:default-process-fn default-process-fn
    :remove-think remove-think
-   :remove-md-code-delimiters remove-md-code-delimiters})
+   :remove-md-code-delimiters remove-md-code-delimiters
+   
+   :process--wsid-1--mistral process--wsid-1--mistral})
 
 (def models ["mistralai/Mistral-Small-3.2-24B-Instruct-2506"])
 
@@ -45,35 +61,6 @@
       process-fn
       (throw (Exception. "Error getting the process function.")))))
 
-(defn- build-request-params
-  "Builds a map of request parameters. This map is for internal use during the
-   request and has all the information needed to build a request to the LLM service,
-   get parameter and model configurations."
-  [request]
-  (let [request-body (:request-body request)
-        prompt (:prompt request-body)
-        prompt-template (:prompt-template request-body)
-        ; Ensure keywords for prompt parameters; useful for JSON input
-        prompt-parameters (when-let [pp (:prompt-parameters request-body)]
-                            (into {} (map (fn [[k v]] [(keyword k) v]) pp)))
-        provider-name (:provider request-body)
-        provider-keyword (keyword provider-name)
-        provider-config (provider-keyword providers)
-        model-name (some #{(:model request-body)} models)
-        process-fn (get-process-fn (:process-fn request-body))
-        params {:prompt prompt
-                :prompt-template prompt-template
-                :prompt-parameters prompt-parameters
-                :model-name model-name
-                :process-fn process-fn
-                :provider-name provider-name
-                :provider-config provider-config}]
-    
-    ;; Validate the params using spec
-    (if (s/valid? :llm.params/request-params params)
-      params
-      (throw (Exception. (str "Invalid request parameters: " 
-                              (s/explain-str :llm.params/request-params params)))))))
 
 (defn- build-llm-request-body
   "Builds the LLM request body to call the LLM service.
@@ -120,16 +107,68 @@
       {:success false :response {:message (get-in http-response [:body :message] "HTTP request failed")
                                  :body (:body http-response)}})))
 
+(defn- do-prompt
+  "Query LLM services and process the output message.
+   Returns the string that results from processing the LLM output."
+  [request-params]
+  (let [request-body (build-llm-request-body request-params)
+        http-response (make-llm-http-request request-params request-body)
+        extracted-response (process-llm-response request-params http-response)]
+    extracted-response))
+
+(defn- build-request-params
+  "Builds a map of request parameters. This map is for internal use during the
+   request and has all the information needed to build a request to the LLM service,
+   get parameter and model configurations."
+  [{:keys [prompt prompt-template prompt-parameters provider model process-fn]}]
+  (let [; Convert prompt parameter keys to keywords
+        prompt-parameters (when-let [pp prompt-parameters]
+                            (into {} (map (fn [[k v]] [(keyword k) v]) pp)))
+        provider-keyword (keyword provider)
+        provider-config (provider-keyword providers)
+        model-name (some #{model} models)
+        process-fn (get-process-fn process-fn)
+        params {:prompt prompt
+                :prompt-template prompt-template
+                :prompt-parameters prompt-parameters
+                :model-name model-name
+                :process-fn process-fn
+                :provider-name provider
+                :provider-config provider-config}]
+
+    ;; Validate the params using spec
+    (if (s/valid? :llm.params/request-params params)
+      params
+      (throw (Exception. (str "Invalid request parameters: "
+                              (s/explain-str :llm.params/request-params params)))))))
+
 (def prompt
-  "Handle LLM requests."
-  {:name :llm-prompt-handler
+  "Handle LLM requests, allowing the client to configure the prompt or template,
+   the template parameters and the process function applied to the output."
+  {:name :llm-prompt
    :enter (fn [context]
             (let [request (:request context)
-                  request-params (build-request-params request)
-                  request-body (build-llm-request-body request-params)
-                  http-response (make-llm-http-request request-params request-body)
-                  extracted-response (process-llm-response request-params http-response)]
-
+                  request-body (:request-body request)
+                  request-params (build-request-params request-body)
+                  extracted-response (do-prompt request-params)]
               (if (:success extracted-response)
                 (http/respond-with context 200 (:response extracted-response))
                 (http/respond-with context 500 (:response extracted-response)))))})
+
+; prompt prompt-template prompt-parameters provider model process-fn
+(def wsid-1--mistral
+  "Run the wsid-1 prompt against the mistralai/Mistral-Small-3.2-24B-Instruct-2506 model
+   and process its output to return structured data."
+  {:name :llm-wsid-1--mistral
+   :enter (fn [context]
+            (let [user-situation (get-in context [:request :request-body :user-situation])
+                  request-params (build-request-params
+                                  {:prompt-template "wsid-1"
+                                   :prompt-parameters {:user-situation user-situation}
+                                   :provider "deepinfra"
+                                   :model "mistralai/Mistral-Small-3.2-24B-Instruct-2506"
+                                   :process-fn :process--wsid-1--mistral})
+                  llm-response (do-prompt request-params)]
+              (if (:success llm-response)
+                (http/respond-with context 200 (:response llm-response))
+                (http/respond-with context 500 (:response llm-response)))))})
