@@ -3,41 +3,39 @@
    [clojure.set]
    [io.pedestal.http :as http]
    [io.pedestal.http.route :as route]
-   [wsid.interceptors.auth :as auth]
-   [wsid.util.config :refer [config]]
-   [wsid.interceptors.db :as db]
    [wsid.handlers.diagnostics :as diagnostics]
    [wsid.handlers.llm :as llm]
-   [wsid.handlers.prompt-templates :as prompt-templates]
    [wsid.handlers.ping :as ping]
+   [wsid.handlers.prompt-templates :as prompt-templates]
    [wsid.handlers.user :as user]
-   [wsid.util.lambda :as lambda]
-   [wsid.interceptors.request :as request])
+   [wsid.interceptors.index :as i]
+   [wsid.util.config :refer [config]]
+   [wsid.util.lambda :as lambda])
   (:import
    [com.amazonaws.services.lambda.runtime Context]))
 
 ; ROUTES ----------------------
 (def app-routes
-  #{["/ping" :get [request/coerce-body-interceptor
-                   request/content-negotiation-interceptor
-                   auth/auth-interceptor
+  #{["/ping" :get [i/coerce-body
+                   i/content-negotiation
+                   i/auth
                    ping/ping] :route-name :ping]
-    ["/user/login" :post [request/parse-body-interceptor
-                          request/coerce-body-interceptor
-                          request/content-negotiation-interceptor
-                          db/db-interceptor
+    ["/user/login" :post [i/parse-body
+                          i/coerce-body
+                          i/content-negotiation
+                          i/db
                           user/login] :route-name :user--login]
-    ["/llm/prompt" :post [request/parse-body-interceptor
-                          request/coerce-body-interceptor
-                          request/content-negotiation-interceptor
-                          auth/auth-interceptor
+    ["/llm/prompt" :post [i/parse-body
+                          i/coerce-body
+                          i/content-negotiation
+                          i/auth
                           llm/prompt] :route-name :llm--prompt]
-    ["/prompt-templates" :get [request/content-negotiation-interceptor
-                               auth/auth-interceptor
+    ["/prompt-templates" :get [i/content-negotiation
+                               i/auth
                                prompt-templates/index] :route-name :prompt-templates--index]})
 
 (def diagnostic-routes
-  #{["/diagnostics/db-connection" :get [db/db-interceptor diagnostics/db-connection] :route-name :diagnostics--db-connection]
+  #{["/diagnostics/db-connection" :get [i/db diagnostics/db-connection] :route-name :diagnostics--db-connection]
     ["/diagnostics/http-outbound" :get [diagnostics/http-outbound] :route-name :diagnostics--http-outbound]})
 
 (def routes
