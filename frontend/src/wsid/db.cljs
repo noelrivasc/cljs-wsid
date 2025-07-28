@@ -31,6 +31,10 @@
 (s/def ::scenario (s/keys :req-un [:scenario/title]
                           :opt-un [:scenario/id :scenario/description]))
 
+(s/def :user/jwt-token (s/nilable string?))
+(s/def :user/email (s/nilable string?))
+(s/def ::user (s/keys :req-un [:user/email :user/jwt-token]))
+
 ; -- TRANSIENT ----------------------
 (s/def :transient/db-is-dirty (s/or :empty nil :bool boolean?))
 (s/def :transient/factor-edit-defaults nil-or-map)
@@ -39,6 +43,7 @@
 (s/def :transient/scenario-edit-defaults nil-or-map)
 (s/def :transient/scenario-active nil-or-map)
 (s/def :transient/scenario-active-validation map?)
+(s/def :transient/user (s/nilable ::user))
 
 ; -- APP DB -------------------------
 (s/def :app-db/transient
@@ -48,7 +53,8 @@
                    :transient/factor-active-validation
                    :transient/scenario-edit-defaults
                    :transient/scenario-active
-                   :transient/scenario-active-validation]))
+                   :transient/scenario-active-validation
+                   :transient/user]))
 (s/def :app-db/factors (s/coll-of ::factor :kind vector?))
 (s/def :app-db/scenarios (s/coll-of ::scenario :kind vector?))
 
@@ -86,7 +92,8 @@
 
                :scenario-edit-defaults nil
                :scenario-active nil
-               :scenario-active-validation {:is-valid nil}}
+               :scenario-active-validation {:is-valid nil}
+               :user nil}
 
    :title ""
    :description ""
