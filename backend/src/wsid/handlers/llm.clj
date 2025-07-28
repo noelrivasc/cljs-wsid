@@ -20,7 +20,7 @@
 (defn- default-process-fn [r] r)
 (defn- remove-think [r] (string/replace r #"(?s)<think>.*</think>" ""))
 (defn- remove-md-code-delimiters [r] (second (re-find #"(?is)```(?:edn|clojure)(.*)```" r)))
-(defn- validate-edn 
+#_(defn- validate-edn 
   "Parses an edn string to validate it, and re-encodes as string on success.
    Throws an error if r is not valid edn."
   [r] (when-let [parsed (read-string r)]
@@ -29,9 +29,12 @@
 
 ;; COMPOSITE process functions
 ;; TODO - implement error handling
-(defn- process--wsid-1--mistral [r] (-> r
+(defn- process--wsid-1--mistral
+  "Removes the markdown code fences (ie ```clojure), and then parses the string as
+   EDN, returning the output of parsing. Throws on parse error."
+  [r] (-> r
                                remove-md-code-delimiters
-                               validate-edn))
+                               read-string))
 
 (def ^:private process-fns 
   {:default-process-fn default-process-fn
@@ -155,7 +158,6 @@
                 (http/respond-with context 200 (:response extracted-response))
                 (http/respond-with context 500 (:response extracted-response)))))})
 
-; prompt prompt-template prompt-parameters provider model process-fn
 (def wsid-1--mistral
   "Run the wsid-1 prompt against the mistralai/Mistral-Small-3.2-24B-Instruct-2506 model
    and process its output to return structured data."
