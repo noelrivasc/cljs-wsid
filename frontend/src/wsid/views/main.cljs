@@ -30,16 +30,24 @@
      [:div.work-area
       [:div.work-area__file-tools
        [:div.work-are__save-to-browser
-        [:input.button 
-               {:type "button"
-                      :value "Save to Browser"
-                      :on-click #(evt> [:save-to-local-storage])}]
-        (when db-is-dirty 
+        [:input.button
+         {:type "button"
+          :value "Save to Browser"
+          :on-click #(evt> [:save-to-local-storage])}]
+        (when db-is-dirty
           [:span.icon
-            (i/get-icon i/edit)])]]
-        
+           (i/get-icon i/edit)])]]
+
       [:div.tool-container.tool-container--decision
        [v-decision-panel]]
+
+      [:div.tool-container.tool-container--ai-help
+       [:input.form__input
+        {:type "text"
+         :placeholder "JWT Token"
+         :on-change #(evt> [:jwt-token-update (-> % .-target .-value)])}]
+       [:input.button {:type "button"
+                       :value "AI Help"}]]
       
 
       ; SECTIONS

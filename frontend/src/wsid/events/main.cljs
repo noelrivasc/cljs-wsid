@@ -13,6 +13,8 @@
    [wsid.events.local-storage :as local-storage]
    #_{:clj-kondo/ignore [:unused-namespace]}
    [wsid.events.decisions :as decisions]
+   #_{:clj-kondo/ignore [:unused-namespace]}
+   [wsid.events.user :as user]
    [wsid.events.util :as util]
 
    [clojure.spec.alpha :as s]))
