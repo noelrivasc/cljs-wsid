@@ -23,7 +23,8 @@
 
 (defn v-toolbar []
   (let [db-is-dirty (<sub [:db-is-dirty])
-        icon-class (if db-is-dirty [:icon :opacity-100] [:icon :opacity-20])]
+        icon-class (if db-is-dirty [:icon :opacity-100] [:icon :opacity-20])
+        user-token (<sub [:user-token])]
     [:div.toolbar
      [:div.toolbar__save-to-browser
       [:button.button
@@ -31,10 +32,14 @@
        [:span.text "Save to Browser"]
        [:span.button__icon {:class icon-class}
         (i/get-icon i/edit :svg.icon--sm)]]]
-     [:div.toolbar__login
-      [:button.button
-       {:on-click #(evt> [:authenticate])}
-       [:span.text "Log in"]]]]))
+     [:div.toolbar__authentication
+      (if user-token
+        [:button.button
+         {:on-click #(evt> [:logout])}
+         [:span.text "Log out"]]
+        [:button.button
+         {:on-click #(evt> [:authenticate])}
+         [:span.text "Log in"]])]]))
 
 (defn v-main-panel []
   [:main.main-container

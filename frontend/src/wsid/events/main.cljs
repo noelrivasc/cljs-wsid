@@ -17,27 +17,10 @@
 
 (re-frame/reg-event-fx
  :app/initialize-db
- [(inject-cofx :local-storage/load (:decision ls-keys))]
- (fn [{db :db local-storage :local-storage/load} _]
-   (let [stored-decision (decisions/validate-decision local-storage)]
-     (if stored-decision
-       {:db (-> db
-                (assoc-in [:decision :title] (:title stored-decision))
-                (assoc-in [:decision :description] (:description stored-decision))
-                (assoc-in [:decision :factors] (:factors stored-decision))
-                (assoc-in [:decision :scenarios] (:scenarios stored-decision))
-                (assoc-in [:decision :scenario-factor-values] (:scenario-factor-values stored-decision)))}
-       {:db db/default-db}))))
-
-#_(re-frame/reg-event-db
-    :app/load-decision
-    (fn [db [_ decision]]
-      (-> db
-          (assoc :title (:title decision))
-          (assoc :description (:description decision))
-          (assoc :factors (:factors decision))
-          (assoc :scenarios (:scenarios decision))
-          (assoc :scenario-factor-values (:scenario-factor-values decision)))))
+ (fn [_ _]
+   {:db db/default-db
+    :dispatch-n [[:app/load-decision-from-storage]
+                 [:app/load-user-from-storage]]}))
 
 (re-frame/reg-event-fx
  :app/compare-db-localstorage

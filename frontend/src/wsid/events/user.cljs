@@ -1,10 +1,31 @@
 (ns wsid.events.user
   (:require
+   [clojure.edn :as edn]
    [clojure.spec.alpha :as s]
+   [re-frame.cofx :refer [inject-cofx]]
    [re-frame.core :as re-frame]
    [superstructor.re-frame.fetch-fx]
    [wsid.config :as config]
-   [wsid.db :as db]))
+   [wsid.db :as db]
+   [wsid.events.local-storage :as local-storage :refer [ls-keys]]))
+
+(defn validate-user [^str stored]
+  (let [parsed (edn/read-string stored)
+        is-valid (s/valid? ::db/user parsed)]
+    (if is-valid
+      parsed
+      (do
+        (println "Failed to load user from local store:")
+        (s/explain ::db/user parsed)))))
+
+(re-frame/reg-event-fx
+ :app/load-user-from-storage
+ [(inject-cofx :local-storage/load (:user ls-keys))]
+ (fn [{db :db local-storage :local-storage/load} _]
+   (let [stored-user (validate-user local-storage)]
+     (if stored-user
+       {:db (assoc db :user stored-user)}
+       {:db db}))))
 
 (re-frame/reg-event-db
  :authenticate
@@ -46,19 +67,31 @@
               :on-success [:login-success]
               :on-failure [:login-failure]}})))
 
-(re-frame/reg-event-db
+(re-frame/reg-event-fx
  :login-success
- (fn [db [_ response]]
-   (let [user-data (get response :body)]
-     (-> db
-         (assoc-in [:user :email] (:email user-data))
-         (assoc-in [:user :jwt-token] (:jwt-token user-data))))))
+ (fn [{:keys [db]} [_ response]]
+   (let [user-data (get response :body)
+         updated-db (-> db
+                        (assoc-in [:user :email] (:email user-data))
+                        (assoc-in [:user :jwt-token] (:jwt-token user-data)))]
+     {:db updated-db
+      :local-storage/save {:key (:user ls-keys) 
+                           :val (:user updated-db)}})))
 
 (re-frame/reg-event-db
  :login-failure
  (fn [db [_ response]]
    (println "Login failed:" response)
    db))
+
+(re-frame/reg-event-fx
+ :logout
+ (fn [{:keys [db]} _]
+   {:db (-> db
+            (assoc-in [:user :email] nil)
+            (assoc-in [:user :jwt-token] nil))
+    :local-storage/save {:key (:user ls-keys) 
+                         :val nil}}))
 
 (re-frame/reg-event-fx
  :llm-fetch

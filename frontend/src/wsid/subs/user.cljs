@@ -16,3 +16,8 @@
  :user-active-is-valid
  (fn [db]
    (get-in db [:transient :user-active-validation :is-valid])))
+
+(re-frame/reg-sub
+ :user-token
+ (fn [db]
+   (get-in db [:user :jwt-token])))
