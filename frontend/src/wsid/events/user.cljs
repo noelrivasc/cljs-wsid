@@ -1,9 +1,10 @@
 (ns wsid.events.user
   (:require
-   [re-frame.core :as re-frame]
-   [wsid.db :as db]
    [clojure.spec.alpha :as s]
-   [superstructor.re-frame.fetch-fx]))
+   [re-frame.core :as re-frame]
+   [superstructor.re-frame.fetch-fx]
+   [wsid.config :as config]
+   [wsid.db :as db]))
 
 (re-frame/reg-event-db
  :authenticate
@@ -36,8 +37,7 @@
    (let [user-active (get-in db [:transient :user-active])]
      {:db (assoc-in db [:transient :user-active] nil)
       :fetch {:method :post
-              ; TODO: get URL from config and differentiate between environments
-              :url "http://localhost:3000/api/user/login"
+              :url (str (get-in config/config [:api :base-url]) "/user/login")
               :headers {"Content-Type" "application/json"
                         "Accept" "application/json"}
               :body (js/JSON.stringify #js {"email" (:email user-active)
@@ -60,19 +60,13 @@
    (println "Login failed:" response)
    db))
 
-(re-frame/reg-event-db
- :jwt-token-update
- (fn [db [_ token]]
-   (assoc-in db [:transient :user :jwt-token] token)))
-
 (re-frame/reg-event-fx
  :llm-fetch
  (fn [{:keys [db]} _]
-   (let [description (:description db)
-         jwt-token (get-in db [:transient :user :jwt-token])]
+   (let [description (get-in db [:decision :description])
+         jwt-token (get-in db [:user :jwt-token])]
      {:fetch {:method :post
-              ; TODO: get URL from config and differentiate between environments
-              :url "http://localhost:3000/api/llm/wsid-1--mistral"
+              :url (str (get-in config/config [:api :base-url]) "/llm/wsid-1--mistral")
               :headers {"Authorization" (str "Bearer " jwt-token)
                         "Content-Type" "application/json"
                         "Accept" "application/json"}
@@ -98,17 +92,16 @@
    (println (get-in response [:body :llm-message]))
    (if-let [decision-data (get-in response [:body :llm-message])]
      ;; TODOS
-     ;; - fix the parsing of scenario-factor-values (convert keyword to string recursively or disable key munging)
      ;; - move this out of user
      ;; - validate the decision before populating (perhaps use existing code)
      ;; - implement retries (timeout, model busy, wrong output)
      ;; - show backend problems and retries to the user
      ;; - show some spinner
-     ;; - consider making this async, the backend streaming?
+     ;; - use SSE?
      (-> db
-         (assoc :factors (:factors decision-data))
-         (assoc :scenarios (:scenarios decision-data))
-         (assoc :scenario-factor-values (string-keys (:scenario-factor-values decision-data))))
+         (assoc-in [:decision :factors] (:factors decision-data))
+         (assoc-in [:decision :scenarios] (:scenarios decision-data))
+         (assoc-in [:decision :scenario-factor-values] (string-keys (:scenario-factor-values decision-data))))
      (do
        (println "There was an error getting the decision data.")
        db))))
