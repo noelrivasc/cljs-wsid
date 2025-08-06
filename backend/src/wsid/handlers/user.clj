@@ -53,7 +53,8 @@
                           (create-user-token user)
                           nil)
                   r (if token
-                             (ok token)
+                             (ok {:jwt-token token
+                                  :email email})
                              (response 401 "Invalid credentials"))]
 
               (assoc context :response r)))})
