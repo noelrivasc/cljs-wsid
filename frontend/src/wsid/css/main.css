@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 @utility icon { @apply w-4 h-4 fill-amber-600; }
+@utility icon--sm { @apply w-3 h-3 fill-amber-600; }
 
 /* -- Transitions -------------------------------------- */
 @utility fade-enter { @apply transition-opacity duration-250 opacity-100; }
@@ -13,6 +14,9 @@
 @utility title { @apply text-lg; }
 @utility title__wrapper { @apply my-4; }
 @utility title__acronym { @apply text-3xl uppercase; }
+
+/* -- Toolbar ----------------------------------- */
+@utility toolbar { @apply my-12 flex items-center gap-4 }
 
 /* -- Modal ------------------------------------- */
 @utility modal { @apply fixed w-screen h-screen left-0 top-0 text-cyan-700 opacity-0; }
@@ -27,7 +31,7 @@
 @utility form__label { @apply font-bold; }
 @utility form__input { @apply border border-gray-300 rounded-sm p-1 focus:outline-none focus:ring-2 focus:ring-cyan-500; }
 @utility form__actions { @apply my-4 flex flex-row justify-end gap-2; }
-@utility button { @apply font-sans px-1 rounded-sm border border-b-4 border-slate-300 bg-slate-100 hover:bg-slate-200 transition-colors duration-250; }
+@utility button { @apply flex items-center gap-1 font-sans px-1 rounded-sm border border-b-4 border-slate-300 bg-slate-100 hover:bg-slate-200 transition-colors duration-250; }
 @utility button--danger { @apply border-b-red-400; }
 @utility button--primary { @apply border-b-slate-400; }
 
