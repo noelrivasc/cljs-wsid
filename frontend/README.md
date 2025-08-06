@@ -1,5 +1,11 @@
 # WSID frontend
 
+A re-frame app to help you make tricky decisions.
+
+The default readme of the re-frame app is found at DEFAULT-README.md.
+
+Started with https://github.com/day8/re-frame-template at commit 3d4358f14bc2e85b22ba6bafaddfb9561b204d15;
+
 ## REPL
 
 ### Running build and REPL

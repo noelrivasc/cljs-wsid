@@ -1,24 +1,32 @@
 # What Should I Do?
 
-A re-frame app to help you make tricky decisions.
-
-The default readme of the re-frame app is found at DEFAULT-README.md.
-
-Started with https://github.com/day8/re-frame-template at commit 3d4358f14bc2e85b22ba6bafaddfb9561b204d15;
+A re-frame + Pedestal app to help you make tricky decisions.
 
 ## Development
 
 ### Running
 
+**Run the backend** (see backend/README.md for options)
+
+```bash
+cd backend
+clj -M -m wsid.core
 ```
+
+**Run the frontend** (see frontend/README.md for options)
+
+```
+cd frontend
 npm install
 npm run watch
 ```
 
-This will run the shadow-cls build tool, start a development web server with hot code reload
-at http://localhost:8280/ and start Tailwind watch.
+**Run the proxy server**
 
-### Tailwind integration
+```bash
+./start-proxy
+# This just runs nginx with the proxy.conf configuration
+# nginx -c $(pwd)/proxy.conf -g "daemon off;"
+```
 
-- Tailwind CLI v4.x is installed as a NPM dependency
-- A `tailwind-watch` command is provided in package.json. This command watches the *.cljs files for changes and compiles Tailwind CSS to a location included in index.html
+The proxy just helps deal with CORS issues on localhost. The app can run fine without it in other environments.
