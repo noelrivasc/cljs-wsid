@@ -31,6 +31,11 @@
 (s/def ::scenario (s/keys :req-un [:scenario/title]
                           :opt-un [:scenario/id :scenario/description]))
 
+; -- USER ---------------------------
+(s/def :user-credentials/email (s/and string? not-empty))
+(s/def :user-credentials/password (s/and string? not-empty))
+(s/def ::user-credentials (s/keys :req-un [:user-credentials/email :user-credentials/password]))
+
 (s/def :user/jwt-token (s/nilable string?))
 (s/def :user/email (s/nilable string?))
 (s/def ::user (s/keys :req-un [:user/email :user/jwt-token]))
