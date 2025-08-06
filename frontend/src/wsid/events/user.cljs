@@ -1,7 +1,64 @@
 (ns wsid.events.user
   (:require
    [re-frame.core :as re-frame]
+   [wsid.db :as db]
+   [clojure.spec.alpha :as s]
    [superstructor.re-frame.fetch-fx]))
+
+(re-frame/reg-event-db
+ :authenticate
+ (fn [db _]
+   (let [active-user {:email ""
+                      :password ""}]
+     (-> db
+         (assoc-in [:transient :user-active] active-user)
+         (assoc-in [:transient :user-active-validation :is-valid] false)))))
+
+(re-frame/reg-event-db
+ :user-active-update
+ (fn [db [_ property value]]
+   (let [updated-user (assoc (get-in db [:transient :user-active]) (keyword property) value)
+         user-valid? (s/valid? ::db/user-credentials updated-user)]
+     (-> db
+         (assoc-in [:transient :user-active] updated-user)
+         (assoc-in [:transient :user-active-validation :is-valid] user-valid?)))))
+
+(re-frame/reg-event-db
+ :user-active-cancel
+ (fn [db _]
+   (-> db
+       (assoc-in [:transient :user-active] nil)
+       (assoc-in [:transient :user-active-validation :is-valid] nil))))
+
+(re-frame/reg-event-fx
+ :submit-login
+ (fn [{:keys [db]} _]
+   (let [user-active (get-in db [:transient :user-active])]
+     {:db (assoc-in db [:transient :user-active] nil)
+      :fetch {:method :post
+              ; TODO: get URL from config and differentiate between environments
+              :url "http://localhost:3000/api/user/login"
+              :headers {"Content-Type" "application/json"
+                        "Accept" "application/json"}
+              :body (js/JSON.stringify #js {"email" (:email user-active)
+                                           "password" (:password user-active)})
+              :response-content-types {"application/json" :json}
+              :on-success [:login-success]
+              :on-failure [:login-failure]}})))
+
+(re-frame/reg-event-db
+ :login-success
+ (fn [db [_ response]]
+   (let [user-data (get response :body)]
+     (-> db
+         (assoc-in [:user :email] (:email user-data))
+         (assoc-in [:user :jwt-token] (:jwt-token user-data))))))
+
+(re-frame/reg-event-db
+ :login-failure
+ (fn [db [_ response]]
+   (println "Login failed:" response)
+   db))
 
 (re-frame/reg-event-db
  :jwt-token-update
@@ -14,6 +71,7 @@
    (let [description (:description db)
          jwt-token (get-in db [:transient :user :jwt-token])]
      {:fetch {:method :post
+              ; TODO: get URL from config and differentiate between environments
               :url "http://localhost:3000/api/llm/wsid-1--mistral"
               :headers {"Authorization" (str "Bearer " jwt-token)
                         "Content-Type" "application/json"

@@ -6,7 +6,9 @@
    #_{:clj-kondo/ignore [:unused-namespace]}
    [wsid.subs.scenarios :as scenarios]
    #_{:clj-kondo/ignore [:unused-namespace]}
-   [wsid.subs.decisions :as decisions]))
+   [wsid.subs.decisions :as decisions]
+   #_{:clj-kondo/ignore [:unused-namespace]}
+   [wsid.subs.user :as user]))
 
 (def <sub (comp deref re-frame.core/subscribe))
 
