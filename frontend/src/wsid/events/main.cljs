@@ -1,16 +1,14 @@
 (ns wsid.events.main
   (:require
-   [re-frame.core :as re-frame]
    [re-frame.cofx :refer [inject-cofx]]
+   [re-frame.core :as re-frame]
    [wsid.db :as db]
-
+   [wsid.events.decisions :as decisions]
    #_{:clj-kondo/ignore [:unused-namespace]}
    [wsid.events.factors :as factors]
+   [wsid.events.local-storage :as local-storage :refer [ls-keys]]
    #_{:clj-kondo/ignore [:unused-namespace]}
    [wsid.events.scenarios :as scenarios]
-   #_{:clj-kondo/ignore [:unused-namespace]}
-   [wsid.events.local-storage :as local-storage]
-   [wsid.events.decisions :as decisions]
    #_{:clj-kondo/ignore [:unused-namespace]}
    [wsid.events.user :as user]
    [wsid.events.util :as util]))
@@ -19,7 +17,7 @@
 
 (re-frame/reg-event-fx
  :app/initialize-db
- [(inject-cofx :local-storage/load)]
+ [(inject-cofx :local-storage/load (:decision ls-keys))]
  (fn [{db :db local-storage :local-storage/load} _]
    (let [stored-decision (decisions/validate-decision local-storage)]
      (if stored-decision
@@ -43,12 +41,9 @@
 
 (re-frame/reg-event-fx
  :app/compare-db-localstorage
- [(inject-cofx :local-storage/load)]
+ [(inject-cofx :local-storage/load (:decision ls-keys))]
  (fn [{db :db local-storage :local-storage/load} _]
-   ; TODO: use multiple local store keys, for decision and user
    (let [stored-decision (decisions/validate-decision local-storage)
          db-decision (:decision db)
          is-dirty (not (= db-decision stored-decision))]
-     (println "We did a thorough review and found the database to be "
-              (if is-dirty "dirty" "not dirty"))
      {:db (assoc-in db [:transient :db-is-dirty] is-dirty)})))
