@@ -45,23 +45,23 @@
    ; Initialize the factor values for the given scenario to nil.
    [db [_ scenario-id]]
    (assoc-in db 
-             [:scenario-factor-values scenario-id]
-             (zipmap (map :id (get-in db [:factors :all])) (repeat nil)))))
+             [:decision :scenario-factor-values scenario-id]
+             (zipmap (map :id (get-in db [:decision :factors])) (repeat nil)))))
 
 
 (re-frame/reg-event-db
  :scenario-factor-values-initialize-factor
  (fn [db [_ factor-id]]
-   (assoc-in db [:scenario-factor-values]
-             (update-vals (get-in db [:scenario-factor-values])
+   (assoc-in db [:decision :scenario-factor-values]
+             (update-vals (get-in db [:decision :scenario-factor-values])
                           (fn [s]
                             (assoc s factor-id nil))))))
 
 (re-frame/reg-event-db
  :scenario-factor-values-prune
  (fn [db [_ factor-id]]
-   (assoc-in db [:scenario-factor-values]
-             (update-vals (get-in db [:scenario-factor-values])
+   (assoc-in db [:decision :scenario-factor-values]
+             (update-vals (get-in db [:decision :scenario-factor-values])
                           (fn [s]
                             (dissoc s factor-id))))))
 
@@ -80,13 +80,13 @@
          scenario-prepared (assoc active-scenario :id scenario-id)
          other-scenarios
          (vec (filter #(not= (:id scenario-prepared) (:id %))
-                      (get-in db [:scenarios])))
+                      (get-in db [:decision :scenarios])))
          scenarios (conj other-scenarios
                          scenario-prepared)]
      (when is-new
        (evt> [:scenario-factor-values-initialize-scenario scenario-id]))
      (-> db
-         (assoc-in [:scenarios] scenarios)
+         (assoc-in [:decision :scenarios] scenarios)
          (assoc-in [:transient :scenario-edit-defaults] nil)
          (assoc-in [:transient :scenario-active] nil)))))
 
@@ -94,12 +94,12 @@
  :scenario-active-delete
  (fn [db _]
    (let [scenario-active (get-in db [:transient :scenario-active])
-         scenarios (vec (filter #(not (= (:id %) (:id scenario-active))) (get-in db [:scenarios])))]
+         scenarios (vec (filter #(not (= (:id %) (:id scenario-active))) (get-in db [:decision :scenarios])))]
      (-> db
-         (assoc-in [:scenarios] scenarios)
+         (assoc-in [:decision :scenarios] scenarios)
          (assoc-in [:transient :scenario-edit-defaults] nil)
          (assoc-in [:transient :scenario-active] nil)
-         (assoc :scenario-factor-values (dissoc (:scenario-factor-values db) (:id scenario-active)))))))
+         (assoc-in [:decision :scenario-factor-values] (dissoc (get-in db [:decision :scenario-factor-values]) (:id scenario-active)))))))
 
 (re-frame/reg-event-db
  :scenario-active-cancel
@@ -111,6 +111,6 @@
 (re-frame/reg-event-db
  :scenario-factor-values-update
  (fn [db [_ scenario-id values]]
-   (assoc-in db [:scenario-factor-values scenario-id] values)))
+   (assoc-in db [:decision :scenario-factor-values scenario-id] values)))
 
 

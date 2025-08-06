@@ -17,4 +17,4 @@
 (re-frame/reg-event-fx
  :save-to-local-storage
  (fn [{:keys [db]} _]
-   {:local-storage/save {:key "wsid" :val (dissoc db :transient)}}))
+   {:local-storage/save {:key "wsid" :val (:decision db)}}))

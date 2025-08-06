@@ -28,7 +28,7 @@
 (re-frame/reg-sub
  :scenarios
  (fn [db]
-   (:scenarios db)))
+   (get-in db [:decision :scenarios])))
 
 (re-frame/reg-sub
  :scenario-ids-sorted
@@ -42,7 +42,7 @@
    (let [scenario (first
                    (filter
                     #(= scenario-id (:id %))
-                    (get db :scenarios)))]
+                    (get-in db [:decision :scenarios])))]
      scenario)
    ))
 
@@ -59,7 +59,7 @@
 (re-frame/reg-sub
  :scenario-factor-values
  (fn [db [_ scenario-id]]
-   (get-in db [:scenario-factor-values scenario-id])))
+   (get-in db [:decision :scenario-factor-values scenario-id])))
 
 (re-frame/reg-sub
  :scenario-factors

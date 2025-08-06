@@ -33,7 +33,7 @@
         [:input.button
          {:type "button"
           :value "Save to Browser"
-          :on-click #(evt> [:save-to-local-storage])}]
+          :on-click #(evt> ^:ls-compare [:save-to-local-storage])}]
         (when db-is-dirty
           [:span.icon
            (i/get-icon i/edit)])]]
@@ -49,7 +49,7 @@
        [:input.button {:type "button"
                        :value "AI Help"
                        :on-click #(evt> [:llm-fetch])}]]
-      
+
       ; SECTIONS
       [:div.tool-container.tool-container--factors
        [v-factors-panel]]

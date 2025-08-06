@@ -5,7 +5,7 @@
 (re-frame/reg-sub
  :factors
  (fn [db]
-   (:factors db)))
+   (get-in db [:decision :factors])))
 
 (re-frame/reg-sub
  :factors-sorted

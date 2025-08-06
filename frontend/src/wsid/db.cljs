@@ -43,7 +43,24 @@
 (s/def :transient/scenario-edit-defaults nil-or-map)
 (s/def :transient/scenario-active nil-or-map)
 (s/def :transient/scenario-active-validation map?)
-(s/def :transient/user (s/nilable ::user))
+(s/def :transient/user-active nil-or-map)
+
+; -- DECISION -----------------------
+(s/def :decision/title (s/and string? #(<= 1 (count %) 50)))
+(s/def :decision/description (s/and string? #(<= (count %) 5000)))
+(s/def :decision/factors (s/coll-of ::factor :kind vector?))
+(s/def :decision/scenarios (s/coll-of ::scenario :kind vector?))
+
+; A map of scenarios with nested maps of factor values
+(s/def :decision/scenario-factor-values (s/map-of string? ; outer map is keyed by scenario-id
+                                                (s/map-of string? ; inner map is keyed by factor-id
+                                                          nil-or-number)))
+
+(s/def ::decision (s/keys :req-un [:decision/title
+                                   :decision/description
+                                   :decision/factors
+                                   :decision/scenarios
+                                   :decision/scenario-factor-values]))
 
 ; -- APP DB -------------------------
 (s/def :app-db/transient
@@ -54,31 +71,17 @@
                    :transient/scenario-edit-defaults
                    :transient/scenario-active
                    :transient/scenario-active-validation
-                   :transient/user]))
-(s/def :app-db/factors (s/coll-of ::factor :kind vector?))
-(s/def :app-db/scenarios (s/coll-of ::scenario :kind vector?))
+                   :transient/user-active]))
 
-; A map of scenarios with nested maps of factor values
-(s/def :app-db/scenario-factor-values (s/map-of string? ; outer map is keyed by scenario-id
-                                                (s/map-of string? ; inner map is keyed by factor-id
-                                                          nil-or-number)))
+(s/def :app-db/user (s/nilable ::user))
+(s/def :app-db/decision (s/nilable ::decision))
+
 (s/def ::app-db (s/keys :req-un [:app-db/transient
-                                 :app-db/factors
-                                 :app-db/scenarios
-                                 :app-db/scenario-factor-values]))
-
-; -- DECISION METADATA --------------
-(s/def :decision/title (s/and string? #(<= 1 (count %) 50)))
-(s/def :decision/description (s/and string? #(<= (count %) 5000)))
-
-(s/def ::decision (s/keys :req-un [:decision/title
-                                   :decision/description
-                                   :app-db/factors
-                                   :app-db/scenarios
-                                   :app-db/scenario-factor-values]))
+                                 :app-db/user
+                                 :app-db/decision]))
 
 (def default-db
-  {; Information that is used for procedures but that is
+  {; Information that is used to control UI but that is
    ; not the resulting data that is the goal of the program
    :transient {; Just default values of factor form
                ; These do not change as form is edited
@@ -93,10 +96,11 @@
                :scenario-edit-defaults nil
                :scenario-active nil
                :scenario-active-validation {:is-valid nil}
-               :user nil}
+               :user-active nil}
 
-   :title ""
-   :description ""
-   :factors []
-   :scenarios []
-   :scenario-factor-values {}})
+   :user nil
+   :decision {:title ""
+              :description ""
+              :factors []
+              :scenarios []
+              :scenario-factor-values {}}})
