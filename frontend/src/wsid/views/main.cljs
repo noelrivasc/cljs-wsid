@@ -49,10 +49,6 @@
      [v-decision-panel]]
 
     [:div.tool-container.tool-container--ai-help
-     [:input.form__input
-      {:type "text"
-       :placeholder "JWT Token"
-       :on-change #(evt> ^:ls-compare [:jwt-token-update (-> % .-target .-value)])}]
      [:input.button {:type "button"
                      :value "AI Help"
                      :on-click #(evt> [:llm-fetch])}]]
