@@ -45,11 +45,11 @@
        [:input.form__input
         {:type "text"
          :placeholder "JWT Token"
-         :on-change #(evt> [:jwt-token-update (-> % .-target .-value)])}]
+         :on-change #(evt> ^:ls-compare [:jwt-token-update (-> % .-target .-value)])}]
        [:input.button {:type "button"
-                       :value "AI Help"}]]
+                       :value "AI Help"
+                       :on-click #(evt> [:llm-fetch])}]]
       
-
       ; SECTIONS
       [:div.tool-container.tool-container--factors
        [v-factors-panel]]
