@@ -63,7 +63,10 @@
    ::http/type :jetty
    ::http/port 8890
    
-   ::http/allowed-origins '("https://d3r6lgifjuis4q.cloudfront.net")})
+   ::http/allowed-origins (fn [origin]
+                            (#{"https://d3r6lgifjuis4q.cloudfront.net"
+                               "http://localhost:3000"
+                               "http://localhost:8280"} origin))})
 
 (defn start []
   (http/start (http/create-server service-map)))
