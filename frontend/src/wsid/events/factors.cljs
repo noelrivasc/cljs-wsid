@@ -58,10 +58,10 @@
          factor-prepared (assoc active-factor :id factor-id)
          factors (conj
                   (vec (filter #(not (= (:id factor-prepared) (:id %)))
-                               (:factors db)))
+                               (get-in db [:decision :factors])))
                   factor-prepared)
          new-db (-> db
-                    (assoc :factors factors)
+                    (assoc-in [:decision :factors] factors)
                     (assoc-in [:transient :factor-edit-defaults] nil)
                     (assoc-in [:transient :factor-active] nil))]
      (when is-new
@@ -74,9 +74,9 @@
  :factor-active-delete
  (fn [db _]
    (let [factor-active (get-in db [:transient :factor-active])
-         factors (vec (filter #(not (= (:id %) (:id factor-active))) (:factors db)))
+         factors (vec (filter #(not (= (:id %) (:id factor-active))) (get-in db [:decision :factors])))
          new-db (-> db
-                    (assoc :factors factors)
+                    (assoc-in [:decision :factors] factors)
                     (assoc-in [:transient :factor-edit-defaults] nil)
                     (assoc-in [:transient :factor-active] nil))]
      (evt> [:scenario-factor-values-prune (:id factor-active)])

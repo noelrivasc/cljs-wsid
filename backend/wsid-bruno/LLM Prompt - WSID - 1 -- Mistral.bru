@@ -1,0 +1,25 @@
+meta {
+  name: LLM Prompt - WSID - 1 -- Mistral
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{protocol}}://{{server_url}}/llm/wsid-1--mistral
+  body: json
+  auth: bearer
+}
+
+headers {
+  ~Accept: application/edn
+}
+
+auth:bearer {
+  token: {{process.env.JWT_TOKEN}}
+}
+
+body:json {
+  {
+    "user-situation": "I'm trying to decide between eating Doritos and getting an apple. I'm allergic to apples, though, and not too sure about how my body will respond to that."
+  }
+}

@@ -5,10 +5,10 @@
 (re-frame/reg-sub
  :decision-title
  (fn [db]
-   (:title db)))
+   (get-in db [:decision :title])))
 
 (re-frame/reg-sub
  :decision-description
  (fn [db]
-   (:description db)))
+   (get-in db [:decision :description])))
 

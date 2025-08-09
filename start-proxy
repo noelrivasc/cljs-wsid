@@ -1,0 +1,3 @@
+#!/bin/zsh
+
+nginx -c $(pwd)/proxy.conf -g "daemon off;"
