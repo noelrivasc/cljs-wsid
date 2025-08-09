@@ -18,7 +18,6 @@
 (def app-routes
   #{["/ping" :get [i/coerce-body
                    i/content-negotiation
-                   i/auth
                    ping/ping] :route-name :ping]
     ["/user/login" :post [i/parse-body
                           i/coerce-body
