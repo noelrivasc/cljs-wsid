@@ -61,7 +61,9 @@
    ; The following only affect the server when started
    ; with http/start —not the lambda handler.
    ::http/type :jetty
-   ::http/port 8890})
+   ::http/port 8890
+   
+   ::http/allowed-origins '("https://d3r6lgifjuis4q.cloudfront.net")})
 
 (defn start []
   (http/start (http/create-server service-map)))
