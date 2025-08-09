@@ -11,6 +11,8 @@
    [wsid.events.scenarios :as scenarios]
    #_{:clj-kondo/ignore [:unused-namespace]}
    [wsid.events.user :as user]
+   #_{:clj-kondo/ignore [:unused-namespace]}
+   [wsid.events.llm :as llm]
    [wsid.events.util :as util]))
 
 (def evt> util/evt>)
