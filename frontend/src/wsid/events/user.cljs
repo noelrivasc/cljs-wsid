@@ -63,6 +63,7 @@
                         "Accept" "application/json"}
               :body (js/JSON.stringify #js {"email" (:email user-active)
                                            "password" (:password user-active)})
+              :mode :cors
               :response-content-types {"application/json" :json}
               :on-success [:login-success]
               :on-failure [:login-failure]}})))

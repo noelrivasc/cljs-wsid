@@ -15,6 +15,7 @@
                         "Content-Type" "application/json"
                         "Accept" "application/json"}
               :body (js/JSON.stringify #js {"user-situation" description})
+              :mode :cors
               :response-content-types {"application/json" :json}
               :on-success [:llm-fetch-success]
               :on-failure [:llm-fetch-failure]}})))
