@@ -8,14 +8,17 @@
  :llm-fetch
  (fn [{:keys [db]} _]
    (let [description (get-in db [:decision :description])
+         title (get-in db [:decision :title])
+         situation (str "Decision title: " title " Description of the situation: " description)
          jwt-token (get-in db [:user :jwt-token])]
      {:fetch {:method :post
               :url (str (get-in config/config [:api :base-url]) "/llm/wsid-1--mistral")
               :headers {"Authorization" (str "Bearer " jwt-token)
                         "Content-Type" "application/json"
                         "Accept" "application/json"}
-              :body (js/JSON.stringify #js {"user-situation" description})
+              :body (js/JSON.stringify #js {"user-situation" situation})
               :mode :cors
+              :credentials :omit
               :response-content-types {"application/json" :json}
               :on-success [:llm-fetch-success]
               :on-failure [:llm-fetch-failure]}})))

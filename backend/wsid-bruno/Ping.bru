@@ -7,7 +7,7 @@ meta {
 get {
   url: {{protocol}}://{{server_url}}/ping?timezone=America/Mexico_City
   body: none
-  auth: bearer
+  auth: none
 }
 
 params:query {
@@ -16,8 +16,4 @@ params:query {
 
 headers {
   ~Authorization: Bearer (token)
-}
-
-auth:bearer {
-  token: {{process.env.JWT_TOKEN}}
 }
