@@ -21,7 +21,8 @@
  :app/initialize-db
  (fn [_ _]
    {:db db/default-db
-    :dispatch-n [[:app/load-decision-from-storage]
+    :dispatch-n [[:decision/load-from-query-string]
+                 [:app/load-decision-from-storage]
                  [:app/load-user-from-storage]]}))
 
 (re-frame/reg-event-fx
