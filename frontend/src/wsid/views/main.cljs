@@ -55,14 +55,14 @@
 
     [:div.tool-container.tool-container--ai-help
      [:input.button {:type "button"
-                     :value "AI Help"
+                     :value "Give me some ideas ✨🤖"
                      :on-click #(evt> [:llm-fetch])}]]
 
       ; SECTIONS
-    [:div.tool-container.tool-container--factors
-     [v-factors-panel]]
     [:div.tool-container.tool-container--scenarios
-     [v-scenarios-panel]]]])
+     [v-scenarios-panel]]
+    [:div.tool-container.tool-container--factors
+     [v-factors-panel]]]])
     
 (defn v-main []
   (let [f-active (<sub [:factor-active-is-set])

@@ -48,7 +48,9 @@
     [:details.scenario-factors
      [:summary.scenario-factors__summary "Decision Factors"]
      [:div.scenario-factors__instructions
-      "Move the slider to adjust the points this scenario gets for each decision factor."]
+      (if (empty? scenario-factors)
+        "You need to add factors before you can adjust their scores for this option"
+        "Move the slider to adjust the points this option gets for each decision factor.")]
      [:ul.scenario-factors__list
       (for [f scenario-factors]
         ^{:key (str "factor-" scenario-id "-" f)}
@@ -81,7 +83,7 @@
     [:div.panel__wrapper
      [:div.panel
       [:div.panel__header
-       [:h2.panel__title "Scenarios"]
+       [:h2.panel__title "My Options"]
        [:button.panel__add-button
         {:type "button"
          :value "add"
@@ -103,7 +105,7 @@
                                           (if (= type "number") (parse-long value) value)])))]
     [:form.form
      [:div.form__field
-      [:label.form__label {:for "scenario-title"} "Title"]
+      [:label.form__label {:for "scenario-title"} "Option Name"]
       [:input.form__input
        {:defaultValue (:title scenario-edit-defaults)
         :id "scenario-title"
