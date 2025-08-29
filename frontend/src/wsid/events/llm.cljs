@@ -11,7 +11,8 @@
          title (get-in db [:decision :title])
          situation (str "Decision title: " title " Description of the situation: " description)
          jwt-token (get-in db [:user :jwt-token])]
-     {:fetch {:method :post
+     {:db (assoc-in db [:transient :llm-request-pending] true)
+      :fetch {:method :post
               :url (str (get-in config/config [:api :base-url]) "/llm/wsid-1--mistral")
               :headers {"Authorization" (str "Bearer " jwt-token)
                         "Content-Type" "application/json"
@@ -42,7 +43,14 @@
      (-> db
          (assoc-in [:decision :factors] (:factors decision-data))
          (assoc-in [:decision :scenarios] (:scenarios decision-data))
-         (assoc-in [:decision :scenario-factor-values] (string-keys (:scenario-factor-values decision-data))))
+         (assoc-in [:decision :scenario-factor-values] (string-keys (:scenario-factor-values decision-data)))
+         (assoc-in [:transient :llm-request-pending] false))
      (do
        (println "There was an error getting the decision data.")
-       db))))
+       (assoc-in db [:transient :llm-request-pending] false)))))
+
+(re-frame/reg-event-db
+ :llm-fetch-failure
+ (fn [db [_ response]]
+   (println "LLM fetch failed:" response)
+   (assoc-in db [:transient :llm-request-pending] false)))

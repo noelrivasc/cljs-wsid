@@ -42,27 +42,30 @@
          [:span.text "Log in"]])]]))
 
 (defn v-main-panel []
-  [:main.main-container
-   [:div.title__wrapper
-    [:span.title__acronym "w.s.i.d"]
-    [:h1.title "What Should I Do?"]]
+  (let [llm-pending (<sub [:llm-request-pending])
+        spinner-class (if llm-pending [:opacity-100 :ml-4 :pt-1] [:opacity-0 :ml-4 :pt-1])]
+    [:main.main-container
+     [:div.title__wrapper
+      [:span.title__acronym "w.s.i.d"]
+      [:h1.title "What Should I Do?"]]
 
-   [:div.work-area
-    [v-toolbar]
+     [:div.work-area
+      [v-toolbar]
 
-    [:div.tool-container.tool-container--decision
-     [v-decision-panel]]
+      [:div.tool-container.tool-container--decision
+       [v-decision-panel]]
 
-    [:div.tool-container.tool-container--ai-help
-     [:input.button {:type "button"
-                     :value "Give me some ideas ✨🤖"
-                     :on-click #(evt> [:llm-fetch])}]]
+      [:div.tool-container.tool-container--ai-help
+       [:input.button {:type "button"
+                       :value "Give me some ideas ✨🤖"
+                       :on-click #(evt> [:llm-fetch])}]
+       [:span {:class spinner-class} (i/get-icon i/spinner :svg.icon.spinner)]]
 
       ; SECTIONS
-    [:div.tool-container.tool-container--scenarios
-     [v-scenarios-panel]]
-    [:div.tool-container.tool-container--factors
-     [v-factors-panel]]]])
+      [:div.tool-container.tool-container--scenarios
+       [v-scenarios-panel]]
+      [:div.tool-container.tool-container--factors
+       [v-factors-panel]]]]))
     
 (defn v-main []
   (let [f-active (<sub [:factor-active-is-set])

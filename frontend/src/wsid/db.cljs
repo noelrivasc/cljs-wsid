@@ -49,6 +49,7 @@
 (s/def :transient/scenario-active nil-or-map)
 (s/def :transient/scenario-active-validation map?)
 (s/def :transient/user-active nil-or-map)
+(s/def :transient/llm-request-pending (s/or :empty nil :bool boolean?))
 
 ; -- DECISION -----------------------
 (s/def :decision/title (s/and string? #(<= 1 (count %) 50)))
@@ -76,7 +77,8 @@
                    :transient/scenario-edit-defaults
                    :transient/scenario-active
                    :transient/scenario-active-validation
-                   :transient/user-active]))
+                   :transient/user-active
+                   :transient/llm-request-pending]))
 
 (s/def :app-db/user (s/nilable ::user))
 (s/def :app-db/decision (s/nilable ::decision))
@@ -101,7 +103,8 @@
                :scenario-edit-defaults nil
                :scenario-active nil
                :scenario-active-validation {:is-valid nil}
-               :user-active nil}
+               :user-active nil
+               :llm-request-pending false}
 
    :user nil
    :decision {:title ""

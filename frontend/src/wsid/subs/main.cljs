@@ -16,3 +16,8 @@
  :db-is-dirty
  (fn [db]
    (get-in db [:transient :db-is-dirty])))
+
+(re-frame/reg-sub
+ :llm-request-pending
+ (fn [db]
+   (get-in db [:transient :llm-request-pending])))
