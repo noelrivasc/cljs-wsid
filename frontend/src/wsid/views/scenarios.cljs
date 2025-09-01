@@ -10,7 +10,7 @@
     [:div.scenario-factor-item {:key (:id scenario-factor)}
      [:div.scenario-factor-item__header
       [:div.scenario-factor-item__title (:title scenario-factor)]
-      [:div.scenario-factor-item__value (:scenario-value scenario-factor)]]
+      [:div.scenario-factor-item__value (* (:weight scenario-factor) (:scenario-value scenario-factor))]]
      [:div.scenario-factor-item__slider
       [:datalist.scenario-factor-item__datalist {:id datalist-id}
        (for [x (range -10 11)]
