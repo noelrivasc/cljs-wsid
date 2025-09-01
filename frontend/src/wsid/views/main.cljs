@@ -24,7 +24,8 @@
 (defn v-toolbar []
   (let [db-is-dirty (<sub [:db-is-dirty])
         icon-class (if db-is-dirty [:icon :opacity-100] [:icon :opacity-20])
-        user-token (<sub [:user-token])]
+        ; user-token (<sub [:user-token])
+        ]
     [:div.toolbar
      [:div.toolbar__save-to-browser
       [:button.button
@@ -32,7 +33,7 @@
        [:span.text "Save to Browser"]
        [:span.button__icon {:class icon-class}
         (i/get-icon i/edit :svg.icon--sm)]]]
-     [:div.toolbar__authentication
+     #_[:div.toolbar__authentication
       (if user-token
         [:button.button
          {:on-click #(evt> [:logout])}
@@ -70,9 +71,10 @@
 (defn v-main []
   (let [f-active (<sub [:factor-active-is-set])
         s-active (<sub [:scenario-active-is-set])
-        u-active (<sub [:user-active-is-set])]
+        ; u-active (<sub [:user-active-is-set])
+        ]
    [:div.wsid-app
     [v-main-panel]
     [v-modal-dialog f-active v-factor-form "Edit Factor"]
     [v-modal-dialog s-active v-scenario-form "Edit Scenario"]
-    [v-modal-dialog u-active v-user-form "Log In"]]))
+    #_[v-modal-dialog u-active v-user-form "Log In"]]))
