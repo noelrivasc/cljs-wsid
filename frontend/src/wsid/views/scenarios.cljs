@@ -56,7 +56,7 @@
         ^{:key (str "factor-" scenario-id "-" f)}
         [v-scenario-factor-item
          scenario-id
-         (assoc f :scenario-value (get scenario-factor-values (:id f)))
+         f
          update-value])]]))
 
 (defn v-scenario-card [scenario-id]
