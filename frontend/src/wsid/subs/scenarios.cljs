@@ -1,8 +1,8 @@
 (ns wsid.subs.scenarios
   (:require
    [re-frame.core :as re-frame
-    :refer [subscribe]]))
-
+    :refer [subscribe]]
+   [wsid.domain.scenarios :as scenarios]))
 
 (re-frame/reg-sub
  :scenario-edit-defaults
@@ -43,8 +43,7 @@
                    (filter
                     #(= scenario-id (:id %))
                     (get-in db [:decision :scenarios])))]
-     scenario)
-   ))
+     scenario)))
 
 (re-frame/reg-sub
  :scenario-score
@@ -53,8 +52,7 @@
     (subscribe [:factors])])
 
  (fn [[values factors]]
-   ; sum the weighted factor values for the scenario
-   (apply + (map #(* (get values (:id %)) (:weight %)) factors))))
+   (scenarios/calculate-scenario-score values factors)))
 
 (re-frame/reg-sub
  :scenario-factor-values
@@ -68,6 +66,4 @@
     (subscribe [:factors])])
 
  (fn [[values factors]]
-   ;; Enrich the global factors with the values for the given scenario
-   (for [f factors]
-     (conj f {:scenario-value (get values (:id f))}))))
+   (scenarios/enrich-factors-with-scenario-values values factors)))
