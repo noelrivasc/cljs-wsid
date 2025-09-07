@@ -2,6 +2,7 @@
   (:require
    [clojure.edn :as edn]
    [wsid.db :as db]
+   [wsid.config :as config]
    [clojure.spec.alpha :as s]
    [re-frame.core :as re-frame]
    [re-frame.cofx :refer [inject-cofx]]
@@ -12,8 +13,9 @@
         is-valid (s/valid? ::db/decision parsed)]
     (if is-valid
       parsed
-      (do
-        (println "Failed to load decision from local store:")
+      (when config/debug?
+        (when (empty? parsed) (println "The decision in localstorage is empty."))
+        (println "The decision in localstorage does not conform to the spec ::db/decision")
         (s/explain ::db/decision parsed)))))
 
 (re-frame/reg-event-fx
