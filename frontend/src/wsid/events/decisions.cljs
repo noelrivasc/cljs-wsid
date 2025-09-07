@@ -1,42 +1,42 @@
 (ns wsid.events.decisions
   (:require
-   [clojure.edn :as edn]
    [wsid.db :as db]
    [wsid.config :as config]
+   [wsid.domain.decisions :as decisions]
    [clojure.spec.alpha :as s]
    [re-frame.core :as re-frame]
    [re-frame.cofx :refer [inject-cofx]]
    [wsid.events.local-storage :as local-storage :refer [ls-keys]]))
-
-(defn validate-decision [^str stored]
-  (let [parsed (edn/read-string stored)
-        is-valid (s/valid? ::db/decision parsed)]
-    (if is-valid
-      parsed
-      (when config/debug?
-        (when (empty? parsed) (println "The decision in localstorage is empty."))
-        (println "The decision in localstorage does not conform to the spec ::db/decision")
-        (s/explain ::db/decision parsed)))))
 
 (defn load-decision
   "Validates and loads a decision into the provided db.
    
    Arguments:
    - db: ::db/app-db
-   - decision: ::db/decision"
+   - decision: ::db/decision
+   
+   Output:
+   - a new ::app/app-db with the decision loaded"
   [db decision]
-  (let [validated-decision (validate-decision decision)]
+  {:pre [(s/valid? ::db/decision decision)]}
+  (-> db
+      (assoc-in [:decision :title] (:title decision))
+      (assoc-in [:decision :description] (:description decision))
+      (assoc-in [:decision :factors] (:factors decision))
+      (assoc-in [:decision :scenarios] (:scenarios decision))
+      (assoc-in [:decision :scenario-factor-values] (:scenario-factor-values decision))))
+
+(defn load-decision-edn
+  "Parses the decision-edn string and loads the decision
+   components to the db if a valid decision is found."
+  [db decision-edn]
+  (let [validated-decision (decisions/validate-decision-edn decision-edn)]
     (if validated-decision
-      (-> db
-          (assoc-in [:decision :title] (:title validated-decision))
-          (assoc-in [:decision :description] (:description validated-decision))
-          (assoc-in [:decision :factors] (:factors validated-decision))
-          (assoc-in [:decision :scenarios] (:scenarios validated-decision))
-          (assoc-in [:decision :scenario-factor-values] (:scenario-factor-values validated-decision)))
-      (do 
+      (load-decision db validated-decision)
+      (do
         (when config/debug?
-          (println "Attempted to load an invalid decision.")
-          (println (s/explain ::db/decision decision)))
+          (println "Attempted to load an invalid decision edn.")
+          (println decision-edn))
         db))))
 
 (re-frame/reg-event-db
@@ -48,7 +48,7 @@
  :app/load-decision-from-storage
  [(inject-cofx :local-storage/load (:decision ls-keys))]
  (fn [{db :db local-storage :local-storage/load} _]
-   {:db (load-decision db local-storage)}))
+   {:db (load-decision-edn db local-storage)}))
 
 (re-frame/reg-event-db
  :decision-metadata-update

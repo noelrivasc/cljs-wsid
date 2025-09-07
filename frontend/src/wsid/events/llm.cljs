@@ -2,7 +2,52 @@
   (:require
    [re-frame.core :as re-frame]
    [superstructor.re-frame.fetch-fx]
-   [wsid.config :as config]))
+   [wsid.config :as config]
+   [wsid.db :as db]
+   [wsid.events.decisions :as decisions]
+   [clojure.spec.alpha :as s]))
+
+(defn- string-keys
+  "Converts the keys in the map to strings, recursively."
+  [m]
+  (into {} (map (fn [[k v]]
+                  [(str (symbol k))
+                   (if (map? v)
+                     (string-keys v)
+                     v)])
+                m)))
+
+(defn conform-llm-decision
+  "Prepares the decision data from an LLM response to conform to ::db/decision"
+  [decision]
+  ;; The conversion of the keys in scenario-factor-values to keys is needed
+  ;; because by default, the keys are converted to keywords. Keywords are fine
+  ;; for the other maps.
+  (let [prepared-decision (assoc decision :scenario-factor-values (string-keys (:scenario-factor-values decision)))
+        decision-valid? (s/valid? ::db/decision prepared-decision)]
+    (if decision-valid?
+      prepared-decision
+      (when config/debug?
+        (println "The received decision data is not valid.")
+        (println (s/explain ::db/decision prepared-decision))))))
+
+(defn process-llm-decision-fetch-success
+  "Processes the response of the call to the LLM service.
+   - validates the decision response
+   - loads the decision to state if valid
+   
+   Arguments:
+   - db: map conforming to ::db/app-db
+   - response: the JSON response, parsed
+   
+   Output: ::db/app-db with the decision loaded if validation succeeded"
+  [db response]
+  (let [decision-raw (get-in response [:body :llm-message])
+        decision (conform-llm-decision decision-raw)]
+
+    (-> db
+        (decisions/load-decision decision)
+        (assoc-in [:transient :llm-request-pending] false))))
 
 (re-frame/reg-event-fx
  :llm-fetch
@@ -24,33 +69,15 @@
               :on-success [:llm-fetch-success]
               :on-failure [:llm-fetch-failure]}})))
 
-(defn- string-keys
-  "Converts the keys in the map to strings, recursively."
-  [m]
-  (into {} (map (fn [[k v]]
-                  (println k)
-                  [(str (symbol k))
-                   (if (map? v)
-                     (string-keys v)
-                     v)])
-                m)))
-
 (re-frame/reg-event-db
  :llm-fetch-success
  (fn [db [_ response]]
-   (println (get-in response [:body :llm-message]))
-   (if-let [decision-data (get-in response [:body :llm-message])]
-     (-> db
-         (assoc-in [:decision :factors] (:factors decision-data))
-         (assoc-in [:decision :scenarios] (:scenarios decision-data))
-         (assoc-in [:decision :scenario-factor-values] (string-keys (:scenario-factor-values decision-data)))
-         (assoc-in [:transient :llm-request-pending] false))
-     (do
-       (println "There was an error getting the decision data.")
-       (assoc-in db [:transient :llm-request-pending] false)))))
+   (process-llm-decision-fetch-success db response)))
 
 (re-frame/reg-event-db
  :llm-fetch-failure
  (fn [db [_ response]]
-   (println "LLM fetch failed:" response)
+   (when config/debug?
+     (println "LLM fetch failed.")
+     (println response))
    (assoc-in db [:transient :llm-request-pending] false)))
