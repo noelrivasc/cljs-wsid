@@ -18,19 +18,37 @@
         (println "The decision in localstorage does not conform to the spec ::db/decision")
         (s/explain ::db/decision parsed)))))
 
+(defn load-decision
+  "Validates and loads a decision into the provided db.
+   
+   Arguments:
+   - db: ::db/app-db
+   - decision: ::db/decision"
+  [db decision]
+  (let [validated-decision (validate-decision decision)]
+    (if validated-decision
+      (-> db
+          (assoc-in [:decision :title] (:title validated-decision))
+          (assoc-in [:decision :description] (:description validated-decision))
+          (assoc-in [:decision :factors] (:factors validated-decision))
+          (assoc-in [:decision :scenarios] (:scenarios validated-decision))
+          (assoc-in [:decision :scenario-factor-values] (:scenario-factor-values validated-decision)))
+      (do 
+        (when config/debug?
+          (println "Attempted to load an invalid decision.")
+          (println (s/explain ::db/decision decision)))
+        db))))
+
+(re-frame/reg-event-db
+ :app/load-decision
+ (fn [db [_ decision]]
+   (load-decision db decision)))
+
 (re-frame/reg-event-fx
  :app/load-decision-from-storage
  [(inject-cofx :local-storage/load (:decision ls-keys))]
  (fn [{db :db local-storage :local-storage/load} _]
-   (let [stored-decision (validate-decision local-storage)]
-     (if stored-decision
-       {:db (-> db
-                (assoc-in [:decision :title] (:title stored-decision))
-                (assoc-in [:decision :description] (:description stored-decision))
-                (assoc-in [:decision :factors] (:factors stored-decision))
-                (assoc-in [:decision :scenarios] (:scenarios stored-decision))
-                (assoc-in [:decision :scenario-factor-values] (:scenario-factor-values stored-decision)))}
-       {:db db}))))
+   {:db (load-decision db local-storage)}))
 
 (re-frame/reg-event-db
  :decision-metadata-update
