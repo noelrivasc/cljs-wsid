@@ -9,6 +9,8 @@
    [wsid.db :as db]
    [wsid.events.local-storage :as local-storage :refer [ls-keys]]))
 
+;; TODO: take logic out of the events
+
 (defn validate-user [^str stored]
   (let [parsed (edn/read-string stored)
         is-valid (s/valid? ::db/user parsed)]
@@ -22,10 +24,9 @@
  :app/load-user-from-storage
  [(inject-cofx :local-storage/load (:user ls-keys))]
  (fn [{db :db local-storage :local-storage/load} _]
-   (let [stored-user (validate-user local-storage)]
-     (if stored-user
-       {:db (assoc db :user stored-user)}
-       {:db db}))))
+   (if-let [stored-user (validate-user local-storage)]
+     {:db (assoc db :user stored-user)}
+     {:db db})))
 
 (re-frame/reg-event-db
  :authenticate
