@@ -141,7 +141,7 @@
  :factor-active-delete
  (fn [db _]
    (let [[new-db deleted-factor-id] (factor-active-delete db)]
-     (evt> [:scenario-factor-values-prune deleted-factor-id])
+     (evt> [:scenario-factor-values-prune-factor deleted-factor-id])
      new-db)))
 
 (re-frame/reg-event-db
