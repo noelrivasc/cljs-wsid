@@ -28,11 +28,6 @@
             (assoc-in [:transient :scenario-edit-defaults] new-scenario)))
       db)))
 
-(re-frame/reg-event-db
- :scenario-create-stub
- (fn [db _]
-   (scenario-create-stub db)))
-
 (defn scenario-edit
   "Loads the given scenario in both [:transient :scenario-active]
    and [:transient :scenario-edit-defaults].
@@ -47,11 +42,6 @@
   (-> db
       (assoc-in [:transient :scenario-active] scenario)
       (assoc-in [:transient :scenario-edit-defaults] scenario)))
-
-(re-frame/reg-event-db
- :scenario-edit
- (fn [db [_ scenario]]
-   (scenario-edit db scenario)))
 
 (defn scenario-active-update
   "Updates a property in the active scenario.
@@ -73,11 +63,6 @@
         (assoc-in [:transient :scenario-active] updated-scenario)
         (assoc-in [:transient :scenario-active-validation :is-valid] scenario-valid?))))
 
-(re-frame/reg-event-db
- :scenario-active-update
- (fn [db [_ property value]]
-   (scenario-active-update db property value)))
-
 (defn scenario-factor-values-initialize-scenario
   "Initialize the factor values for the given scenario to nil.
    
@@ -91,12 +76,6 @@
   (let [factors (get-in db [:decision :factors])
         factor-values (scenarios/initialize-scenario-factor-values factors)]
     (assoc-in db [:decision :scenario-factor-values scenario-id] factor-values)))
-
-(re-frame/reg-event-db
- :scenario-factor-values-initialize-scenario
- (fn [db [_ scenario-id]]
-   (scenario-factor-values-initialize-scenario db scenario-id)))
-
 
 (defn scenario-factor-values-initialize-factor
   "Adds a new factor with nil value to all existing scenario factor values.
@@ -112,11 +91,6 @@
         updated-values (scenarios/initialize-factor-in-scenario-values scenario-factor-values factor-id)]
     (assoc-in db [:decision :scenario-factor-values] updated-values)))
 
-(re-frame/reg-event-db
- :scenario-factor-values-initialize-factor
- (fn [db [_ factor-id]]
-   (scenario-factor-values-initialize-factor db factor-id)))
-
 (defn scenario-factor-values-prune-factor
   "Removes a factor from all scenario factor values.
    
@@ -131,11 +105,6 @@
         updated-values (scenarios/prune-factor-from-scenario-values scenario-factor-values factor-id)]
     (assoc-in db [:decision :scenario-factor-values] updated-values)))
 
-(re-frame/reg-event-db
- :scenario-factor-values-prune-factor
- (fn [db [_ factor-id]]
-   (scenario-factor-values-prune-factor db factor-id)))
-
 (defn scenario-factor-values-prune-scenario
   "Removes a scenario from the scenario factor values.
    
@@ -148,11 +117,6 @@
   [db scenario-id]
   (assoc-in db [:decision :scenario-factor-values]
             (dissoc (get-in db [:decision :scenario-factor-values]) scenario-id)))
-
-(re-frame/reg-event-db
- :scenario-factor-values-prune-scenario
- (fn [db [_ scenario-id]]
-   (scenario-factor-values-prune-scenario db scenario-id)))
 
 (defn scenario-active-wipe
   "Unsets [:transient :scenario-active] and [:transient :scenario-edit-defaults]"
@@ -182,14 +146,6 @@
         new-db (assoc-in db [:decision :scenarios] scenarios)]
     [new-db scenario-is-new (:id scenario-prepared)]))
 
-(re-frame/reg-event-db
- :scenario-active-save
- (fn [db _]
-   (let [[new-db scenario-is-new scenario-id] (scenario-active-save db)]
-     (when scenario-is-new
-       (evt> [:scenario-factor-values-initialize-scenario scenario-id]))
-     (scenario-active-wipe new-db))))
-
 (defn scenario-active-delete
   "Removes the :scenario-active from the decision scenarios vector.
    
@@ -209,18 +165,6 @@
                    )]
     [new-db (:id scenario-active)]))
 
-(re-frame/reg-event-db
- :scenario-active-delete
- (fn [db _]
-   (let [[new-db deleted-scenario-id] (scenario-active-delete db)]
-     (evt> [:scenario-factor-values-prune-scenario deleted-scenario-id])
-     new-db)))
-
-(re-frame/reg-event-db
- :scenario-active-cancel
- (fn [db _]
-   (scenario-active-wipe db)))
-
 (defn scenario-factor-values-update
   "Updates the factor values for a specific scenario.
    
@@ -234,9 +178,75 @@
   [db scenario-id values]
   (assoc-in db [:decision :scenario-factor-values scenario-id] values))
 
+;; Event definitions
+
+;; Creates a new scenario if none is currently active
+(re-frame/reg-event-db
+ :scenario-create-stub
+ (fn [db _]
+   (scenario-create-stub db)))
+
+;; Loads a scenario for editing in the active state
+(re-frame/reg-event-db
+ :scenario-edit
+ (fn [db [_ scenario]]
+   (scenario-edit db scenario)))
+
+;; Updates a property of the currently active scenario
+(re-frame/reg-event-db
+ :scenario-active-update
+ (fn [db [_ property value]]
+   (scenario-active-update db property value)))
+
+;; Initializes factor values for a new scenario with nil values
+(re-frame/reg-event-db
+ :scenario-factor-values-initialize-scenario
+ (fn [db [_ scenario-id]]
+   (scenario-factor-values-initialize-scenario db scenario-id)))
+
+;; Adds a new factor to all existing scenarios with nil values
+(re-frame/reg-event-db
+ :scenario-factor-values-initialize-factor
+ (fn [db [_ factor-id]]
+   (scenario-factor-values-initialize-factor db factor-id)))
+
+;; Removes a factor from all scenario factor values
+(re-frame/reg-event-db
+ :scenario-factor-values-prune-factor
+ (fn [db [_ factor-id]]
+   (scenario-factor-values-prune-factor db factor-id)))
+
+;; Removes a scenario from the scenario factor values
+(re-frame/reg-event-db
+ :scenario-factor-values-prune-scenario
+ (fn [db [_ scenario-id]]
+   (scenario-factor-values-prune-scenario db scenario-id)))
+
+;; Saves the active scenario and initializes factor values if new
+(re-frame/reg-event-db
+ :scenario-active-save
+ (fn [db _]
+   (let [[new-db scenario-is-new scenario-id] (scenario-active-save db)]
+     (when scenario-is-new
+       (evt> [:scenario-factor-values-initialize-scenario scenario-id]))
+     (scenario-active-wipe new-db))))
+
+;; Deletes the active scenario and removes its factor values
+(re-frame/reg-event-db
+ :scenario-active-delete
+ (fn [db _]
+   (let [[new-db deleted-scenario-id] (scenario-active-delete db)]
+     (evt> [:scenario-factor-values-prune-scenario deleted-scenario-id])
+     new-db)))
+
+;; Cancels scenario editing and clears the active state
+(re-frame/reg-event-db
+ :scenario-active-cancel
+ (fn [db _]
+   (scenario-active-wipe db)))
+
+;; Updates the factor values for a specific scenario
 (re-frame/reg-event-db
  :scenario-factor-values-update
  (fn [db [_ scenario-id values]]
    (scenario-factor-values-update db scenario-id values)))
-
-

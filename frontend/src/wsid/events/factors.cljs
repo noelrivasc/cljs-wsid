@@ -29,11 +29,6 @@
             (assoc-in [:transient :factor-edit-defaults] new-factor)))
       db)))
 
-(re-frame/reg-event-db
- :factor-create
- (fn [db _]
-   (factor-create db)))
-
 (defn factor-edit
   "Loads the given factor in both [:transient :factor-active]
    and [:transient :factor-edit-defaults].
@@ -48,11 +43,6 @@
   (-> db
       (assoc-in [:transient :factor-active] factor)
       (assoc-in [:transient :factor-edit-defaults] factor)))
-
-(re-frame/reg-event-db
- :factor-edit
- (fn [db [_ factor]]
-   (factor-edit db factor)))
 
 (defn factor-active-update
   "Updates a property in the active factor.
@@ -73,11 +63,6 @@
     (-> db
         (assoc-in [:transient :factor-active] updated-factor)
         (assoc-in [:transient :factor-active-validation :is-valid] factor-valid?))))
-
-(re-frame/reg-event-db
- :factor-active-update
- (fn [db [_ property value]]
-   (factor-active-update db property value)))
 
 (defn factor-active-wipe
   "Unsets [:transient :factor-active] and [:transient :factor-edit-defaults]"
@@ -107,17 +92,6 @@
         new-db (assoc-in db [:decision :factors] factors)]
     [new-db factor-is-new (:id factor-prepared)]))
 
-(re-frame/reg-event-db
- :factor-active-save
- (fn [db _]
-   ; Save the active factor to the factors vector
-   ; Clear the active-factor
-   ; Trigger the initialization of factor values in existing scenarios
-   (let [[new-db factor-is-new factor-id] (factor-active-save db)]
-     (when factor-is-new
-       (evt> [:scenario-factor-values-initialize-factor factor-id]))
-     (factor-active-wipe new-db))))
-
 (defn factor-active-delete
   "Removes the :factor-active from the decision factors vector.
    
@@ -137,6 +111,36 @@
     
     [new-db (:id factor-active)]))
 
+;; Event definitions
+
+;; Creates a new factor if none is currently active
+(re-frame/reg-event-db
+ :factor-create
+ (fn [db _]
+   (factor-create db)))
+
+;; Loads a factor for editing in the active state
+(re-frame/reg-event-db
+ :factor-edit
+ (fn [db [_ factor]]
+   (factor-edit db factor)))
+
+;; Updates a property of the currently active factor
+(re-frame/reg-event-db
+ :factor-active-update
+ (fn [db [_ property value]]
+   (factor-active-update db property value)))
+
+;; Saves the active factor and initializes factor values in scenarios
+(re-frame/reg-event-db
+ :factor-active-save
+ (fn [db _]
+   (let [[new-db factor-is-new factor-id] (factor-active-save db)]
+     (when factor-is-new
+       (evt> [:scenario-factor-values-initialize-factor factor-id]))
+     (factor-active-wipe new-db))))
+
+;; Deletes the active factor and removes it from scenario values
 (re-frame/reg-event-db
  :factor-active-delete
  (fn [db _]
@@ -144,6 +148,7 @@
      (evt> [:scenario-factor-values-prune-factor deleted-factor-id])
      new-db)))
 
+;; Cancels factor editing and clears the active state
 (re-frame/reg-event-db
  :factor-active-cancel
  (fn [db _]
