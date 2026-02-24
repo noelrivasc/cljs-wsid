@@ -13,19 +13,18 @@
   {:deepinfra
    {:endpoint-url  "https://api.deepinfra.com/v1/openai/chat/completions"
     :extract-response-fn (fn [r] (-> r :choices first :message :content))
-    :token (:llm-token-deepinfra config)}})
+    :token (:api-token-deepinfra config)}})
 
 ;; BASE process functions
 ;; These are meant to be blocks that are assembled to compose a processing pipeline
 (defn- default-process-fn [r] r)
 (defn- remove-think [r] (string/replace r #"(?s)<think>.*</think>" ""))
 (defn- remove-md-code-delimiters [r] (second (re-find #"(?is)```(?:edn|clojure)(.*)```" r)))
-#_(defn- validate-edn 
-  "Parses an edn string to validate it, and re-encodes as string on success.
+#_(defn- validate-edn
+    "Parses an edn string to validate it, and re-encodes as string on success.
    Throws an error if r is not valid edn."
-  [r] (when-let [parsed (read-string r)]
-                          (pr-str parsed)))
-
+    [r] (when-let [parsed (read-string r
+                                       (pr-str parsed))]))
 
 ;; COMPOSITE process functions
 ;; TODO - implement error handling
@@ -33,14 +32,14 @@
   "Removes the markdown code fences (ie ```clojure), and then parses the string as
    EDN, returning the output of parsing. Throws on parse error."
   [r] (-> r
-                               remove-md-code-delimiters
-                               read-string))
+          remove-md-code-delimiters
+          read-string))
 
-(def ^:private process-fns 
+(def ^:private process-fns
   {:default-process-fn default-process-fn
    :remove-think remove-think
    :remove-md-code-delimiters remove-md-code-delimiters
-   
+
    :process--wsid-1--mistral process--wsid-1--mistral})
 
 (def models ["mistralai/Mistral-Small-3.2-24B-Instruct-2506"])
@@ -64,7 +63,6 @@
       process-fn
       (throw (Exception. "Error getting the process function.")))))
 
-
 (defn- build-llm-request-body
   "Builds the LLM request body to call the LLM service.
   The input params are assumed to be valid."
@@ -77,24 +75,24 @@
                    (substitute-template t p)))
         llm-request-body {:model model-name
                           :messages [{:role "user" :content prompt}]}]
-    
+
     ;; Validate final structure with spec
     (when-not (s/valid? :llm.api/request-body llm-request-body)
-      (throw (Exception. (str "Invalid LLM request body: " 
+      (throw (Exception. (str "Invalid LLM request body: "
                               (s/explain-str :llm.api/request-body llm-request-body)))))
-    
+
     llm-request-body))
 
 (defn- make-llm-http-request
   "Makes the HTTP request to the LLM API endpoint."
   [request-params request-body]
   (http-client/post (get-in request-params [:provider-config :endpoint-url])
-             {:body (json/generate-string request-body)
-              :headers {"Content-Type" "application/json"
-                        "Authentication" (str "Bearer "
-                                              (get-in request-params [:provider-config :token]))}
-              :throw-exceptions false
-              :as :json}))
+                    {:body (json/generate-string request-body)
+                     :headers {"Content-Type" "application/json"
+                               "Authorization" (str "Bearer "
+                                                    (get-in request-params [:provider-config :token]))}
+                     :throw-exceptions false
+                     :as :json}))
 
 (defn- process-llm-response
   "Processes the LLM response message using the model's processing function."
@@ -104,8 +102,8 @@
     (if (<= 200 (:status http-response) 299)
       ;; Success case
       {:success true :response {:llm-message (-> (:body http-response)
-                                    extract-response-fn
-                                    process-fn)}}
+                                                extract-response-fn
+                                                process-fn)}}
       ;; HTTP error case
       {:success false :response {:message (get-in http-response [:body :message] "HTTP request failed")
                                  :body (:body http-response)}})))
