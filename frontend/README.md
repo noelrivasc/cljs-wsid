@@ -38,3 +38,19 @@ OR
 ```
 
 Note that this relies on an alias defined in deps.edn
+
+## Testing
+
+### Running Tests
+
+```bash
+# Compile and run browser tests
+npm run test:browser
+
+# Or run tests in watch mode (includes browser-test build)
+npm run shadow-watch
+```
+
+Tests are located in `src/wsid/test/` and should have the `-test` suffix in their namespace names.
+
+Browser tests run at http://localhost:8290/index.html and provide an interactive test runner UI.

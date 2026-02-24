@@ -1,24 +1,30 @@
 {
-	"name": "wsid",
-	"scripts": {
-		"ancient": "clojure -Sdeps '{:deps {com.github.liquidz/antq {:mvn/version \"RELEASE\"}}}' -m antq.core",
-		"tailwind-watch": "npx @tailwindcss/cli -i ./src/wsid/css/main.css -o ./resources/public/css/main.css --content './src/cljs/**/*.cljs' --watch",
-		"shadow-watch": "npx shadow-cljs watch app browser-test karma-test",
-		"watch": "npm run shadow-watch & npm run tailwind-watch",
+  "name": "wsid",
+  "scripts": {
+    "ancient": "clojure -Sdeps '{:deps {com.github.liquidz/antq {:mvn/version \"RELEASE\"}}}' -m antq.core",
+    "tailwind-watch": "npx @tailwindcss/cli -i ./src/wsid/css/main.css -o ./resources/public/css/main.css --content './src/cljs/**/*.cljs' --watch",
+    "shadow-watch": "npx shadow-cljs watch app browser-test karma-test",
+    "watch": "npm run shadow-watch & npm run tailwind-watch",
     "repl": "echo \"Enter the CLJS repl with (require 'dev.repl) (dev.repl/init)\"; clojure -M:nrebel --port `cat .shadow-cljs/nrepl.port`",
-
-		"tailwind-release": "npx @tailwindcss/cli -i ./src/wsid/css/main.css -o ./resources/public/css/main.css --content './src/cljs/**/*.cljs' -m",
-		"app-release": "npx shadow-cljs release app",
-		"release": "npm run tailwind-release & npm run app-release",
-		"build-report": "npx shadow-cljs run shadow.cljs.build-report app target/build-report.html"
-	},
-	"dependencies": {
-		"react": "17.0.2",
-		"react-dom": "17.0.2",
-		"react-transition-group": "^4.4.5"
-	},
-	"devDependencies": {
-		"@tailwindcss/cli": "^4.0.15",
-		"shadow-cljs": "2.26.2"
-	}
+    "test:browser:compile": "npx shadow-cljs compile browser-test",
+    "test:browser:start": "python3 -m http.server 8290 --directory target/browser-test &echo $! > .test-server.pid && sleep 1 && echo 'Tests running at http://localhost:8290/index.html' && open http://localhost:8290/index.html",
+    "test:browser:stop": "kill $(cat .test-server.pid 2>/dev/null) 2>/dev/null || true && rm -f .test-server.pid",
+    "test:karma": "npx shadow-cljs compile karma-test && npx karma start --single-run",
+    "tailwind-release": "npx @tailwindcss/cli -i ./src/wsid/css/main.css -o ./resources/public/css/main.css --content './src/cljs/**/*.cljs' -m",
+    "app-release": "npx shadow-cljs release app",
+    "release": "npm run tailwind-release & npm run app-release",
+    "build-report": "npx shadow-cljs run shadow.cljs.build-report app target/build-report.html"
+  },
+  "dependencies": {
+    "react": "17.0.2",
+    "react-dom": "17.0.2",
+    "react-transition-group": "^4.4.5"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.0.15",
+    "karma-chrome-launcher": "^3.2.0",
+    "karma-cljs-test": "^0.1.0",
+    "karma-junit-reporter": "^2.0.1",
+    "shadow-cljs": "2.26.2"
+  }
 }

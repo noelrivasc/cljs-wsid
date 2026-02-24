@@ -3,6 +3,7 @@
    [re-frame.cofx :refer [inject-cofx]]
    [re-frame.core :as re-frame]
    [wsid.db :as db]
+   #_{:clj-kondo/ignore [:unused-namespace]}
    [wsid.events.decisions :as decisions]
    #_{:clj-kondo/ignore [:unused-namespace]}
    [wsid.events.factors :as factors]
@@ -16,6 +17,11 @@
    [wsid.events.util :as util]))
 
 (def evt> util/evt>)
+
+(re-frame/reg-event-db
+ :app/wipe-state
+ (fn [_]
+   db/default-db))
 
 (re-frame/reg-event-fx
  :app/initialize-db

@@ -13,6 +13,11 @@
 (def <sub (comp deref re-frame.core/subscribe))
 
 (re-frame/reg-sub
+ :app/db
+ (fn [db]
+   db))
+
+(re-frame/reg-sub
  :db-is-dirty
  (fn [db]
    (get-in db [:transient :db-is-dirty])))
