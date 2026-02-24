@@ -28,7 +28,7 @@
  :app/compare-db-localstorage
  [(inject-cofx :local-storage/load (:decision ls-keys))]
  (fn [{db :db local-storage :local-storage/load} _]
-   (let [stored-decision (decisions/validate-decision local-storage)
+   (let [stored-decision local-storage
          db-decision (:decision db)
          is-dirty (not (= db-decision stored-decision))]
      {:db (assoc-in db [:transient :db-is-dirty] is-dirty)})))

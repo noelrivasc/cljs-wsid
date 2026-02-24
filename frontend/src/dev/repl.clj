@@ -1,4 +1,5 @@
-(ns dev.repl)
+(ns dev.repl
+  (:require [shadow.cljs.devtools.api :as shadow-api]))
 
 (defn init []
-  (shadow.cljs.devtools.api/nrepl-select :app))
+  (shadow-api/nrepl-select :app))
