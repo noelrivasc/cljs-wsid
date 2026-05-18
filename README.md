@@ -34,5 +34,4 @@ The proxy just helps deal with CORS issues on localhost. The app can run fine wi
 
 The backend compiles to an uberjar (`clojure -X:uberjar`) and runs on AWS Lambda with the Java 21 runtime, exposed via a Lambda Function URL. The frontend builds to static assets (`npm run release`) and is synced to an S3 bucket served through CloudFront. Both pipelines are automated through GitHub Actions — see `.github/workflows/` for the definitions and `backend/AWS.md` for the Lambda setup instructions. There is no infrastructure-as-code; AWS resources were configured manually.
 
-<img width="1514" height="3722" alt="Screenshot 2026-05-18 at 08-35-03 wsid" src="https://github.com/user-attachments/assets/a2ba5af0-0865-46d8-b7da-0f17960d68c1" />
-
+<img width="1458" height="3638" alt="Screenshot 2026-05-18 at 08-41-18 wsid" src="https://github.com/user-attachments/assets/fef0b2ed-0ea7-4e15-839a-04d0e65efd01" />
